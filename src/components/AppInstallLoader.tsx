@@ -2,35 +2,50 @@
 
 import { useEffect, useState } from "react";
 
+let deferredPrompt: any = null;
+
 export default function AppInstallLoader({
   children,
-  duration = 5, // 5 دقائق = 5 ثانية
 }: {
   children: React.ReactNode;
-  duration?: number;
 }) {
-  const [seconds, setSeconds] = useState(duration);
-  const [done, setDone] = useState(false);
+  const [canInstall, setCanInstall] = useState(false);
+  const [installed, setInstalled] = useState(false);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setSeconds((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setDone(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+    const handler = (e: any) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      setCanInstall(true);
+    };
 
-    return () => clearInterval(timer);
+    window.addEventListener("beforeinstallprompt", handler);
+
+    window.addEventListener("appinstalled", () => {
+      setInstalled(true);
+      setCanInstall(false);
+    });
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+    };
   }, []);
 
-  if (done) return <>{children}</>;
+  const installApp = async () => {
+    if (!deferredPrompt) return;
 
-  const minutes = Math.floor(seconds / 60);
-  const secs = seconds % 60;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+
+    if (outcome === "accepted") {
+      setInstalled(true);
+    }
+
+    deferredPrompt = null;
+    setCanInstall(false);
+  };
+
+  if (!canInstall || installed) return <>{children}</>;
 
   return (
     <div
@@ -49,27 +64,32 @@ export default function AppInstallLoader({
       }}
     >
       <h1 style={{ fontSize: 26, fontWeight: "bold" }}>
-        📲 جاري تثبيت التطبيق
+        📲 ثبّت التطبيق الآن
       </h1>
 
       <p style={{ marginTop: 15, fontSize: 18 }}>
-        يرجى عدم إغلاق الصفحة
+        لتحصل على تجربة أسرع وأسهل
       </p>
 
-      <div
+      <button
+        onClick={installApp}
         style={{
-          marginTop: 25,
-          fontSize: 22,
-          background: "rgba(255,255,255,0.2)",
-          padding: "12px 25px",
-          borderRadius: 12,
+          marginTop: 30,
+          fontSize: 20,
+          background: "#fff",
+          color: "#15803d",
+          padding: "14px 30px",
+          borderRadius: 14,
+          border: "none",
+          fontWeight: "bold",
+          cursor: "pointer",
         }}
       >
-        ⏳ {minutes}:{secs.toString().padStart(2, "0")}
-      </div>
+        ➕ تثبيت التطبيق
+      </button>
 
-      <p style={{ marginTop: 30, fontSize: 14, opacity: 0.9 }}>
-        بعد اكتمال التثبيت سيتم فتح المنتج تلقائيًا
+      <p style={{ marginTop: 25, fontSize: 13, opacity: 0.9 }}>
+        يمكنك استخدام التطبيق بدون متصفح بعد التثبيت
       </p>
     </div>
   );
