@@ -49,7 +49,8 @@ export default function RootLayout({
 
         {/* ✅ تسجيل Service Worker */}
         <RegisterSW />
-<meta name="google-site-verification" content="7XY4QFlcbO13HsbJ3M-4Pl1l9A4Pbbe-GltnYncvINA" />
+         <meta name="google-site-verification" content="7XY4QFlcbO13HsbJ3M-4Pl1l9A4Pbbe-GltnYncvINA" />
+         <meta name="google-adsense-account" content="ca-pub-4973672854580770">
         <Header />
 
         <main className="flex-1">
