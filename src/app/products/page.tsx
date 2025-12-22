@@ -32,22 +32,15 @@ export default function ProductsPage() {
               {product.description}
             </p>
 
-            <div className="flex justify-between items-center">
-              <span className="font-bold text-green-600">
-                {product.price} {product.currency}
-              </span>
-
-              {/* الطلب عبر واتساب */}
+            {/* زر الفتح */}
+            {product.link && (
               <a
-                href={`https://wa.me/201021732703?text=${encodeURIComponent(
-                  product.whatsappText
-                )}`}
-                target="_blank"
-                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+                href={product.link}
+                className="block text-center bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
               >
-                اطلب عبر واتساب
+                افتح المنتج
               </a>
-            </div>
+            )}
           </div>
         ))}
       </div>

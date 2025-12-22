@@ -142,7 +142,6 @@ export default function HotlinePage() {
             </h1>
 
             <p className="text-gray-600 mb-6 text-center text-sm">
-              هذا المنتج يعمل فورًا بعد الدفع
               <br />
               يُفضّل إضافته للشاشة الرئيسية لاستخدامه كتطبيق
             </p>

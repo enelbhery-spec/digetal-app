@@ -9,26 +9,34 @@ export const metadata: Metadata = {
     default: "Digital Store | متجر المنتجات الرقمية",
     template: "%s | Digital Store",
   },
-  description: "متجر منتجات رقمية – استلم منتجك فورًا بعد الطلب",
+  description: "متجر منتجات رقمية – استلم منتجك فورًا بدون تعقيد",
   keywords: [
     "منتجات رقمية",
     "متجر رقمي",
-    "تحميل فوري",
+    "خدمات رقمية",
     "Digital Products",
     "Digital Store",
   ],
   authors: [{ name: "Digital Store" }],
   creator: "Digital Store",
+
   manifest: "/manifest.json",
+
   icons: {
     icon: "/favicon.ico",
   },
+
   openGraph: {
     title: "Digital Store | متجر المنتجات الرقمية",
-    description: "منتجات رقمية جاهزة – استلام فوري – دعم عبر واتساب",
+    description: "خدمات ومنتجات رقمية مجانية وسريعة",
     type: "website",
     locale: "ar_EG",
     siteName: "Digital Store",
+  },
+
+  other: {
+    "google-site-verification": "7XY4QFlcbO13HsbJ3M-4Pl1l9A4Pbbe-GltnYncvINA",
+    "google-adsense-account": "ca-pub-4973672854580770",
   },
 };
 
@@ -47,10 +55,9 @@ export default function RootLayout({
     <html lang="ar" dir="rtl" className="scroll-smooth">
       <body className="min-h-screen flex flex-col bg-gray-50 text-gray-800 font-sans antialiased">
 
-        {/* ✅ تسجيل Service Worker */}
+        {/* تسجيل Service Worker */}
         <RegisterSW />
-         <meta name="google-site-verification" content="7XY4QFlcbO13HsbJ3M-4Pl1l9A4Pbbe-GltnYncvINA" />
-         <meta name="google-adsense-account" content="ca-pub-4973672854580770">
+
         <Header />
 
         <main className="flex-1">

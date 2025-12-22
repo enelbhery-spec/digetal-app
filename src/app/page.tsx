@@ -29,13 +29,7 @@ export default function Home() {
                 تصفح المنتجات
               </a>
 
-              <a
-                href="https://wa.me/201021732703?text=مرحبًا،%20أرغب%20في%20شراء%20منتج"
-                target="_blank"
-                className="border border-white/80 px-7 py-4 rounded-xl font-bold hover:bg-white hover:text-green-600 transition"
-              >
-                اطلب عبر واتساب
-              </a>
+
             </div>
 
             {/* Trust Badges */}
@@ -164,11 +158,11 @@ export default function Home() {
           اختر منتجك الآن واستلمه فورًا
         </p>
         <a
-          href="https://wa.me/201234567890?text"
+            href="/products/"
           target="_blank"
           className="bg-white text-green-600 px-10 py-4 rounded-xl font-bold hover:bg-gray-100 transition"
         >
-          تواصل عبر واتساب
+          ابدا بتصفح المنتجات
         </a>
       </section>
 
