@@ -28,4 +28,18 @@ export const products: Product[] = [
     image: "/products/meals.png",
     link: "/delivery/meals?mode=meals", // 👈 نفس الصفحة بس محتوى مختلف
   },
+  {
+    id: 4,
+    title: "العروض الحصرية للمتاجر الاكترونية",
+    description: "احصل على العروض حصريا )",
+    image: "/products/egyptstores.png",
+    link: "/delivery/egyptStores?mode=meals", // 👈 نفس الصفحة بس محتوى مختلف
+  },
+  {
+    id: 5,
+    title: " متاجر الكترونية لاجهزة اللابتوب وقطع الغيار  ",
+    description: "احصل على العروض حصريا )",
+    image: "/products/ComputerStores.png",
+    link: "/delivery/ComputerStores?mode=meals", // 👈 نفس الصفحة بس محتوى مختلف
+  },
 ];
