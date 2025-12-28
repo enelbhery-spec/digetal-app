@@ -42,4 +42,11 @@ export const products: Product[] = [
     image: "/products/ComputerStores.png",
     link: "/delivery/ComputerStores?mode=meals", // 👈 نفس الصفحة بس محتوى مختلف
   },
+  {
+    id: 6,
+    title: " أفضل شركات التأمين على السيارات في مصر  ",
+    description: "دليل شركات التأمين على السيارات في مصر مع أرقام الاتصال والمواقع الرسمية )",
+    image: "/products/inscar.png",
+    link: "/delivery/insuranceCompanies", // 👈 نفس الصفحة بس محتوى مختلف
+  },
 ];
