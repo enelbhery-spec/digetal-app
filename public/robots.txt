@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://https:digetal-app-q1mf.vercel.app/sitemap.xml
