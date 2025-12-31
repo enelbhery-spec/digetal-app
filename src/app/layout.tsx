@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import RegisterSW from "@/components/RegisterSW";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: {
@@ -19,13 +20,10 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Digital Store - Smart Search " }],
   creator: "Digital Store - Smart Search ",
-
   manifest: "/manifest.json",
-
   icons: {
     icon: "/favicon.ico",
   },
-
   openGraph: {
     title: "Digital Store - Smart Search  | متجر المنتجات الرقمية",
     description: "خدمات ومنتجات رقمية مجانية وسريعة",
@@ -33,7 +31,6 @@ export const metadata: Metadata = {
     locale: "ar_EG",
     siteName: "Digital Store - smart searching ",
   },
-
   other: {
     "google-site-verification": "7XY4QFlcbO13HsbJ3M-4Pl1l9A4Pbbe-GltnYncvINA",
     "google-adsense-account": "ca-pub-4973672854580770",
@@ -53,11 +50,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ar" dir="rtl" className="scroll-smooth">
+      <head>
+        {/* الطريقة الصحيحة لإضافة سكريبت Adsterra في Next.js */}
+        <Script
+          src="https://pl28375284.effectivegatecpm.com/a2/d8/f9/a2d8f911d27d875162419ab2c20d9e9b.js"
+          strategy="afterInteractive"
+          data-cfasync="false"
+          async
+        />
+      </head>
       <body className="min-h-screen flex flex-col bg-gray-50 text-gray-800 font-sans antialiased">
 
-        {/* تسجيل Service Worker */}
-        <RegisterSW />
+        {/* حاوية الإعلان: يفضل وضعها في مكان استراتيجي، هنا ستظهر في أعلى الصفحة */}
+        <div id="container-68452107c89d06df62ec5e7bed215ec8"></div>
 
+        <RegisterSW />
         <Header />
 
         <main className="flex-1">
