@@ -53,7 +53,7 @@ export default function RootLayout({
       <head>
         {/* الطريقة الصحيحة لإضافة سكريبت Adsterra في Next.js */}
         <Script
-          src="https://pl28375284.effectivegatecpm.com/a2/d8/f9/a2d8f911d27d875162419ab2c20d9e9b.js"
+          src="https://pl28375236.effectivegatecpm.com/68452107c89d06df62ec5e7bed215ec8/invoke.js"
           strategy="afterInteractive"
           data-cfasync="false"
           async
@@ -63,7 +63,6 @@ export default function RootLayout({
 
         {/* حاوية الإعلان: يفضل وضعها في مكان استراتيجي، هنا ستظهر في أعلى الصفحة */}
 
-        <div id="container-68452107c89d06df62ec5e7bed215ec8"></div>
 
         <RegisterSW />
         <Header />
