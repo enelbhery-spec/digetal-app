@@ -17,13 +17,14 @@ export default function AdComponent() {
     }
   }, []);
 
-  return (
-    <div className="my-10 flex flex-col items-center justify-center">
-      {/* نص اختياري صغير فوق الإعلان */}
-      <span className="text-gray-400 text-xs mb-2">إعلان مُقترح</span>
+// داخل ملف AdComponent.tsx
+return (
+  <div className="my-10 w-full flex flex-col items-center bg-gray-50 p-4 rounded-xl border border-dashed border-gray-300">
+    <span className="text-gray-400 text-[10px] mb-4 uppercase tracking-widest">محتوى إعلاني</span>
 
-      {/* الحاوية التي سيظهر فيها إعلان Native Banner */}
-      <div id="container-68452107c89d06df62ec5e7bed215ec8"></div>
+    {/* تحديد عرض أقصى للحاوية لكي لا تفرش الصور بعرض الشاشة كله */}
+    <div id="container-68452107c89d06df62ec5e7bed215ec8"></div> className="max-w-[350px] overflow-hidden rounded-lg shadow-sm">
+      {/* الإعلان سيظهر هنا بداخل مساحة محددة ومنظمة */}
     </div>
-  );
-}
+  </div>
+);
