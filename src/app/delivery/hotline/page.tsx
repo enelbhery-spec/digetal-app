@@ -3,6 +3,7 @@
 import { useState } from "react";
 import AppInstallLoader from "@/components/AppInstallLoader";
 import DeviceLock from "@/components/DeviceLock";
+import AdComponent from "@/components/AdComponent";
 
 /* ================== DATA ================== */
 const hotlines = [
@@ -193,7 +194,7 @@ export default function HotlinePage() {
                 </div>
               ))}
             </div>
-
+             <AdComponent />
             <p className="text-xs text-gray-400 mt-8 text-center">
               🔒 هذا المنتج مخصص للاستخدام الشخصي فقط
               <br />
@@ -201,6 +202,7 @@ export default function HotlinePage() {
             </p>
 
           </div>
+
         </div>
       </AppInstallLoader>
     </DeviceLock>

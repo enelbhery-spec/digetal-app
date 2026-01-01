@@ -62,6 +62,7 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col bg-gray-50 text-gray-800 font-sans antialiased">
 
         {/* حاوية الإعلان: يفضل وضعها في مكان استراتيجي، هنا ستظهر في أعلى الصفحة */}
+
         <div id="container-68452107c89d06df62ec5e7bed215ec8"></div>
 
         <RegisterSW />
