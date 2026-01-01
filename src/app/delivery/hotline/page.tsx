@@ -3,7 +3,6 @@
 import { useState } from "react";
 import AppInstallLoader from "@/components/AppInstallLoader";
 import DeviceLock from "@/components/DeviceLock";
-import AdComponent from "@/components/AdComponent";
 
 /* ================== DATA ================== */
 const hotlines = [
@@ -155,7 +154,6 @@ export default function HotlinePage() {
               onChange={(e) => setQuery(e.target.value)}
               className="w-full p-3 border rounded-xl mb-4 text-right focus:outline-none focus:ring-2 focus:ring-green-500"
             />
-            <AdComponent />
 
             {/* رسائل إرشادية */}
             {query.trim() === "" && (
