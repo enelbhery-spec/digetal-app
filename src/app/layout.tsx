@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import RegisterSW from "@/components/RegisterSW";
@@ -32,7 +33,8 @@ export const metadata: Metadata = {
     siteName: "Digital Store",
   },
   other: {
-    "google-site-verification": "7XY4QFlcbO13HsbJ3M-4Pl1l9A4Pbbe-GltnYncvINA",
+    "google-site-verification":
+      "7XY4QFlcbO13HsbJ3M-4Pl1l9A4Pbbe-GltnYncvINA",
     "google-adsense-account": "ca-pub-4973672854580770",
   },
 };
@@ -50,24 +52,30 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ar" dir="rtl" className="scroll-smooth">
-      <body className="min-h-screen flex flex-col bg-gray-50 text-gray-800 font-sans antialiased">
+      <body className="min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased">
 
+        {/* ===== Header ===== */}
         <Header />
-        {/* 🔹 إعلان Adsterra داخل المحتوى (لن يظهر أسفل الفوتر) */}
-          <div className="w-full flex justify-center my-6">
-            <AdsterraResponsive />
 
-        <main className="flex-1">
+        {/* ===== Adsterra | أعلى المحتوى ===== */}
+        <section className="w-full flex justify-center my-4">
+          <AdsterraResponsive />
+        </section>
 
-          {/* 🔹 إعلان Adsterra داخل المحتوى (لن يظهر أسفل الفوتر) */}
-          <div className="w-full flex justify-center my-6">
-            <AdsterraResponsive />
-          </div>
-
+        {/* ===== Main Content ===== */}
+        <main className="flex-1 container mx-auto px-4">
           {children}
         </main>
 
+        {/* ===== Adsterra | قبل الفوتر (اختياري) ===== */}
+        <section className="w-full flex justify-center my-6">
+          <AdsterraResponsive />
+        </section>
+
+        {/* ===== Footer ===== */}
         <Footer />
+
+        {/* ===== Service Worker ===== */}
         <RegisterSW />
 
       </body>
