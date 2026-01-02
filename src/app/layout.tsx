@@ -53,6 +53,9 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col bg-gray-50 text-gray-800 font-sans antialiased">
 
         <Header />
+        {/* 🔹 إعلان Adsterra داخل المحتوى (لن يظهر أسفل الفوتر) */}
+          <div className="w-full flex justify-center my-6">
+            <AdsterraResponsive />
 
         <main className="flex-1">
 
