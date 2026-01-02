@@ -58,6 +58,8 @@ export default function RootLayout({
           data-cfasync="false"
           async
         />
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-FGK2Z5C8W8"></script>
+
       </head>
       <body className="min-h-screen flex flex-col bg-gray-50 text-gray-800 font-sans antialiased">
 
