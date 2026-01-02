@@ -44,6 +44,7 @@ export default function Home() {
                   className="bg-white/10 backdrop-blur rounded-lg py-2 text-center font-semibold"
                 >
                   {item}
+
                 </div>
               ))}
             </div>

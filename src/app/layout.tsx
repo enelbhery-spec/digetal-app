@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import RegisterSW from "@/components/RegisterSW";
 import Script from "next/script";
+import AdsterraBanner from "@/components/AdsterraBanner";
 
 export const metadata: Metadata = {
   title: {
@@ -62,6 +63,10 @@ export default function RootLayout({
 
       </head>
       <body className="min-h-screen flex flex-col bg-gray-50 text-gray-800 font-sans antialiased">
+       {/* 🔴 إعلان أعلى الصفحة */}
+        <div style={{ textAlign: "center", margin: "10px 0" }}>
+          <AdsterraBanner />
+        </div>
 
         {/* حاوية الإعلان: يفضل وضعها في مكان استراتيجي، هنا ستظهر في أعلى الصفحة */}
          <div id="container-a2d8f911d27d875162419ab2c20d9e9b"></div>
@@ -71,6 +76,10 @@ export default function RootLayout({
 
         <main className="flex-1">
           {children}
+          {/* 🔴 إعلان أسفل الصفحة (اختياري) */}
+        <div style={{ textAlign: "center", margin: "20px 0" }}>
+          <AdsterraBanner />
+        </div>
         </main>
 
 
