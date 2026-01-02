@@ -13,14 +13,21 @@ export default function AdsterraResponsive() {
 
     checkScreen();
     window.addEventListener("resize", checkScreen);
-
     return () => window.removeEventListener("resize", checkScreen);
   }, []);
+
+  // 🔑 مفاتيح Adsterra
+  const DESKTOP_KEY = "71ccc427e033d5bedd03426b6b870193";
+  const MOBILE_KEY = "5c5cce937b84a9f6a179ef303633843b";
+
+  const adKey = isMobile ? MOBILE_KEY : DESKTOP_KEY;
+  const width = isMobile ? 300 : 728;
+  const height = isMobile ? 250 : 90;
 
   return (
     <div
       style={{
-        maxWidth: isMobile ? "300px" : "728px",
+        maxWidth: `${width}px`,
         margin: "30px auto",
         textAlign: "center",
         overflow: "hidden",
@@ -28,24 +35,24 @@ export default function AdsterraResponsive() {
     >
       {/* إعداد الإعلان */}
       <Script
-        id={`adsterra-config-${isMobile ? "mobile" : "desktop"}`}
+        id={`adsterra-config-${adKey}`}
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: `
             atOptions = {
-              'key' : '${isMobile ? "MOBILE_KEY" : "DESKTOP_KEY"}',
+              'key' : '${adKey}',
               'format' : 'iframe',
-              'height' : ${isMobile ? 250 : 90},
-              'width' : ${isMobile ? 300 : 728},
+              'height' : ${height},
+              'width' : ${width},
               'params' : {}
             };
           `,
         }}
       />
 
-      {/* سكربت التحميل */}
+      {/* تحميل الإعلان */}
       <Script
-        src="//www.highperformanceformat.com/${isMobile ? "'5c5cce937b84a9f6a179ef303633843b'" : "'71ccc427e033d5bedd03426b6b870193'"}/invoke.js"
+        src={`//www.highperformanceformat.com/${adKey}/invoke.js`}
         strategy="afterInteractive"
       />
     </div>
