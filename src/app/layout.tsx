@@ -7,12 +7,12 @@ import RegisterSW from "@/components/RegisterSW";
 
 export const metadata: Metadata = {
   title: {
-    default: "Digital Store - smart searching | متجر المنتجات الرقمية",
+    default: "Digital Store - smart searching | متجر التطبيقات الرقمية",
     template: "%s | Digital Store - smart search",
   },
-  description: "خدمات ومنتجات رقمية مجانية وسريعة",
+  description: "خدمات وتطبيقات رقمية مجانية وسريعة",
   keywords: [
-    "منتجات رقمية",
+    "تطبيقات رقمية",
     "متجر رقمي",
     "خدمات رقمية",
     "Digital Products",
@@ -25,8 +25,8 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
   },
   openGraph: {
-    title: "Digital Store - Smart Search | متجر المنتجات الرقمية",
-    description: "خدمات ومنتجات رقمية مجانية وسريعة",
+    title: "Digital Store - Smart Search | تطبيقات بحث رقمية",
+    description: "خدمات وتطبيقات رقمية مجانية وسريعة",
     type: "website",
     locale: "ar_EG",
     siteName: "Digital Store",

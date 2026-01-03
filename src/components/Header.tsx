@@ -15,7 +15,7 @@ export default function Header() {
         {/* Navigation */}
         <nav className="hidden md:flex items-center gap-8 font-semibold text-gray-700">
           <Link href="/products" className="hover:text-green-600 transition">
-            المنتجات
+            التطبيقات
           </Link>
 
           <Link href="/how-to-use" className="hover:text-green-600 transition">

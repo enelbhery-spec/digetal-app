@@ -25,7 +25,7 @@ export default function Home() {
                 href="/products"
                 className="bg-white text-green-600 px-7 py-4 rounded-xl font-bold hover:bg-gray-100 transition"
               >
-                تصفح المنتجات
+                تصفح  التطبيقات
               </a>
 
 
@@ -57,8 +57,8 @@ export default function Home() {
                 كيف يعمل المتجر؟
               </h3>
               <ul className="space-y-3 text-gray-600">
-                <li>✔ اختر المنتج المناسب</li>
-                <li>✔ اضغط على افتح المنتج </li>
+                <li>✔ اختر  التطبيق  المناسب</li>
+                <li>✔ اضغط على افتح  التطبيق  </li>
                 <li>✔ بدون الدفع - مجانا</li>
                 <li>✔ ااستعمل البحث  فورًا</li>
               </ul>
@@ -78,7 +78,7 @@ export default function Home() {
 
     <p className="text-gray-600 leading-relaxed mb-8">
       Smart Search هو محرك بحث ذكي يساعدك على الوصول السريع
-      إلى الخدمات والمنتجات الرقمية داخل موقع واحد
+      إلى الخدمات و التطبيقات الرقمية داخل موقع واحد
       بنتائج دقيقة وسهلة الاستخدام.
     </p>
 
@@ -92,84 +92,72 @@ export default function Home() {
 </section>
 
 
-      {/* ================= WHAT WE OFFER ================= */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12">
-            ماذا نقدم؟
-          </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "منتجات رقمية جاهزة",
-                desc: "ملفات وأدوات قابلة للاستخدام الفوري",
-              },
-              {
-                title: "استخدام فوري",
-                desc: "يتم فتح البحث مباشرة",
-              },
-              {
-                title: "دعم واتساب",
-                desc: "تواصل مباشر وسريع عند الحاجة",
-              },
-              {
-                title: "المنتجات مجانا",
-                desc: "منتجات عالية القيمة مجانا",
-              },
-              {
-                title: "سهولة الاستخدام",
-                desc: "بدون تسجيل أو خطوات معقدة",
-              },
-              {
-                title: "خصوصية وأمان",
-                desc: "لا نحتفظ بأي بيانات شخصية",
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="bg-white p-8 rounded-2xl shadow hover:shadow-lg transition"
-              >
-                <h3 className="text-xl font-bold mb-3 text-green-600">
-                  {item.title}
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {item.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ======== عرض 3 منتجات فقط ======== */}
+<section className="mt-10">
+  <div className="grid gap-6 md:grid-cols-3">
 
-      {/* ================= HOW IT WORKS ================= */}
-      <section className="py-20 bg-white">
-        <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12">
-            كيف تحصل على منتج مدفوع؟
-          </h2>
+    {/*  التطبيق  1 */}
+    <div className="bg-white rounded-xl border p-4 shadow-sm hover:shadow-md transition">
+      <div className="h-40 flex items-center justify-center mb-4">
+        <img
+          src="/products/hotline-guide.png"
+          alt="نسطبيق بحث الخط الساخن "
+          className="max-h-full"
+        />
+      </div>
+      <h3 className="font-bold text-lg mb-2">بحث الخط الساخن – اتصال مباشر</h3>
+      <p className="text-sm text-gray-600 mb-4">
+       الوصول السريع لأرقام البنوك والجهات الرسمية والخدمات الحكومية وشركات الاتصالات وغيرها لتوفير وقتك
+      </p>
+      <a href="/delivery/hotline" className="text-green-600 font-semibold">
+        عرض التطبيق →
+      </a>
+    </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 text-center">
-            {[
-              "اختر المنتج",
-              "اضغط اطلب",
-              "أرسل رسالة واتساب",
-              "أتمم الدفع",
-              "استلم الرابط فورًا",
-            ].map((step, i) => (
-              <div
-                key={i}
-                className="border rounded-xl p-6 hover:border-green-500 transition"
-              >
-                <div className="text-3xl font-bold text-green-600 mb-2">
-                  {i + 1}
-                </div>
-                <p className="font-semibold">{step}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+    {/*  التطبيق  2 */}
+    <div className="bg-white rounded-xl border p-4 shadow-sm hover:shadow-md transition">
+      <div className="h-40 flex items-center justify-center mb-4">
+        <img
+          src="/products/egyptstores.png"
+          alt="تطليق بحث متاجر اكتروني "
+          className="max-h-full"
+        />
+      </div>
+      <h3 className="font-bold text-lg mb-2">العروض الحصرية للمتاجر الاكترونية</h3>
+      <p className="text-sm text-gray-600 mb-4">
+       احصل على العروض حصريا للمتاجر الاكترونية حتى تتمكن من متابعة احتياجات بضطة  واجة من هاتفك توفر عليك البحث على المتصفحات
+      </p>
+      <a href="/delivery/egyptStores" className="text-green-600 font-semibold">
+        عرض التطبيق →
+      </a>
+    </div>
+
+    {/*  التطبيق  3 */}
+    <div className="bg-white rounded-xl border p-4 shadow-sm hover:shadow-md transition">
+      <div className="h-40 flex items-center justify-center mb-4">
+        <img
+          src="/products/ComputerStores.png"
+          alt="تطبيق بحث متاجر اكتونية لبيع اللابتوب وقطع غيار"
+          className="max-h-full"
+        />
+      </div>
+      <h3 className="font-bold text-lg mb-2">متاجر الكترونية لاجهزة اللابتوب وقطع الغيار</h3>
+      <p className="text-sm text-gray-600 mb-4">
+       عروص حصرية لمتاجر الكترونية لاجهزة اللابتوب وقطع الغيار
+      </p>
+      <a href="/delivery/ComputerStores" className="text-green-600 font-semibold">
+        عرض التطبيق →
+      </a>
+    </div>
+
+  </div>
+
+
+</section>
+
+<br/>
+
 
       {/* ================= CTA ================= */}
       <section className="py-20 bg-green-600 text-white text-center">
@@ -177,27 +165,19 @@ export default function Home() {
           جاهز تبدأ؟
         </h2>
         <p className="mb-8 text-lg">
-          اختر منتجك الآن واستلمه فورًا
         </p>
         <a
             href="/products/"
           target="_blank"
           className="bg-white text-green-600 px-10 py-4 rounded-xl font-bold hover:bg-gray-100 transition"
         >
-          ابدا بتصفح المنتجات
+          ابدا بتصفح  التطبيقات
 
         </a>
 
       </section>
 
-      {/* ================= WHATSAPP FLOAT ================= */}
-      <a
-        href="https://wa.me/201234567890?text"
-        target="_blank"
-        className="fixed bottom-5 right-5 bg-green-500 text-white px-6 py-3 rounded-full shadow-lg hover:bg-green-600 transition"
-      >
-        واتساب
-      </a>
+
 
     </main>
   );
