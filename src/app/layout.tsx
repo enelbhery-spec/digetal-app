@@ -26,13 +26,31 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
-  openGraph: {
-    title: "Digital Store - Smart Search | تطبيقات بحث رقمية",
-    description: "خدمات وتطبيقات رقمية مجانية وسريعة",
-    type: "website",
-    locale: "ar_EG",
-    siteName: "Digital Store",
-  },
+openGraph: {
+  title: "Digital Store - Smart Search",
+  description: "خدمات وتطبيقات رقمية مجانية وسريعة",
+  url: "https://digetal-app-q1mf.vercel.app/", // غيّرها لرابطك الحقيقي
+  siteName: "Digital Store",
+  locale: "ar_EG",
+  type: "website",
+  images: [
+    {
+      url: "/og-image.png",
+      width: 1200,
+      height: 630,
+      alt: "Digital Store - Smart Search",
+    },
+
+  ],
+},
+twitter: {
+  card: "summary_large_image",
+  title: "Digital Store - Smart Search",
+  description: "خدمات وتطبيقات رقمية مجانية وسريعة",
+  images: ["/og-image.png"],
+},
+
+
   other: {
     "google-site-verification":
       "7XY4QFlcbO13HsbJ3M-4Pl1l9A4Pbbe-GltnYncvINA",
