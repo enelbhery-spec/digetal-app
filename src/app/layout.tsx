@@ -35,7 +35,7 @@ openGraph: {
   type: "website",
   images: [
     {
-      url: "/og-image.png",
+      url: "https://digetal-app-q1mf.vercel.app/og-image.png",
       width: 1200,
       height: 630,
       alt: "Digital Store - Smart Search",
