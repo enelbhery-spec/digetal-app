@@ -5,6 +5,7 @@ export type Product = {
   description: string;
   image: string;
   link: string; // ✅ مهم
+  category: string; // 👈 جديد
 };
 
 export const products: Product[] = [
@@ -14,6 +15,8 @@ export const products: Product[] = [
     description: "الوصول السريع لأرقام البنوك والجهات الرسمية والخدمات الحكومية والخدمات وشركات الاتصالات وغيرها لتوفير وقتك",
     image: "/products/hotline-guide.png",
     link: "/delivery/hotline", // 👈 المنتج الأول
+     category: "الخط الساخن",
+
   },
   {
     id: 2,
@@ -21,6 +24,7 @@ export const products: Product[] = [
     description: "الوصول السريع للمواقع  الكترونية بنوك خدمات متاجر اتصالات ",
     image: "/products/OneTap Links.png",
     link: "/delivery/OneTapLinksArabic?mode=web", // 👈 نفس الصفحة بس استخدام مختلف
+     category: "المواقع الاكترونية "
   },
   {
     id: 3,
@@ -28,6 +32,7 @@ export const products: Product[] = [
     description: "(فطور – غداء – عشاء)",
     image: "/products/meals.png",
     link: "/delivery/meals?mode=meals", // 👈 نفس الصفحة بس محتوى مختلف
+     category: " وجبات رائقة"
   },
   {
     id: 4,
@@ -35,6 +40,7 @@ export const products: Product[] = [
     description: "احصل على العروض حصريا للمتاجر الاكترونية حتى تتمكن من متابعة احتياجات بضطة  واجة من هاتفك توفر عليك البحث على المتصفحات  )",
     image: "/products/egyptstores.png",
     link: "/delivery/egyptStores?mode=meals", // 👈 نفس الصفحة بس محتوى مختلف
+     category: "العروض الحصرية للمتاجر الاكترونية"
   },
   {
     id: 5,
@@ -42,6 +48,7 @@ export const products: Product[] = [
     description: "احصل على العروض حصريا )",
     image: "/products/ComputerStores.png",
     link: "/delivery/ComputerStores?mode=meals", // 👈 نفس الصفحة بس محتوى مختلف
+     category: "متجر اكترونية للالبتوب "
   },
   {
     id: 6,
@@ -49,5 +56,6 @@ export const products: Product[] = [
     description: "دليل شركات التأمين على السيارات في مصر مع أرقام الاتصال والمواقع الرسمية )",
     image: "/products/inscar.png",
     link: "/delivery/insuranceCompanies", // 👈 نفس الصفحة بس محتوى مختلف
+    category: "افضل شركات التامين"
   },
 ];

@@ -8,6 +8,7 @@ type Company = {
   type: string;
   phone: string;
   url: string;
+  category: "cars" | "general" | "health";
 };
 
 const companies: Company[] = [
@@ -17,6 +18,7 @@ const companies: Company[] = [
     type: "تأمين شامل – سيارات",
     phone: "19114",
     url: "https://misrins.com.eg/ar/",
+    category: "cars",
   },
   {
     id: 2,
@@ -24,6 +26,7 @@ const companies: Company[] = [
     type: "تأمين سيارات",
     phone: "16569",
     url: "https://sci-egypt.com",
+    category: "cars",
   },
   {
     id: 3,
@@ -31,74 +34,92 @@ const companies: Company[] = [
     type: "تأمين شامل",
     phone: "19909",
     url: "https://www.allianz.com.eg",
+    category: "general",
   },
-
   {
     id: 4,
     name: "AXA مصر",
     type: "تأمين سيارات – صحي",
-    phone: "16363 ",
-    url: "https://www.axa-egypt.com"
-  },
-
-  {
-    id: 6,
-    name: "رويال للتأمين",
-    type: "تأمين سيارات وممتلكات",
-    phone: "16902",
-    url: "https://royalinsurance.com.eg"
+    phone: "16363",
+    url: "https://www.axa-egypt.com",
+    category: "health",
   },
   {
-    id: 7,
+    id: 5,
     name: "GIG مصر",
     type: "تأمين عام وحياة",
     phone: "19792",
-    url: "https://gig.com.eg"
-  },
-
-  {
-    id: 9,
-    name: "بيت التأمين المصري السعودي",
-    type: "تأمين شامل",
-    phone: "19652",
-    url: "https://ifti-sd.org/ar/members/65"
-  },
-  {
-    id: 10,
-    name: "وثاق للتأمين",
-    type: "تأمين سيارات وأفراد",
-    phone: "19685",
-    url: "https://www.wethaq-egypt.com/home"
+    url: "https://gig.com.eg",
+    category: "general",
   },
 ];
 
-export default function InsuranceCompanies() {
-  const [search, setSearch] = useState("");
+const categories = [
+  { id: "cars", label: "🚗 تأمين سيارات" },
+  { id: "general", label: "🛡️ تأمين شامل" },
+  { id: "health", label: "🏥 تأمين صحي" },
+];
 
-  const filtered = companies.filter(
-    (c) =>
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.type.toLowerCase().includes(search.toLowerCase())
-  );
+export default function InsuranceCompanies() {
+  const [query, setQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  const normalizedQuery = query.trim().toLowerCase();
+
+  const searchResults =
+    normalizedQuery.length >= 1
+      ? companies.filter(
+          (c) =>
+            c.name.toLowerCase().includes(normalizedQuery) ||
+            c.type.toLowerCase().includes(normalizedQuery)
+        )
+      : [];
+
+  const categoryResults = activeCategory
+    ? companies.filter((c) => c.category === activeCategory)
+    : [];
 
   return (
-    <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-xl font-bold text-center mb-4">
-        🚗 أفضل شركات التأمين على السيارات في مصر
+    <div className="max-w-xl mx-auto p-4 space-y-5" dir="rtl">
+      {/* العنوان */}
+      <h1 className="text-xl font-bold text-center">
+        🚗 شركات التأمين على السيارات
       </h1>
 
+      {/* مربع البحث */}
       <input
-        className="w-full border p-2 rounded mb-4"
-        placeholder="ابحث عن شركة أو نوع التأمين..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        className="w-full border rounded-xl p-3 text-right"
+        placeholder="اكتب اسم الشركة أو نوع التأمين..."
+        value={query}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          setActiveCategory(null); // إخفاء نتائج الأيقونات عند البحث
+        }}
       />
 
+      {/* الأيقونات */}
+      {!query && (
+        <div className="grid grid-cols-3 gap-3">
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              className={`border rounded-xl py-3 text-sm font-medium hover:bg-gray-100 ${
+                activeCategory === cat.id ? "bg-gray-100" : ""
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* النتائج */}
       <ul className="space-y-3">
-        {filtered.map((company) => (
+        {(query ? searchResults : categoryResults).map((company) => (
           <li
             key={company.id}
-            className="border rounded p-3 flex justify-between items-center"
+            className="border rounded-xl p-4 flex justify-between items-center bg-white shadow-sm"
           >
             <div>
               <p className="font-semibold">{company.name}</p>
@@ -108,15 +129,14 @@ export default function InsuranceCompanies() {
             <div className="flex gap-2">
               <a
                 href={`tel:${company.phone}`}
-                className="bg-green-600 text-white px-3 py-1 rounded text-sm"
+                className="bg-green-600 text-white px-3 py-1 rounded-lg text-sm"
               >
                 اتصال
               </a>
-
               <a
                 href={company.url}
                 target="_blank"
-                className="bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                className="bg-blue-600 text-white px-3 py-1 rounded-lg text-sm"
               >
                 الموقع
               </a>
@@ -124,6 +144,13 @@ export default function InsuranceCompanies() {
           </li>
         ))}
       </ul>
+
+      {/* لا توجد نتائج */}
+      {query && searchResults.length === 0 && (
+        <p className="text-center text-gray-400 mt-6">
+          لا توجد نتائج مطابقة
+        </p>
+      )}
     </div>
   );
 }

@@ -2,92 +2,144 @@
 
 import React, { useState } from "react";
 
+/* ================== TYPES ================== */
 type StoreItem = {
   name: string;
   category: string;
   url: string;
 };
 
+/* ================== DATA ================== */
 const data: StoreItem[] = [
   { name: "جوميا", category: "تسوق عام", url: "https://www.jumia.com.eg" },
   { name: "نون", category: "تسوق عام", url: "https://www.noon.com/egypt-ar" },
   { name: "أمازون مصر", category: "تسوق عام", url: "https://www.amazon.eg" },
+
   { name: "كارفور مصر", category: "سوبر ماركت", url: "https://www.carrefouregypt.com" },
   { name: "سبينيس", category: "سوبر ماركت", url: "https://www.spinneys-egypt.com" },
 
   { name: "بي تك", category: "إلكترونيات", url: "https://www.btech.com" },
   { name: "2B", category: "إلكترونيات", url: "https://2b.com.eg" },
   { name: "راية شوب", category: "إلكترونيات", url: "https://www.rayashop.com" },
-  { name: "إكسترا", category: "إلكترونيات", url: "https://www.extra.com.eg" },
-  { name: "شارب مصر", category: "إلكترونيات", url: "https://www.sharp.eg" },
 
   { name: "تاون تيم", category: "ملابس", url: "https://townteam.com" },
   { name: "ديفاكتو", category: "ملابس", url: "https://www.defacto.com.eg" },
-  { name: "LC Waikiki", category: "ملابس", url: "https://www.lcwaikiki.com/eg-EG" },
-  { name: "Max Fashion", category: "ملابس", url: "https://www.maxfashion.com/eg/ar" },
   { name: "H&M مصر", category: "ملابس", url: "https://www.hm.com/eg" },
 
   { name: "رنين", category: "أدوات منزلية", url: "https://www.raneen.com" },
-  { name: "هوم سنتر", category: "أثاث ومنزل", url: "https://www.homecentre.com/eg/ar" },
   { name: "IKEA مصر", category: "أثاث", url: "https://www.ikea.com/eg/ar" },
-  { name: "Pan Emirates", category: "أثاث", url: "https://www.panemirates.com/eg" },
 
   { name: "صيدليات العزبي", category: "صيدليات", url: "https://www.elezabypharmacy.com" },
   { name: "صيدليات سيف", category: "صيدليات", url: "https://seifpharmacy.com" },
-  { name: "صيدليات 19011", category: "صيدليات", url: "https://19011.com" },
 
-  { name: "Jiji Egypt", category: "إعلانات مبوبة", url: "https://jiji.eg" },
   { name: "OLX Egypt", category: "إعلانات مبوبة", url: "https://www.olx.com.eg" }
 ];
 
-const EgyptStoresProduct: React.FC = () => {
-  const [query, setQuery] = useState<string>("");
+/* ================== CATEGORIES ================== */
+const categories = [
+  "تسوق عام",
+  "سوبر ماركت",
+  "إلكترونيات",
+  "ملابس",
+  "أثاث",
+  "صيدليات",
+  "إعلانات مبوبة"
+];
 
-  const results = data.filter(
-    (item) =>
-      item.name.toLowerCase().includes(query.toLowerCase()) ||
-      item.category.toLowerCase().includes(query.toLowerCase())
-  );
+export default function EgyptStoresProduct() {
+  const [query, setQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  const normalizedQuery = query.trim().toLowerCase();
+  const isSearching = normalizedQuery.length >= 1;
+
+  let results: StoreItem[] = [];
+
+  // 🔍 البحث له الأولوية
+  if (isSearching) {
+    results = data.filter((item) =>
+      item.name.toLowerCase().includes(normalizedQuery)
+    );
+  }
+  // 🧩 نتائج الأيقونات
+  else if (activeCategory) {
+    results = data.filter(
+      (item) => item.category === activeCategory
+    );
+  }
 
   return (
     <div style={styles.container} dir="rtl">
-      <h1 style={styles.title}>🔍 بحث عن المتاجر الإلكترونية في مصر</h1>
-      <p>:
+      <h1 style={styles.title}>🛒 دليل المتاجر الإلكترونية في مصر</h1>
 
-🛒 تسوق بذكاء: دليلك الشامل لأفضل المتاجر الإلكترونية في مصر
-مع الطفرة الكبيرة في عالم التجارة الإلكترونية، أصبح الوصول إلى المتجر الموثوق هو المفتاح لتجربة شراء ناجحة. بدلاً من التنقل بين التطبيقات والمواقع المختلفة، جمعنا لك كل وجهات التسوق في مصر داخل محرك بحث واحد ذكي وسريع.</p>
+      <p style={styles.description}>
+        اختر تصنيفًا أو ابدأ بكتابة اسم المتجر
+      </p>
 
+      {/* البحث */}
       <input
         type="text"
-        placeholder="اكتب اسم المتجر أو التصنيف"
+        placeholder="اكتب اسم المتجر (مثال: جوميا)"
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          setActiveCategory(null); // ❌ إلغاء الأيقونات عند البحث
+        }}
         style={styles.input}
       />
 
-      <div>
-        {query &&
-          results.map((item, index) => (
-            <div
-              key={index}
-              style={styles.card}
-              onClick={() => window.open(item.url, "_blank")}
+      {/* الأيقونات */}
+      {!isSearching && (
+        <div style={styles.tabs}>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => {
+                setActiveCategory(cat);
+                setQuery("");
+              }}
+              style={{
+                ...styles.tab,
+                background:
+                  activeCategory === cat ? "#16a34a" : "#fff",
+                color:
+                  activeCategory === cat ? "#fff" : "#333",
+              }}
             >
-              <div style={styles.name}>{item.name}</div>
-              <div style={styles.category}>{item.category}</div>
-            </div>
+              {cat}
+            </button>
           ))}
+        </div>
+      )}
 
-        {query && results.length === 0 && (
-          <div style={styles.empty}>لا توجد نتائج مطابقة</div>
-        )}
-      </div>
+      {/* رسالة البداية */}
+      {!isSearching && !activeCategory && (
+        <p style={styles.hint}>
+          👆 اختر تصنيفًا أو استخدم البحث
+        </p>
+      )}
+
+      {/* لا نتائج */}
+      {(isSearching || activeCategory) && results.length === 0 && (
+        <p style={styles.empty}>❌ لا توجد نتائج</p>
+      )}
+
+      {/* النتائج */}
+      {results.map((item, index) => (
+        <div
+          key={index}
+          style={styles.card}
+          onClick={() => window.open(item.url, "_blank")}
+        >
+          <div style={styles.name}>{item.name}</div>
+          <div style={styles.category}>{item.category}</div>
+        </div>
+      ))}
     </div>
   );
-};
+}
 
-export default EgyptStoresProduct;
-
+/* ================== STYLES ================== */
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     minHeight: "100vh",
@@ -97,7 +149,12 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   title: {
     textAlign: "center",
-    marginBottom: "12px"
+    marginBottom: "8px"
+  },
+  description: {
+    textAlign: "center",
+    color: "#555",
+    marginBottom: "16px"
   },
   input: {
     width: "100%",
@@ -105,8 +162,22 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: "12px",
     border: "1px solid #ccc",
     fontSize: "16px",
-    marginBottom: "15px",
+    marginBottom: "14px",
     textAlign: "right"
+  },
+  tabs: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "8px",
+    justifyContent: "center",
+    marginBottom: "20px"
+  },
+  tab: {
+    padding: "8px 14px",
+    borderRadius: "20px",
+    border: "1px solid #ddd",
+    cursor: "pointer",
+    fontSize: "14px"
   },
   card: {
     background: "#fff",
@@ -128,5 +199,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     textAlign: "center",
     color: "#999",
     marginTop: "20px"
+  },
+  hint: {
+    textAlign: "center",
+    color: "#aaa",
+    marginTop: "30px"
   }
 };

@@ -3,231 +3,187 @@
 import { useState } from "react";
 import AppInstallLoader from "@/components/AppInstallLoader";
 import DeviceLock from "@/components/DeviceLock";
+import Link from "next/link";
+
 
 /* ================== DATA ================== */
 const hotlines = [
-  /* ===== البنوك (30) ===== */
-    { name: "البنك الأهلي المصري", phone: "19623" },
-    { name: "بنك مصر", phone: "19888" },
-    { name: "بنك القاهرة", phone: "16990" },
-    { name: "البنك التجاري الدولي CIB", phone: "19666" },
-    { name: "بنك الإسكندرية", phone: "19033" },
-    { name: "بنك فيصل الإسلامي", phone: "19851" },
-    { name: "بنك HSBC", phone: "19007" },
-    { name: "بنك QNB", phone: "19700" },
-    { name: "بنك أبوظبي الإسلامي", phone: "19951" },
-    { name: "بنك أبوظبي الأول", phone: "16555" },
-    { name: "بنك البركة", phone: "19373" },
-    { name: "بنك SAIB", phone: "16668" },
-    { name: "بنك قناة السويس", phone: "19093" },
-    { name: "كريدي أجريكول", phone: "19191" },
-    { name: "الإمارات دبي الوطني", phone: "16664" },
-    { name: "البنك العربي الأفريقي", phone: "19555" },
-    { name: "بنك التعمير والإسكان", phone: "19995" },
-    { name: "بنك ناصر الاجتماعي", phone: "16868" },
-    { name: "البنك الزراعي المصري", phone: "19080" },
-    { name: "بنك الكويت الوطني", phone: "19336" },
-    { name: "بنك المشرق", phone: "19677" },
-    { name: "بنك الاستثمار العربي", phone: "16664" },
-    { name: "بنك التنمية الصناعية", phone: "16606" },
-    { name: "بنك مصر إيران", phone: "19888" },
-    { name: "بنك بلوم", phone: "19233" },
-    { name: "بنك الاتحاد الوطني", phone: "16777" },
-    { name: "بنك ABC", phone: "19123" },
-    { name: "بنك عودة", phone: "19222" },
-    { name: "البنك المركزي المصري", phone: "16747" },
-    { name: "شكاوى البنوك", phone: "16747" },
+  { name: "البنك الأهلي المصري", phone: "19623", category: "بنوك" },
+  { name: "بنك مصر", phone: "19888", category: "بنوك" },
+  { name: "بنك القاهرة", phone: "16990", category: "بنوك" },
 
-    /* ===== الاتصالات والدفع (20) ===== */
-    { name: "فودافون", phone: "888" },
-    { name: "فودافون كاش", phone: "7001" },
-    { name: "اورنج", phone: "110" },
-    { name: "اورنج كاش", phone: "7115" },
-    { name: "اتصالات", phone: "333" },
-    { name: "اتصالات كاش", phone: "777" },
-    { name: "WE", phone: "111" },
-    { name: "انستاباي", phone: "15989" },
-    { name: "فوري", phone: "16421" },
-    { name: "أمان", phone: "16233" },
-    { name: "مصاري", phone: "16994" },
-    { name: "Bee", phone: "16818" },
-    { name: "خدمات الدفع الإلكتروني", phone: "16421" },
-    { name: "الدعم الفني إنترنت", phone: "155" },
-    { name: "خدمة العملاء الاتصالات", phone: "155" },
-    { name: "شكاوى الاتصالات", phone: "155" },
-    { name: "دعم المحافظ الإلكترونية", phone: "7001" },
-    { name: "خدمة العملاء فودافون", phone: "888" },
-    { name: "خدمة العملاء أورنج", phone: "110" },
-    { name: "خدمة العملاء WE", phone: "111" },
+  { name: "فودافون", phone: "888", category: "اتصالات" },
+  { name: "اورنج", phone: "110", category: "اتصالات" },
+  { name: "WE", phone: "111", category: "اتصالات" },
 
-    /* ===== الطوارئ (15) ===== */
-    { name: "الشرطة", phone: "122" },
-    { name: "النجدة", phone: "122" },
-    { name: "الإسعاف", phone: "123" },
-    { name: "المطافئ", phone: "180" },
-    { name: "هيئة الإسعاف", phone: "123" },
-    { name: "طوارئ الكهرباء", phone: "121" },
-    { name: "طوارئ الغاز", phone: "129" },
-    { name: "طوارئ المياه", phone: "125" },
-    { name: "المرور", phone: "136" },
-    { name: "الكوارث والطوارئ", phone: "114" },
-    { name: "وزارة الداخلية", phone: "108" },
-    { name: "وزارة الصحة", phone: "105" },
-    { name: "الإسعاف الخاص", phone: "16474" },
-    { name: "ونش إنقاذ", phone: "01200000000" },
-    { name: "الطوارئ البيئية", phone: "19808" },
+  { name: "الشرطة", phone: "122", category: "طوارئ" },
+  { name: "الإسعاف", phone: "123", category: "طوارئ" },
+  { name: "المطافئ", phone: "180", category: "طوارئ" },
 
-    /* ===== الخدمات الحكومية (20) ===== */
-    { name: "حماية المستهلك", phone: "19588" },
-    { name: "التموين", phone: "16528" },
-    { name: "الشكاوى الحكومية", phone: "16528" },
-    { name: "هيئة البريد المصري", phone: "16789" },
-    { name: "وزارة التضامن", phone: "16439" },
-    { name: "التأمين الصحي", phone: "19588" },
-    { name: "الضرائب", phone: "16395" },
-    { name: "الجمارك", phone: "16210" },
-    { name: "وزارة التعليم", phone: "19996" },
-    { name: "الرقابة الإدارية", phone: "16100" },
-    { name: "هيئة المجتمعات العمرانية", phone: "15999" },
-    { name: "السكك الحديدية", phone: "15047" },
-    { name: "المطار", phone: "16747" },
-    { name: "مياه الشرب", phone: "125" },
-    { name: "الكهرباء", phone: "121" },
-    { name: "الغاز الطبيعي", phone: "129" },
-    { name: "المرور الذكي", phone: "136" },
-    { name: "خدمة المواطنين", phone: "16528" },
-    { name: "الدعم الحكومي", phone: "16528" },
-    { name: "الشكاوى العامة", phone: "16528" },
+  { name: "حماية المستهلك", phone: "19588", category: "حكومة" },
+  { name: "التموين", phone: "16528", category: "حكومة" },
 
-    /* ===== منصات وخدمات (15) ===== */
-    { name: "مصر للطيران", phone: "1717" },
-    { name: "أوبر", phone: "01202222222" },
-    { name: "كريم", phone: "01234567890" },
-    { name: "طلبات", phone: "19511" },
-    { name: "جاهز", phone: "19515" },
-    { name: "نون", phone: "16358" },
-    { name: "جوميا", phone: "19586" },
-    { name: "أمازون مصر", phone: "08000262966" },
-    { name: "سوق دوت كوم", phone: "16232" },
-    { name: "خدمة التوصيل", phone: "19511" },
-    { name: "خدمة العملاء نون", phone: "16358" },
-    { name: "خدمة العملاء جوميا", phone: "19586" },
-    { name: "خدمة العملاء أمازون", phone: "08000262966" },
-    { name: "خدمة النقل الذكي", phone: "136" },
-    { name: "الدعم الفني العام", phone: "155" }
-
+  { name: "أوبر", phone: "01202222222", category: "منصات" },
+  { name: "طلبات", phone: "19511", category: "منصات" },
 ];
 
-/* ================== PAGE ================== */
+/* ================== CATEGORIES ================== */
+const categories = [
+  { label: "🏦 بنوك", value: "بنوك" },
+  { label: "📡 اتصالات", value: "اتصالات" },
+  { label: "🚨 طوارئ", value: "طوارئ" },
+  { label: "🏛️ حكومة", value: "حكومة" },
+  { label: "🛒 منصات", value: "منصات" },
+];
+
 export default function HotlinePage() {
   const [query, setQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  const normalizedQuery = query.replace(/\s+/g, "").toLowerCase();
+  const cleanQuery = query.trim().toLowerCase();
+  const isNumberOnly = /^[0-9]+$/.test(cleanQuery);
 
-  const filtered =
-    normalizedQuery.length < 2
-      ? []
-      : hotlines.filter((h) =>
-          h.name.replace(/\s+/g, "").toLowerCase().includes(normalizedQuery)
-        );
+  const isSearching = cleanQuery.length > 0;
+
+  const shouldShowResults =
+    isSearching || activeCategory !== null;
+
+  const filteredHotlines = shouldShowResults
+    ? hotlines.filter((item) => {
+        // ❌ منع البحث بالأرقام
+        if (isNumberOnly) return false;
+
+        // ✅ البحث له أولوية ويُلغي الأيقونة
+        if (isSearching) {
+          return item.name.toLowerCase().includes(cleanQuery);
+        }
+
+        // ✅ عرض حسب الأيقونة فقط
+        return item.category === activeCategory;
+      })
+    : [];
 
   return (
     <DeviceLock>
       <AppInstallLoader>
-        <div className="min-h-screen bg-gray-50 px-4 py-10">
-          <div className="max-w-xl mx-auto bg-white rounded-2xl shadow p-6">
+        <main className="bg-gray-50 min-h-screen px-4 py-12" dir="rtl">
 
-            <h1 className="text-2xl font-extrabold mb-4 text-center">
+          {/* العنوان */}
+          <section className="max-w-3xl mx-auto text-center mb-10">
+            <h1 className="text-3xl font-extrabold mb-4">
               📞 دليل الخطوط الساخنة
             </h1>
-
-            <p className="text-black-600 mb-6 text-center text-md">
-              <br />
-              هل تبحث عن رقم خط ساخن؟ لا تضيع وقتك في البحث الطويل. ابحث عن أرقام خدمة العملاء، البنوك، والمطاعم في ثوانٍ عبر محرك بحثنا الذكي.
+            <p className="text-gray-600">
+              اختر تصنيفًا أو ابدأ بالبحث
             </p>
+          </section>
 
-            {/* البحث */}
+          {/* البحث */}
+          <div className="max-w-3xl mx-auto mb-6">
             <input
               type="text"
-              placeholder="اكتب اسم الجهة (بنك – إسعاف – كهرباء...)"
+              placeholder="اكتب اسم الجهة (مثال: بنك – إسعاف)"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="w-full p-4 border rounded-xl mb-4 text-right focus:outline-none focus:ring-2 focus:ring-green-500"
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setActiveCategory(null); // 🔥 إلغاء الأيقونة عند البحث
+              }}
+              className="w-full p-4 rounded-2xl border shadow focus:ring-2 focus:ring-green-600"
             />
-            {/* المقالة  */}
-            {query.trim() === "" && (
-              <p className="text-right text-black-400 text-md">
-                🔎 وداعاً لرحلة البحث الطويلة.. ابحث عن أي "خط ساخن" في ثوانٍ!
-هل مررت يوماً بموقف طارئ واحتاجت للوصول إلى رقم خدمة العملاء لشركة شحن، أو مطعم، أو حتى بنك، ووجدت نفسك تائهاً بين صفحات المواقع والنتائج القديمة على جوجل؟
+          </div>
 
-نحن نعلم أن الوصول إلى "الخط الساخن" الصحيح هو نصف الحل، ولأن وقتك لا يحتمل التأجيل، صممنا لك محرك بحث الخطوط الساخنة داخل تطبيقنا ليكون دليلك الشامل والموثوق.
+          {/* تحذير الأرقام */}
+          {isNumberOnly && (
+            <p className="text-center text-orange-500 text-sm mb-4">
+              ⚠️ البحث بالأرقام غير مدعوم
+            </p>
+          )}
 
-ما الذي يميز محرك بحث الخطوط الساخنة لدينا؟
-لم نكتفِ بجمع الأرقام فقط، بل صممنا تجربة بحث ذكية تضمن لك:
+          {/* الأيقونات */}
+          <div className="flex flex-wrap justify-center gap-3 mb-10">
+            {categories.map((cat) => (
+              <button
+                key={cat.value}
+                onClick={() => {
+                  setActiveCategory(cat.value);
+                  setQuery(""); // 🔥 مسح البحث عند الضغط على أيقونة
+                }}
+                className={`px-5 py-2 rounded-full text-sm font-medium transition
+                  ${
+                    activeCategory === cat.value
+                      ? "bg-green-600 text-white"
+                      : "bg-white border hover:bg-gray-100"
+                  }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
 
-السرعة الفائقة: بمجرد كتابة أول حروف من اسم الشركة أو الخدمة، ستظهر لك النتائج فوراً.
+          {/* رسالة البداية */}
+          {!shouldShowResults && (
+            <p className="text-center text-gray-400 text-sm">
+              👆 اختر تصنيفًا أو ابدأ بالبحث
+            </p>
+          )}
 
-أرقام موثقة ومحدثة: فريقنا يعمل على تحديث قاعدة البيانات باستمرار لضمان أن الرقم الذي تطلبه يعمل فعلياً وليس رقماً قديماً أو ملغياً.
-
-تصنيف ذكي: يمكنك البحث حسب الفئة (بنوك، مستشفيات، مطاعم، شركات اتصالات، جهات حكومية) لتجد ما تحتاجه حتى لو نسيت الاسم.
-
-الاتصال المباشر: لا حاجة لنسخ الرقم أو كتابته على ورقة؛ اضغط على زر "اتصال" من داخل التطبيق وسيقوم بالوصل مباشرة.
-
-
-
-
-              </p>
-            )}
-
-              <br />
-            {/* رسائل إرشادية */}
-            {query.trim() === "" && (
-              <p className="text-center text-gray-600 text-sm">
-                              يُفضّل إضافته للشاشة الرئيسية لاستخدامه كتطبيق
-
-              </p>
-            )}
-
-            {query.trim().length === 1 && (
-              <p className="text-center text-gray-400 text-sm">
-                ✍️ اكتب حرفين على الأقل
-              </p>
-            )}
-
-            {query.trim().length >= 2 && filtered.length === 0 && (
+          {/* لا نتائج */}
+          {shouldShowResults &&
+            filteredHotlines.length === 0 &&
+            !isNumberOnly && (
               <p className="text-center text-red-500 text-sm">
                 ❌ لا توجد نتائج
               </p>
             )}
 
-            {/* النتائج */}
-            <div className="space-y-3 mt-4">
-              {filtered.map((item, index) => (
-                <div key={index} className="border rounded-xl p-4 text-center">
-                  <h3 className="font-bold mb-1">{item.name}</h3>
+          {/* النتائج */}
+          <section className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+            {filteredHotlines.map((item, index) => (
+              <div
+                key={index}
+                className="bg-white p-6 rounded-2xl shadow text-center"
+              >
+                <h3 className="font-bold mb-2">{item.name}</h3>
+                <p className="text-green-600 font-bold text-xl">
+                  {item.phone}
+                </p>
+                <a
+                  href={`tel:${item.phone}`}
+                  className="inline-block mt-4 bg-green-600 text-white px-6 py-2 rounded-xl"
+                >
+                  📞 اتصال مباشر
+                </a>
+              </div>
+            ))}
+          </section>
+          <section className="mt-12 bg-gray-50 p-6 rounded-xl">
+             <h3 className="text-xl font-bold mb-3">
+         📘 مقالات تهمك عن الخطوط الساخنة
+        </h3>
 
-                  <p className="text-green-600 font-bold text-lg">
-                    {item.phone}
-                  </p>
+      <ul className="space-y-2">
+          <li>
+       <Link
+        href="/blog/app/hotline-smart-search"
+        className="text-green-600 font-semibold"
+      >
+        الخط الساخن: من البحث التقليدي إلى البحث الذكي
+      </Link>
+    </li>
 
-                  <a
-                    href={`tel:${item.phone}`}
-                    className="block mt-2 bg-green-600 text-white py-2 rounded-xl hover:bg-green-700 transition"
-                  >
-                    📞 اتصال مباشر
-                  </a>
-                </div>
-              ))}
-            </div>
-            <p className="text-xs text-red-400 mt-10 text-center">
-              🔒 هذا المنتج مخصص للاستخدام الشخصي فقط
-              <br />
-              لا يُسمح بمشاركة الرابط
-            </p>
+    <li>
+      <Link
+        href="/blog/problems/user-search-problems"
+        className="text-green-600 font-semibold"
+      >
+        مشاكل المستخدم عند البحث عن أرقام الخدمات
+       </Link>
+      </li>
+      </ul>
+       </section>
 
-          </div>
 
-        </div>
+        </main>
       </AppInstallLoader>
     </DeviceLock>
   );
