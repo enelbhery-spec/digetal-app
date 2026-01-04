@@ -4,6 +4,8 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import RegisterSW from "@/components/RegisterSW";
+import Script from "next/script";
+
 
 export const metadata: Metadata = {
   title: {
@@ -51,6 +53,23 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ar" dir="rtl" className="scroll-smooth">
+    <head>
+    <Script
+      src="https://www.googletagmanager.com/gtag/js?id=G-FGK2Z5C8W8"
+      strategy="afterInteractive"
+    />
+    <Script id="ga4" strategy="afterInteractive">
+      {`
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-FGK2Z5C8W8', {
+          page_path: window.location.pathname,
+        });
+      `}
+    </Script>
+  </head>
+
       <body className="min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased">
 
         {/* ===== Header ===== */}
