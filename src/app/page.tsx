@@ -42,21 +42,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ================= SMART SEARCH ================= */}
+      {/* ================= البحث الذكى ================= */}
       <p className="mt-4 text-sm text-gray-600">
   📖 تعرّف على
   <Link
     href="/blog"
     className="text-green-600 font-semibold mx-1"
   >
-    مقالات Smart Search
+    مقالات البحث الذكى
   </Link>
   لفهم طريقة البحث الذكي ولماذا هو أفضل من البحث التقليدي.
 </p>
 
       <section className="py-16 bg-white text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
-          Smart Search – محرك البحث الذكي
+          البحث الذكى – محرك البحث الذكي
         </h2>
 
         <p className="text-gray-600 mb-8">
@@ -67,7 +67,7 @@ export default function Home() {
           href="/smart-search"
           className="inline-block bg-green-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-green-700 transition"
         >
-          استخدم Smart Search الآن
+          استخدم البحث الذكى الآن
         </Link>
       </section>
 
@@ -84,7 +84,7 @@ export default function Home() {
       <div className="bg-white rounded-xl border p-4 shadow hover:shadow-lg transition">
         <img
           src="/products/hotline-guide.png"
-          alt="بحث الخط الساخن"
+          alt="بحث خدمةالعملاء"
           className="rounded-lg mb-4"
         />
         <h3 className="font-bold text-lg mb-2">

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "مدونة Smart Search | البحث الذكي عن الخدمات والمنتجات",
+  title: "مدونة البحث الذكى | البحث الذكي عن الخدمات والمنتجات",
   description:
     "مقالات ودلائل تساعدك على البحث الذكي عن الخطوط الساخنة، الخدمات، المتاجر، والتطبيقات بدل الطرق التقليدية المرهقة.",
 };
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 const categories = [
   {
     title: "📱 مقالات التطبيق",
-    desc: "شرح خدمات Smart Search وكيف تحل مشكلات البحث اليومي",
+    desc: "شرح خدمات البحث الذكى وكيف تحل مشكلات البحث اليومي",
     link: "/blog/app",
   },
   {
@@ -24,7 +24,7 @@ const categories = [
     link: "/blog/problems/user-search-problems",
   },
   {
-    title: "🚀 تحديثات Smart Search",
+    title: "🚀 تحديثات البحث الذكى",
     desc: "آخر التحديثات والتحسينات داخل التطبيق",
     link: "/blog/updates/smart-search-updates",
   },
@@ -36,7 +36,7 @@ export default function BlogPage() {
       {/* ====== HERO ====== */}
       <section className="text-center mb-10">
         <h1 className="text-3xl font-bold mb-3">
-          📝 مدونة Smart Search
+          📝 مدونة البحث الذكى
         </h1>
         <p className="text-gray-600 text-lg">
           دليلك العملي للبحث الذكي عن الخطوط الساخنة، الخدمات، والمتاجر
@@ -99,10 +99,10 @@ export default function BlogPage() {
           </article>
           <article className="border rounded-xl p-4 bg-white">
             <h3 className="font-bold mb-2">
-              Google أم Smart Search؟ أيهما أفضل للعثور على الخطوط الساخنةالذكي
+              Google أم البحث الذكى؟ أيهما أفضل للعثور على الخطوط الساخنةالذكي
             </h3>
             <p className="text-sm text-gray-600 mb-3">
-              مقارنة عملية بين البحث في Google واستخدام Smart Search من حيث السرعة والدقة وتجربة المستخدم.
+              مقارنة عملية بين البحث في Google واستخدام البحث الذكى من حيث السرعة والدقة وتجربة المستخدم.
             </p>
             <Link
               href="/blog/guides-and-comparisons/google-vs-smart-search"
@@ -127,7 +127,7 @@ export default function BlogPage() {
           href="/"
           className="inline-block bg-green-600 text-white px-6 py-2 rounded-lg"
         >
-          الذهاب إلى Smart Search
+          الذهاب إلى البحث الذكى
         </Link>
       </section>
     </main>

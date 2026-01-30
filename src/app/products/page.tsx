@@ -17,7 +17,7 @@ export default function ProductsPage() {
             منتجات البحث الذكي
           </h1>
           <p className="text-lg leading-relaxed opacity-95">
-            Smart Search هو رفيقك للوصول إلى المعلومة الصحيحة في ثوانٍ،
+            البحث الذكى هو رفيقك للوصول إلى المعلومة الصحيحة في ثوانٍ،
             بدون روابط مكسورة أو نتائج غير دقيقة.
           </p>
         </div>
@@ -31,7 +31,7 @@ export default function ProductsPage() {
           <p>
             في عالم يمتلئ بالبيانات، لم يعد التحدي في إيجاد المعلومة،
             بل في الوصول إليها بسرعة ودقة.
-            منتجات <strong>Smart Search</strong> صُممت لتقدم لك
+            منتجات <strong>البحث الذكى</strong> صُممت لتقدم لك
             <strong> الإجابة </strong> وليس مجرد روابط.
           </p>
         </div>

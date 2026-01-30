@@ -9,7 +9,7 @@ export default function Header() {
 
         {/* Logo */}
         <Link href="/" className="text-2xl font-extrabold text-green-600">
-           Smart Search
+           البحث الذكى
         </Link>
 
         {/* Navigation */}

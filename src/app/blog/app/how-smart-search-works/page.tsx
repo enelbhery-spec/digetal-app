@@ -104,7 +104,7 @@ export default function HowSmartSearchWorksPage() {
             href="/smart-search"
             className="bg-green-600 text-white px-6 py-2 rounded-lg font-semibold"
           >
-            استخدم Smart Search
+             استخدم البحث الذكى  ()Smart Search)
           </Link>
           <Link
             href="/delivery/hotline"

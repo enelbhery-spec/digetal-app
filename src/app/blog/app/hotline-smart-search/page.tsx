@@ -44,7 +44,7 @@ export default function HotlineSmartSearchArticle() {
       </p>
 
       <h2 className="text-2xl font-semibold mt-8 mb-3">
-        لماذا Smart Search هو الحل؟
+        لماذا البحث الذكى هو الحل؟
       </h2>
 
       <ul className="list-disc pr-6 text-gray-700 mb-6">

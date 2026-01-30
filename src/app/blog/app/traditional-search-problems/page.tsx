@@ -60,7 +60,7 @@ export default function TraditionalHotlineSearchFailure() {
         وسيطة وخدمات غير رسمية، مما يؤدي إلى تجربة سيئة للمستخدم.
       </p>
 
-      {/* ===== SMART SEARCH SOLUTION ===== */}
+      {/* ===== البحث الذكى SOLUTION ===== */}
       <h2 className="text-2xl font-semibold mt-10 mb-3">
         كيف يحل البحث الذكي هذه المشكلة؟
       </h2>

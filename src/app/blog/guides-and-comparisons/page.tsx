@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "الأدلة والمقارنات | Smart Search",
+  title: "الأدلة والمقارنات | البحث الذكى",
   description:
-    "مقارنات وأدلة عملية توضح الفرق بين البحث التقليدي والبحث الذكي باستخدام Smart Search للوصول السريع للخدمات والخطوط الساخنة.",
+    "مقارنات وأدلة عملية توضح الفرق بين البحث التقليدي والبحث الذكي باستخدام البحث الذكى للوصول السريع للخدمات والخطوط الساخنة.",
 };
 
 const articles = [
   {
-    title: "Google أم Smart Search؟ أيهما أفضل للعثور على الخطوط الساخنة",
-    desc: "مقارنة عملية بين البحث في Google واستخدام Smart Search من حيث السرعة والدقة وتجربة المستخدم.",
+    title: "Google أم البحث الذكى؟ أيهما أفضل للعثور على الخطوط الساخنة",
+    desc: "مقارنة عملية بين البحث في Google واستخدام البحث الذكى من حيث السرعة والدقة وتجربة المستخدم.",
     link: "/blog/guides-and-comparisons/google-vs-smart-search",
   },
   {
@@ -81,7 +81,7 @@ export default function GuidesAndComparisonsPage() {
           href="/"
           className="inline-block bg-green-600 text-white px-6 py-2 rounded-lg"
         >
-          استخدم Smart Search الآن
+          استخدم البحث الذكى الآن
         </Link>
       </section>
     </main>
