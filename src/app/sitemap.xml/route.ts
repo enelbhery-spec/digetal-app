@@ -1,39 +1,62 @@
 import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
+
+const baseUrl = "https://digetal-app-q1mf.vercel.app";
+const appDir = path.join(process.cwd(), "src/app");
+
+function getPages(dir: string, basePath = ""): string[] {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  let pages: string[] = [];
+
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+
+    if (entry.isDirectory()) {
+      if (entry.name.startsWith("_")) continue;
+      if (entry.name === "api") continue;
+
+      pages.push(
+        ...getPages(fullPath, `${basePath}/${entry.name}`)
+      );
+    }
+
+    if (entry.isFile() && entry.name === "page.tsx") {
+      pages.push(basePath || "/");
+    }
+  }
+
+  return pages;
+}
 
 export async function GET() {
-  const baseUrl = "https://digetal-app-q1mf.vercel.app";
-  const lastMod = new Date().toISOString(); // تاريخ اليوم بتنسيق ISO
+  const lastMod = new Date().toISOString();
 
-  const urls = [
-    "/", // الصفحة الرئيسية
-    "/products",
-    "/delivery/hotline",
-    "/delivery/meals",
-    "/delivery/OneTapLinksArabic",
-    "/delivery/egyptStores",
-    "/delivery/ComputerStores",
-  ];
+  const pages = getPages(appDir)
+    .filter((p) => !p.includes("["))
+    .map((p) => p.replace(/\/+/g, "/"));
+
+  const urls = pages
+    .map(
+      (page) => `
+  <url>
+    <loc>${baseUrl}${page === "/" ? "" : page}</loc>
+    <lastmod>${lastMod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>${page === "/" ? "1.0" : "0.8"}</priority>
+  </url>`
+    )
+    .join("");
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls
-  .map(
-    (url) => `
-  <url>
-    <loc>${baseUrl}${url === "/" ? "" : url}</loc>
-    <lastmod>${lastMod}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>${url === "/" ? "1.0" : "0.8"}</priority>
-  </url>`
-  )
-  .join("")}
+${urls}
 </urlset>`;
 
   return new NextResponse(sitemap, {
     headers: {
       "Content-Type": "application/xml",
-      // إضافة Cache Control لضمان تحديث الملف دورياً وعدم استهلاكه للموارد بلا داعٍ
-      "Cache-Control": "public, s-maxage=86400, stale-while-revalidate",
+      "Cache-Control": "public, s-maxage=86400",
     },
   });
 }
