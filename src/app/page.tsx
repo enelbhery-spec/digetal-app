@@ -143,6 +143,51 @@ export default function Home() {
     </div>
   </div>
 </section>
+      {/* ================= خدمات العملاء ================= */}
+
+<section className="container mx-auto px-4 py-16 text-right">
+  <h2 className="text-3xl font-bold mb-4">
+    دليل الخدمات الذكية
+  </h2>
+
+  <p className="text-gray-600 mb-10">
+    خدمات وتطبيقات تساعدك توصل للمعلومة الصح بسرعة
+    بدون بحث طويل أو روابط مضللة.
+  </p>
+
+  <div className="grid md:grid-cols-3 gap-6">
+
+    <a href="/services/banks" className="border rounded-lg p-6 hover:shadow-lg transition">
+      <h3 className="text-xl font-semibold mb-2">
+        خدمة عملاء البنوك
+      </h3>
+      <p className="text-gray-600">
+        أرقام البنوك والخط الساخن بدون انتظار
+      </p>
+    </a>
+
+    <a href="/services/hotline" className="border rounded-lg p-6 hover:shadow-lg transition">
+      <h3 className="text-xl font-semibold mb-2">
+        الخط الساخن
+      </h3>
+      <p className="text-gray-600">
+        الوصول السريع لخدمات الطوارئ والدعم
+      </p>
+    </a>
+
+    <a href="/services/telecom" className="border rounded-lg p-6 hover:shadow-lg transition">
+      <h3 className="text-xl font-semibold mb-2">
+        شركات الاتصالات
+      </h3>
+      <p className="text-gray-600">
+        أرقام خدمة العملاء والدعم الفني
+      </p>
+    </a>
+
+  </div>
+
+</section>
+
 
 
       {/* ================= BLOG SECTION (NEW) ================= */}

@@ -5,6 +5,21 @@ import path from "path";
 const baseUrl = "https://digetal-app-q1mf.vercel.app";
 const appDir = path.join(process.cwd(), "src/app");
 
+// ===== Helpers =====
+function getPriority(page: string): string {
+  if (page === "/") return "1.0";
+  if (page.startsWith("/services")) return "0.9";
+  if (page.startsWith("/applications")) return "0.8";
+  return "0.7";
+}
+
+function getChangeFreq(page: string): string {
+  if (page === "/") return "daily";
+  if (page.startsWith("/services")) return "weekly";
+  return "monthly";
+}
+
+// ===== Read pages =====
 function getPages(dir: string, basePath = ""): string[] {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   let pages: string[] = [];
@@ -14,6 +29,7 @@ function getPages(dir: string, basePath = ""): string[] {
 
     if (entry.isDirectory()) {
       if (entry.name.startsWith("_")) continue;
+      if (entry.name.startsWith("(")) continue; // route groups
       if (entry.name === "api") continue;
 
       pages.push(
@@ -29,11 +45,12 @@ function getPages(dir: string, basePath = ""): string[] {
   return pages;
 }
 
+// ===== GET =====
 export async function GET() {
   const lastMod = new Date().toISOString();
 
   const pages = getPages(appDir)
-    .filter((p) => !p.includes("["))
+    .filter((p) => !p.includes("[")) // exclude dynamic routes
     .map((p) => p.replace(/\/+/g, "/"));
 
   const urls = pages
@@ -42,8 +59,8 @@ export async function GET() {
   <url>
     <loc>${baseUrl}${page === "/" ? "" : page}</loc>
     <lastmod>${lastMod}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>${page === "/" ? "1.0" : "0.8"}</priority>
+    <changefreq>${getChangeFreq(page)}</changefreq>
+    <priority>${getPriority(page)}</priority>
   </url>`
     )
     .join("");
