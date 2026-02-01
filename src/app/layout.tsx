@@ -89,12 +89,8 @@ export default function RootLayout({
     <html lang="ar" dir="rtl" className="scroll-smooth">
       <head>
         {/* Google AdSense */}
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4973672854580770"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4973672854580770"
+     crossorigin="anonymous"></script>
 
         {/* Google Analytics */}
         <Script
