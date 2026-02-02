@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "fبحث حوجل مقارنة بالبحث الذكى",
+  title: "بحث حوجل مقارنة بالبحث الذكى",
   description:
     "مقارنة شاملة توضح الفرق بين البحث التقليدي في جوجل والبحث الذكي داخل البحث الذكى للوصول السريع والدقيق إلى الخطوط الساخنة والخدمات.",
 };

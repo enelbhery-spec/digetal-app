@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "كيف يعمل Smart Search للوصول للخدمة الصحيحة؟",
+  title: "كيف يعمل البحث الذكى للوصول للخدمة الصحيحة؟",
   description:
     "شرح عملي لكيفية عمل Smart Search في الوصول السريع والدقيق إلى الخطوط الساخنة والخدمات بدون نتائج خاطئة.",
 };

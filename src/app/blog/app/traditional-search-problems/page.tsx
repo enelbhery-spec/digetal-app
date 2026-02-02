@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "لماذا يفشل البحث التقليدي عن الخطوط الساخنة؟",
+  title: "لماذا يفشل بحث جوجل  بعكس  بحثنا الذكى؟",
   description:
-    "تعرف على أسباب فشل البحث التقليدي عن أرقام الخطوط الساخنة ولماذا يضيع وقتك، وكيف يحل البحث الذكي هذه المشكلة.",
+    "تعرف على أسباب فشل بحث جوجل عن أرقام الخطوط الساخنة ولماذا يضيع وقتك، وكيف يحل البحث الذكي هذه المشكلة.",
 };
 
 export default function TraditionalHotlineSearchFailure() {
@@ -12,7 +12,7 @@ export default function TraditionalHotlineSearchFailure() {
     <main className="max-w-3xl mx-auto p-4 leading-relaxed" dir="rtl">
       {/* ===== TITLE ===== */}
       <h1 className="text-3xl font-bold mb-6">
-        لماذا يفشل البحث التقليدي عن الخطوط الساخنة؟
+        لماذا يفشل بحث جوجل عن الخطوط الساخنة؟
       </h1>
 
       {/* ===== INTRO ===== */}
@@ -37,7 +37,7 @@ export default function TraditionalHotlineSearchFailure() {
         2️⃣ تشتيت المستخدم بالإعلانات
       </h2>
       <p className="mb-4">
-        عند البحث التقليدي، يظهر أمامك عشرات الروابط والإعلانات
+        عند بحث جوجل، يظهر أمامك عشرات الروابط والإعلانات
         المدفوعة قبل الوصول إلى المعلومة الحقيقية، مما يضيع وقتك
         ويشتتك عن الهدف الأساسي.
       </p>
@@ -48,7 +48,7 @@ export default function TraditionalHotlineSearchFailure() {
       </h2>
       <p className="mb-4">
         في حالات الطوارئ، لا يوجد وقت لتصفح صفحات طويلة أو مقارنة
-        نتائج متعددة. البحث التقليدي لا يراعي عامل السرعة.
+        نتائج متعددة. بحث جوجل لا يراعي عامل السرعة.
       </p>
 
       {/* ===== REASON 4 ===== */}

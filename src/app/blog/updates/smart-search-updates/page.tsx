@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "تحديثات Smart Search | تطوير البحث الذكي وتحسين تجربة المستخدم",
+  title: "تحديثات | البحث الذكي وتحسين تجربة المستخدم",
   description:
     "تعرف على أحدث تحديثات Smart Search وكيف نطوّر محرك البحث الذكي لتحسين الدقة، السرعة، وتجربة المستخدم في الوصول للخدمات.",
 };

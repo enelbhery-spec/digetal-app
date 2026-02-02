@@ -3,7 +3,7 @@ import Link from "next/link";
 
 /* ================== SEO META ================== */
 export const metadata: Metadata = {
-  title: "مقالات تطبيق البحث الذكى | بديل البحث التقليدي",
+  title: "مقالات تطبيق البحث الذكى |افضل من بحث جوحل",
   description:
     "مقالات تشرح فكرة تطبيق البحث الذكى وكيف يساعدك في الوصول السريع إلى الخطوط الساخنة والخدمات والمتاجر بدل البحث التقليدي المرهق.",
   keywords: [
@@ -28,9 +28,9 @@ const articles = [
     link: "/blog/app/traditional-search-problems",
   },
   {
-    title: "كيف يعمل البحث الذكى للوصول للخدمة الصحيحة؟",
+    title: "بحث حوجل مقارنة بالبحث الذكى",
     desc: "شرح مبسط لفكرة البحث الذكي وكيفية تصفية النتائج بدقة.",
-    link: "/blog/app/how-smart-search-works",
+    link: "/blog/app/google-vs-smart-search",
   },
 ];
 

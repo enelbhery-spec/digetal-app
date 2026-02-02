@@ -8,15 +8,15 @@ import Script from "next/script";
 
 export const metadata: Metadata = {
   title: {
-    default: "Digital Store - بحث رقمى ذكى | متجر الحث الرفمى",
-    template: "%s | Digital Store - بحث رقمى ذكى",
+    default: "البحث الذكى - بحث رقمى ذكى | متجر الحث الرفمى",
+    template: "%s | البحث الذكى - بحث رقمى ذكى",
   },
   description: "خدمات بحث رقمية مجانية وسريعة",
   keywords: [
     "تطبيقات بخث رقمية",
     "بحث  رقمي",
     "خدمات رقمية",
-        "البحث الذكى",
+     "البحث الذكى",
     "محرك بحث ذكي",
     "البحث عن الخدمات",
     "أرقام الخط الساخن",
@@ -36,10 +36,10 @@ export const metadata: Metadata = {
     "البحث الذكي",
     "محرك بحث للخدمات",
     "Digital Products",
-    "Digital Store",
+    "البحث الذكى",
   ],
-  authors: [{ name: "Digital Store - البحث الذكى" }],
-  creator: "Digital Store - البحث الذكى",
+  authors: [{ name: "البحث الذكى - البحث الذكى" }],
+  creator: "البحث الذكى - البحث الذكى",
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.ico",
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     description:
       "كل التطبيقات والخدمات الرقمية في مكان واحد، بحث سريع وذكي بدون تعقيد",
     url: "https://digital-app-q1mf.vercel.app",
-    siteName: "Digital Store",
+    siteName: "البحث الذكى",
     locale: "ar_EG",
     type: "website",
     images: [
