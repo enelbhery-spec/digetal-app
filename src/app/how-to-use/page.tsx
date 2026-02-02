@@ -28,7 +28,7 @@ export default function HowToUsePage() {
 
         {/* Step 2 */}
         <div className="bg-white p-6 rounded-xl shadow-sm border">
-          <div className="text-green-600 text-3xl font-bold mb-4">5</div>
+          <div className="text-green-600 text-3xl font-bold mb-4">2</div>
           <h3 className="font-bold text-lg mb-2">فتح الرابط</h3>
           <p className="text-gray-600 text-sm leading-relaxed">
             افتح الرابط مباشرة واستمتع باستخدام التطبيق بدون أي تعقيد.
@@ -37,7 +37,7 @@ export default function HowToUsePage() {
 
         {/* Step 3 */}
         <div className="bg-white p-6 rounded-xl shadow-sm border">
-          <div className="text-green-600 text-3xl font-bold mb-4">6</div>
+          <div className="text-green-600 text-3xl font-bold mb-4">3</div>
           <h3 className="font-bold text-lg mb-2">الدعم الفني</h3>
           <p className="text-gray-600 text-sm leading-relaxed">
             في حالة وجود أي مشكلة يمكنك التواصل معنا عبر واتساب في أي وقت.
