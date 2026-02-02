@@ -26,7 +26,7 @@ export default function HowToUsePage() {
 
 
 
-        {/* Step 5 */}
+        {/* Step 2 */}
         <div className="bg-white p-6 rounded-xl shadow-sm border">
           <div className="text-green-600 text-3xl font-bold mb-4">5</div>
           <h3 className="font-bold text-lg mb-2">فتح الرابط</h3>
@@ -35,7 +35,7 @@ export default function HowToUsePage() {
           </p>
         </div>
 
-        {/* Step 6 */}
+        {/* Step 3 */}
         <div className="bg-white p-6 rounded-xl shadow-sm border">
           <div className="text-green-600 text-3xl font-bold mb-4">6</div>
           <h3 className="font-bold text-lg mb-2">الدعم الفني</h3>
