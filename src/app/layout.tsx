@@ -121,7 +121,7 @@ y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
 })(window, document, "clarity", "script", "vbff8ppfd2");
   `}
 </Script>
->
+
       </head>
 
       <body className="min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased">
