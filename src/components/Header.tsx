@@ -18,13 +18,13 @@ export default function Header() {
             التطبيقات
           </Link>
 
-          <Link href="/how-to-use" className="hover:text-green-600 transition">
-            طريقة الاستخدام
-          </Link>
 
-          <Link href="/contact" className="hover:text-green-600 transition">
-            تواصل معنا
-          </Link>
+                {/* عناصر بيع قطع غيار */}
+      <Link href="/hardware-store">
+  متجر الهاردوير
+</Link>
+
+
         </nav>
 
         {/* WhatsApp Button */}
@@ -35,6 +35,7 @@ export default function Header() {
         >
           واتساب
         </a>
+
 
       </div>
     </header>
