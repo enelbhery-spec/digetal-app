@@ -15,7 +15,7 @@ const stores: Store[] = [
     id: 1,
     name: "Maximum Hardware",
     type: "تجميعات وقطع غيار",
-    url: "https://maximumhardware.store",
+    url: "https://maximumhardware.store/samsung-970-evo-plus-1tb-m-2-nvme-v-nand-internal-solid-state-drive-ssd?tracking=4yz6vQ0EwyDAoenU2015Q0TGZW6F33PIlo4hTiVRTZFnBW6QOzR94stOEpjiQsz0",
     category: "hardware",
   },
   {

@@ -143,6 +143,36 @@ export default function Home() {
     </div>
   </div>
 </section>
+<section
+  style={{
+    background: "#ffffff",
+    padding: 20,
+    borderRadius: 16,
+    marginTop: 24,
+    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+  }}
+>
+  <h2>🛒 متجر الهاردوير</h2>
+  <p style={{ color: "#555", marginBottom: 12 }}>
+    ترشيحات هاردوير موثوقة – شراء مباشر من الموقع الرسمي
+  </p>
+
+  <Link
+    href="/hardware-store/samsung-970-evo"
+    style={{
+      display: "inline-block",
+      background: "#1976d2",
+      color: "#fff",
+      padding: "10px 16px",
+      borderRadius: 8,
+      textDecoration: "none",
+      fontWeight: "bold",
+    }}
+  >
+    تعرف على المتجر
+  </Link>
+</section>
+
       {/* ================= خدمات العملاء ================= */}
 
 <section className="container mx-auto px-4 py-16 text-right">
