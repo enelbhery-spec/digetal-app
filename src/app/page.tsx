@@ -169,7 +169,7 @@ export default function Home() {
       fontWeight: "bold",
     }}
   >
-    تعرف على المتجر
+    تعرف على المنتجات
   </Link>
 </section>
 
