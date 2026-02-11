@@ -17,6 +17,13 @@ export default function Header() {
           <Link href="/products" className="hover:text-green-600 transition">
             التطبيقات
           </Link>
+          <Link
+  href="/videos"
+  className="hover:text-green-600 transition"
+>
+  الفيديوهات
+</Link>
+
 
 
                 {/* عناصر بيع قطع غيار */}

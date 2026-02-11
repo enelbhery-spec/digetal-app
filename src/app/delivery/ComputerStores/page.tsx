@@ -15,7 +15,7 @@ const stores: Store[] = [
     id: 1,
     name: "Maximum Hardware",
     type: "تجميعات وقطع غيار",
-    url: "https://maximumhardware.store/samsung-970-evo-plus-1tb-m-2-nvme-v-nand-internal-solid-state-drive-ssd?tracking=4yz6vQ0EwyDAoenU2015Q0TGZW6F33PIlo4hTiVRTZFnBW6QOzR94stOEpjiQsz0",
+    url: "https://maximumhardware.store/accessories-1/meetion-mt-pd121-large-rgb-gaming-mouse-pad?tracking=4yz6vQ0EwyDAoenU2015Q0TGZW6F33PIlo4hTiVRTZFnBW6QOzR94stOEpjiQsz0&fbclid=IwY2xjawP5uo5leHRuA2FlbQIxMABicmlkETF0NkdUNWV4MnlFV1V6YjJac3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHiCuC8PyZ2WCaemepjdSmr_f78jD7o7B6EQY-C7WnaLUy3cgC4rGiSJzSkR-_aem_9dQyFBKqorYkORc2KO4Ypg",
     category: "hardware",
   },
   {

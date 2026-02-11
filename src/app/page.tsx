@@ -173,6 +173,7 @@ export default function Home() {
   </Link>
 </section>
 
+
       {/* ================= خدمات العملاء ================= */}
 
 <section className="container mx-auto px-4 py-16 text-right">
@@ -296,6 +297,7 @@ export default function Home() {
         </div>
       </section>
 
+
       {/* ================= CTA ================= */}
       <section className="py-20 bg-green-600 text-white text-center">
         <h2 className="text-4xl font-bold mb-6">جاهز تبدأ؟</h2>
@@ -307,6 +309,7 @@ export default function Home() {
           ابدأ بتصفح التطبيقات
         </Link>
       </section>
+
 
     </main>
   );
