@@ -1,0 +1,30 @@
+name: Auto Update Deals
+on:
+  schedule:
+    - cron: '0 */6 * * *' # تحديث كل 6 ساعات
+  workflow_dispatch: # يتيح لك تشغيل التحديث يدوياً بضغطة زر
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Tools
+        run: |
+          pip install playwright supabase
+          playwright install chromium
+
+      - name: Run Scrapers
+        run: |
+          python scraper.py
+          python stores_updater.py
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
