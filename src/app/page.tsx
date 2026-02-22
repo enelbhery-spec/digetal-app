@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import Categories from "../components/Categories";
-import SmartSearchPreview from "../components/SmartSearchPreview"; // استيراد المكون الجديد
+import AmazonProductsPreview from "../components/AmazonProductsPreview";
 
 export default function Home() {
   return (
@@ -50,7 +50,8 @@ export default function Home() {
       </div>
 
       {/* استدعاء عرض المحرك الذكي هنا (قبل التصنيفات لزيادة التفاعل) */}
-      <SmartSearchPreview />
+    
+      <AmazonProductsPreview />
 
       {/* ================= CATEGORIES ================= */}
       <Categories />

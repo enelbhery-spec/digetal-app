@@ -12,7 +12,7 @@ export default function SmartSearchPreview() {
     async function fetchData() {
       try {
         const { data, error } = await supabase
-          .from('universal_search')
+          .from('amazon_products')
           .select('*')
           // أضفنا Mobiles هنا لأن السكريبت يرفع بهذا الاسم
           .in('category', ['Mobiles', 'deals', 'market']) 
