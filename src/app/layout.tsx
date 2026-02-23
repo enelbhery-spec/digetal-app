@@ -7,66 +7,69 @@ import RegisterSW from "@/components/RegisterSW";
 import Script from "next/script";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://digetal-app-q1mf.vercel.app"),
+
   title: {
-    default: "البحث الذكى - بحث رقمى ذكى | متجر الحث الرفمى",
-    template: "%s | البحث الذكى - بحث رقمى ذكى",
+    default: "البحث الذكي - خدمات رقمية وخصومات أمازون",
+    template: "%s | البحث الذكي",
   },
-  description: "خدمات بحث رقمية مجانية وسريعة",
+
+  description:
+    "البحث الذكي منصة رقمية مجانية تساعدك في الوصول السريع لأرقام وخدمات العملاء وأفضل منتجات وخصومات أمازون المحدثة يوميًا بسهولة ودقة.",
+
   keywords: [
-    "تطبيقات بخث رقمية",
-    "بحث  رقمي",
+    "تطبيقات بحث رقمية",
+    "بحث رقمي",
     "خدمات رقمية",
-     "البحث الذكى",
-    "محرك بحث ذكي",
-    "البحث عن الخدمات",
-    "أرقام الخط الساخن",
-    "خدمات الدليفري في مصر",
-    "دليل الخدمات في مصر",
-    "رقم خدمة العملاء",
-    "الخط الساخن لشركة",
-    "رقم شكاوى",
-    "خدمة عملاء مصر",
-    "بحث جوجل ",
-    "البحث عن رقم الخط الساخن في مصر",
-    "أفضل طريقة للبحث عن خدمات الدليفري",
-    "ازاي أوصل لخدمة عملاء الشركات",
-    "دليل شامل للشركات والخدمات في مصر",
-    "محرك بحث للخدمات المصرية",
-    "محرك بحث ذكي",
     "البحث الذكي",
-    "محرك بحث للخدمات",
-    "Digital Products",
-    "البحث الذكى",
+    "محرك بحث ذكي",
+    "أرقام الخط الساخن",
+    "خدمة عملاء مصر",
+    "رقم خدمة العملاء",
+    "عروض وخصومات أمازون مصر",
+    "محرك بحث أمازون",
+    "ادوات المطبخ من امازون",
   ],
-  authors: [{ name: "البحث الذكى - البحث الذكى" }],
-  creator: "البحث الذكى - البحث الذكى",
+
+  authors: [{ name: "البحث الذكي" }],
+  creator: "البحث الذكي",
+
   manifest: "/manifest.json",
+
   icons: {
     icon: "/favicon.ico",
   },
+
+  alternates: {
+    canonical: "/",
+  },
+
   openGraph: {
-    title: "البحث الذكى – البحث الذكي",
+    title: "البحث الذكي - خدمات رقمية وخصومات أمازون",
     description:
-      "كل التطبيقات والخدمات الرقمية في مكان واحد، بحث سريع وذكي بدون تعقيد",
-    url: "https://digital-app-q1mf.vercel.app",
-    siteName: "البحث الذكى",
+      "خدمات عملاء رقمية سريعة وأفضل منتجات وخصومات أمازون في مكان واحد.",
+    url: "/",
+    siteName: "البحث الذكي",
     locale: "ar_EG",
     type: "website",
     images: [
       {
-        url: "https://digital-app-q1mf.vercel.app/og-image.png",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "البحث الذكى – البحث الذكي",
+        alt: "البحث الذكي",
       },
     ],
   },
+
   twitter: {
     card: "summary_large_image",
-    title: "البحث الذكى – البحث الذكي",
-    description: "كل التطبيقات والخدمات في مكان واحد",
-    images: ["https://digital-app-q1mf.vercel.app/og-image.png"],
+    title: "البحث الذكي - خدمات رقمية وخصومات أمازون",
+    description:
+      "البحث الذكي منصة رقمية مجانية للوصول السريع إلى خدمات العملاء وخصومات أمازون.",
+    images: ["/og-image.png"],
   },
+
   other: {
     "google-site-verification":
       "7XY4QFlcbO13HsbJ3M-4Pl1l9A4Pbbe-GltnYncvINA",
@@ -111,8 +114,6 @@ export default function RootLayout({
             });
           `}
         </Script>
-
-
       </head>
 
       <body className="min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased">

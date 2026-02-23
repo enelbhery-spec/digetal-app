@@ -4,12 +4,58 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "البحث عن الخط الساخن: من الطريقة التقليدية إلى البحث الذكي",
   description:
-    "تعرف على الفرق بين البحث التقليدي عن الخطوط الساخنة والبحث الذكي، وكيف تصل لرقم أي خدمة في ثوانٍ.",
+    "اكتشف الفرق بين البحث التقليدي عن الخط الساخن والبحث الذكي، وكيف تصل لرقم أي خدمة عملاء في ثوانٍ بسهولة ودقة.",
+  alternates: {
+    canonical: "/articles/hotline-smart-search",
+  },
+  openGraph: {
+    title:
+      "البحث عن الخط الساخن: من الطريقة التقليدية إلى البحث الذكي",
+    description:
+      "كيف تصل لرقم أي خدمة عملاء بسرعة؟ تعرف على قوة البحث الذكي مقارنة بالطريقة التقليدية.",
+    url: "/articles/hotline-smart-search",
+    type: "article",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title:
+      "البحث عن الخط الساخن: من الطريقة التقليدية إلى البحث الذكي",
+    description:
+      "تعرف على أفضل طريقة للوصول إلى أرقام خدمة العملاء في ثوانٍ.",
+  },
 };
 
 export default function HotlineSmartSearchArticle() {
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline:
+      "البحث عن الخط الساخن: من الطريقة التقليدية إلى البحث الذكي",
+    description:
+      "تعرف على الفرق بين البحث التقليدي والبحث الذكي للوصول إلى أرقام خدمة العملاء بسرعة.",
+    author: {
+      "@type": "Organization",
+      name: "البحث الذكي",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "البحث الذكي",
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id":
+        "https://digetal-app-q1mf.vercel.app/articles/hotline-smart-search",
+    },
+  };
+
   return (
     <main className="max-w-3xl mx-auto p-4 leading-relaxed" dir="rtl">
+      {/* Article Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+
       <h1 className="text-3xl font-bold mb-6">
         البحث عن الخط الساخن: من الطريقة التقليدية إلى البحث الذكي
       </h1>
@@ -44,7 +90,7 @@ export default function HotlineSmartSearchArticle() {
       </p>
 
       <h2 className="text-2xl font-semibold mt-8 mb-3">
-        لماذا البحث الذكى هو الحل؟
+        لماذا البحث الذكي هو الحل؟
       </h2>
 
       <ul className="list-disc pr-6 text-gray-700 mb-6">

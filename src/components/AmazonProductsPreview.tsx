@@ -9,7 +9,7 @@ interface Product {
   description: string | null;
   image_url: string;
   price: number;
-  old_price?: number | null; // optional
+  old_price?: number | null;
   rating?: number | null;
   affiliate_url: string;
   created_at: string;
@@ -27,7 +27,8 @@ export default function AmazonProductsPreview() {
     const { data, error } = await supabase
       .from("amazon_products")
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .limit(8); // عرض أحدث 8 فقط
 
     if (!error && data) {
       setProducts(data as Product[]);
@@ -39,7 +40,17 @@ export default function AmazonProductsPreview() {
   if (loading) {
     return (
       <section className="py-20 text-center">
-        <p className="text-gray-500 text-lg">جاري تحميل المنتجات...</p>
+        <p className="text-gray-500 text-lg">جاري تحميل أفضل العروض...</p>
+      </section>
+    );
+  }
+
+  if (!products.length) {
+    return (
+      <section className="py-20 text-center">
+        <p className="text-gray-500 text-lg">
+          لا توجد عروض متاحة حاليًا 🔎
+        </p>
       </section>
     );
   }
@@ -47,14 +58,22 @@ export default function AmazonProductsPreview() {
   return (
     <section className="py-20 px-6 bg-gray-50">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-extrabold mb-14 text-center">
-          🔥 أفضل عروض أمازون اليوم
-        </h2>
+        
+        {/* ===== TITLE ===== */}
+        <div className="text-center mb-14">
+          <h2 className="text-3xl md:text-4xl font-extrabold mb-4">
+            🔥 أفضل عروض وخصومات أمازون اليوم
+          </h2>
+          <p className="text-gray-600">
+            اكتشف أحدث المنتجات بأفضل الأسعار المحدثة يوميًا
+          </p>
+        </div>
 
+        {/* ===== GRID ===== */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {products.map((product) => {
-
             const price = Number(product.price) || 0;
+
             const oldPrice =
               product.old_price !== undefined &&
               product.old_price !== null
@@ -69,7 +88,7 @@ export default function AmazonProductsPreview() {
                 ? Math.round(((oldPrice - price) / oldPrice) * 100)
                 : null;
 
-            const rating = product.rating ?? 0;
+            const rating = Number(product.rating) || 0;
 
             return (
               <div
@@ -88,6 +107,7 @@ export default function AmazonProductsPreview() {
                   <img
                     src={product.image_url}
                     alt={product.title}
+                    loading="lazy"
                     className="max-h-full object-contain transition duration-300 group-hover:scale-110"
                   />
                 </div>
@@ -107,14 +127,14 @@ export default function AmazonProductsPreview() {
 
                   {/* التقييم */}
                   {rating > 0 && (
-                    <div className="flex items-center mb-3 text-yellow-500 text-sm">
-                      {"★".repeat(Math.floor(rating))}
-                      {"☆".repeat(5 - Math.floor(rating))}
-                      <span className="text-gray-400 text-xs ml-2">
-                        ({rating})
-                      </span>
-                    </div>
-                  )}
+                  <div className="flex items-center mb-3 text-yellow-500 text-sm">
+                  {"★".repeat(Math.floor(rating))}
+                  {"☆".repeat(5 - Math.floor(rating))}
+                  <span className="text-gray-400 text-xs ml-2">
+                  ({rating.toFixed(1)})
+                </span>
+              </div>
+)}
 
                   {/* السعر */}
                   <div className="mb-4 flex items-center gap-3">
@@ -129,14 +149,14 @@ export default function AmazonProductsPreview() {
                     )}
                   </div>
 
-                  {/* زر */}
+                  {/* زر الشراء */}
                   <a
                     href={product.affiliate_url}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="nofollow noopener noreferrer"
                     className="mt-auto bg-yellow-500 hover:bg-yellow-600 text-white text-center py-3 rounded-xl transition font-semibold shadow"
                   >
-                    عرض على أمازون
+                    تسوق الآن على أمازون
                   </a>
 
                 </div>
@@ -144,6 +164,7 @@ export default function AmazonProductsPreview() {
             );
           })}
         </div>
+
       </div>
     </section>
   );
