@@ -1,16 +1,25 @@
 import Link from "next/link";
 import Image from "next/image";
+import { cookies } from "next/headers";
+
 import Categories from "../components/Categories";
+import StoresPreview from "../components/StoresPreview";
 import AmazonProductsPreview from "../components/AmazonProductsPreview";
 
-export default function Home() {
+export default async function Home() {
+
+  // ✅ قراءة الدولة من middleware
+  const cookieStore = cookies();
+  const country =
+    (await cookieStore).get("user_country")?.value || "EG";
+
   return (
     <main className="bg-gray-50 text-gray-800">
 
       {/* ================= HERO SECTION ================= */}
       <section className="relative bg-gradient-to-bl from-green-600 via-green-500 to-emerald-500 text-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 py-24 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          
+
           {/* LEFT CONTENT */}
           <div>
             <h1 className="text-4xl md:text-5xl font-extrabold leading-tight mb-6">
@@ -70,7 +79,12 @@ export default function Home() {
       </div>
 
       {/* ================= AMAZON PREVIEW ================= */}
-      <AmazonProductsPreview />
+      
+      {/* ✅ تظهر فقط للمصريين */}
+      {country === "EG" && <AmazonProductsPreview />}
+
+      {/* ================= STORES ================= */}
+      <StoresPreview />
 
       {/* ================= CATEGORIES ================= */}
       <Categories />
