@@ -1,9 +1,9 @@
 import { supabase } from "@/lib/supabase";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 type Store = {
@@ -23,7 +23,8 @@ type Product = {
 };
 
 export default async function StorePage({ params }: PageProps) {
-  const { slug } = params;
+  // ✅ مهم جداً في Next 15
+  const { slug } = await params;
 
   // 🔹 جلب بيانات المتجر بالـ slug
   const { data: store, error: storeError } = await supabase
@@ -56,7 +57,6 @@ export default async function StorePage({ params }: PageProps) {
   return (
     <section className="py-16 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-6">
-
         {/* عنوان المتجر */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-extrabold mb-3">
@@ -149,7 +149,6 @@ export default async function StorePage({ params }: PageProps) {
             );
           })}
         </div>
-
       </div>
     </section>
   );
