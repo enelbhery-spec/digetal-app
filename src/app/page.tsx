@@ -42,7 +42,7 @@ export default async function Home() {
                   description: product.description ?? "",
                   image: product.image_url ?? "",
                   category: product.category ?? "",
-                  link: product.affiliate_url ?? "#",
+                  product_url: product.product_url ?? "#",
                   price: product.price,
                   currency: product.currency,
                 }}

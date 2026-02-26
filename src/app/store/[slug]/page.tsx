@@ -1,58 +1,147 @@
-import { createClient } from "@supabase/supabase-js";
-import ProductCard from "@/components/ProductCard";
+import { supabase } from "@/lib/supabase";
 
-type PageProps = {
-  params: Promise<{ slug: string }>;
+type Store = {
+  id: string; // uuid مش number
+  name: string;
+  slug: string;
 };
 
-export default async function StorePage({ params }: PageProps) {
-  const { slug } = await params; // ✅ مهم جداً في Next 15
+type Product = {
+  id: string;
+  title: string;
+  description?: string;
+  price: number;
+  rating?: number;
+  image_url?: string;
+  affiliate_url?: string;
+};
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+export default async function StorePage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const { slug } = params;
 
-  const { data: products, error } = await supabase
-    .from("products")
+  // 🔹 جلب بيانات المتجر بالـ slug
+  const { data: store, error: storeError } = await supabase
+    .from("stores")
     .select("*")
-    .eq("category", slug);
+    .eq("slug", slug)
+    .single<Store>();
 
-  if (error) {
-    console.log(error);
+  if (storeError || !store) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-red-500 text-xl">
+        المتجر غير موجود
+      </div>
+    );
   }
 
-  return (
-    <main className="bg-gray-50 text-gray-800 min-h-screen py-20 px-6">
-      <h1 className="text-3xl font-bold mb-10 text-center">
-        منتجات {slug}
-      </h1>
+  // 🔹 جلب المنتجات المرتبطة بالمتجر عبر store_id
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .eq("store_id", store.id)
+    .order("created_at", { ascending: false });
 
-      {products && products.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {products.map((product: any) => (
-            <ProductCard
-              key={product.id}
-              product={{
-                id: product.id,
-                title: product.title ?? "",
-                description: product.description ?? "",
-                image: product.image_url ?? "",
-                category: product.category ?? "",
-                link: product.affiliate_url ?? "#",
-                price: product.price,
-                old_price: product.old_price,
-                rating: product.rating,
-                currency: product.currency,
-              }}
-            />
-          ))}
+  const products: Product[] = data || [];
+
+  return (
+    <section className="py-16 bg-gray-50 min-h-screen">
+      <div className="max-w-7xl mx-auto px-6">
+
+        {/* عنوان المتجر */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-extrabold mb-3">
+            {store.name}
+          </h1>
+          <p className="text-gray-500 text-lg">
+            تصفح جميع المنتجات المتاحة
+          </p>
         </div>
-      ) : (
-        <p className="text-center text-gray-500">
-          لا توجد منتجات في هذا القسم
-        </p>
-      )}
-    </main>
+
+        {/* لو مفيش منتجات */}
+        {products.length === 0 && (
+          <div className="text-center text-gray-500 py-20 text-lg">
+            لا توجد منتجات حالياً
+          </div>
+        )}
+
+        {/* المنتجات */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {products.map((product) => {
+            const productLink = product.affiliate_url?.trim();
+
+            return (
+              <div
+                key={product.id}
+                className="bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 p-5 flex flex-col"
+              >
+                {/* صورة المنتج */}
+                <div className="h-48 flex items-center justify-center mb-4 bg-gray-100 rounded-lg overflow-hidden">
+                  <img
+                    src={
+                      product.image_url ||
+                      "https://via.placeholder.com/300x300?text=No+Image"
+                    }
+                    alt={product.title}
+                    className="max-h-full object-contain"
+                  />
+                </div>
+
+                {/* عنوان المنتج */}
+                <h3 className="font-bold text-lg mb-2 line-clamp-2 min-h-[56px]">
+                  {product.title}
+                </h3>
+
+                {/* وصف */}
+                {product.description && (
+                  <p className="text-sm text-gray-500 mb-3 line-clamp-2">
+                    {product.description}
+                  </p>
+                )}
+
+                {/* السعر */}
+                <p className="text-green-600 font-bold text-xl mb-2">
+                  EGP {product.price}
+                </p>
+
+                {/* التقييم */}
+                {product.rating && (
+                  <p className="text-yellow-500 text-sm mb-4">
+                    ⭐ {product.rating} / 5
+                  </p>
+                )}
+
+                {/* زر الشراء */}
+                {productLink ? (
+                  <a
+                    href={
+                      productLink.startsWith("http")
+                        ? productLink
+                        : `https://${product_url}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-auto block text-center bg-yellow-400 text-black py-2 rounded-xl font-bold hover:bg-yellow-500 transition duration-300"
+                  >
+                    اشتري الآن
+                  </a>
+                ) : (
+                  <button
+                    disabled
+                    className="mt-auto bg-gray-300 text-gray-600 py-2 rounded-xl font-bold cursor-not-allowed"
+                  >
+                    الرابط غير متوفر
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+      </div>
+    </section>
   );
 }

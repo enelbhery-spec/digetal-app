@@ -4,9 +4,9 @@ interface Product {
   description: string;
   image: string;
   category: string;
-  link: string;
+   product_url: string; // ← هذا هو رابط الأفلييت
   price?: number;
-  old_price?: number; // ✅ نفس اسم العمود بالضبط
+  old_price?: number;
   rating?: number;
   currency?: string;
 }
@@ -52,13 +52,14 @@ export default function ProductCard({ product }: Props) {
         )}
 
         {/* زر الشراء */}
-        <a
-          href={product.link}
-          target="_blank"
-          className="block text-center bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
-        >
-          عرض المنتج
-        </a>
+       <a
+  href={product.product_url}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="block text-center bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
+>
+  عرض المنتج
+</a>
 
       </div>
     </div>
