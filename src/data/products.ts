@@ -15,25 +15,11 @@ export const products: Product[] = [
     description: "الوصول السريع لأرقام البنوك والجهات الرسمية والخدمات الحكومية والخدمات وشركات الاتصالات وغيرها لتوفير وقتك",
     image: "/products/hotline-guide.png",
     link: "/delivery/hotline", // 👈 المنتج الأول
-     category: "الخط الساخن",
+     category: " -خدمة العملاء - الخط الساخن",
 
   },
-  {
-    id: 2,
-    title: "البحث الفورى للمواقع الاكترونية والصفحات الرئيسية  – اتصال مباشر",
-    description: "الوصول السريع للمواقع  الكترونية بنوك خدمات متاجر اتصالات ",
-    image: "/products/OneTap Links.png",
-    link: "/delivery/OneTapLinksArabic?mode=web", // 👈 نفس الصفحة بس استخدام مختلف
-     category: "المواقع الاكترونية "
-  },
-  {
-    id: 3,
-    title: "25 وجبات رائعة فى صفحة واحدة",
-    description: "(فطور – غداء – عشاء)",
-    image: "/products/meals.png",
-    link: "/delivery/meals?mode=meals", // 👈 نفس الصفحة بس محتوى مختلف
-     category: " وجبات رائقة"
-  },
+  
+  
   {
     id: 4,
     title: "العروض الحصرية للمتاجر الاكترونية",
@@ -42,14 +28,7 @@ export const products: Product[] = [
     link: "/delivery/egyptStores?mode=meals", // 👈 نفس الصفحة بس محتوى مختلف
      category: "العروض الحصرية للمتاجر الاكترونية"
   },
-  {
-    id: 5,
-    title: " متاجر الكترونية لاجهزة اللابتوب وقطع الغيار  ",
-    description: "احصل على العروض حصريا )",
-    image: "/products/ComputerStores.png",
-    link: "/delivery/ComputerStores?mode=meals", // 👈 نفس الصفحة بس محتوى مختلف
-     category: "متجر اكترونية للالبتوب "
-  },
+  
   {
     id: 6,
     title: " أفضل شركات التأمين على السيارات في مصر  ",

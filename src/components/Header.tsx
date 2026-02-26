@@ -8,8 +8,8 @@ export default function Header() {
 
         {/* Logo */}
         <Link href="/" className="text-2xl font-extrabold text-green-600">
-          البحث الذكى
-        </Link>
+              خصومات و كوبونات     
+         </Link>
 
         {/* Videos Link */}
         <nav className="flex items-center font-semibold text-gray-700">
@@ -17,7 +17,7 @@ export default function Header() {
             href="/videos"
             className="hover:text-green-600 transition"
           >
-            الفيديوهات
+            استراحة وترفيه
           </Link>
         </nav>
 

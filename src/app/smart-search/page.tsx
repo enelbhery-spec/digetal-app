@@ -15,7 +15,7 @@ export default function amazon_products() {
       console.log("🛒 Fetching Amazon Products...");
 
       const { data, error } = await supabase
-        .from("amazon_products")
+        .from("products")
         .select("*")
         .eq("category", "amazon") // ✅ منتجات امازون فقط
         .order("created_at", { ascending: false });

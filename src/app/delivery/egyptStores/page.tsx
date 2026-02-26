@@ -13,7 +13,7 @@ type StoreItem = {
 const data: StoreItem[] = [
   { name: "جوميا", category: "تسوق عام", url: "https://www.jumia.com.eg" },
   { name: "نون", category: "تسوق عام", url: "https://www.noon.com/egypt-ar" },
-  { name: "أمازون مصر", category: "تسوق عام", url: "https://www.amazon.eg" },
+  { name: "أمازون مصر", category: "تسوق عام", url: "https://amzn.to/4kPzDL8" },
 
   { name: "كارفور مصر", category: "سوبر ماركت", url: "https://www.carrefouregypt.com" },
   { name: "سبينيس", category: "سوبر ماركت", url: "https://www.spinneys-egypt.com" },
@@ -30,7 +30,6 @@ const data: StoreItem[] = [
   { name: "IKEA مصر", category: "أثاث", url: "https://www.ikea.com/eg/ar" },
 
   { name: "صيدليات العزبي", category: "صيدليات", url: "https://www.elezabypharmacy.com" },
-  { name: "صيدليات سيف", category: "صيدليات", url: "https://seifpharmacy.com" },
 
   { name: "OLX Egypt", category: "إعلانات مبوبة", url: "https://www.olx.com.eg" }
 ];

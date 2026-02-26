@@ -6,11 +6,10 @@ export default function Footer() {
         {/* About */}
         <div>
           <h3 className="text-xl font-bold text-white mb-4">
-            Digital Store
+            خصومات و كبونات
           </h3>
           <p className="text-sm leading-relaxed">
-            متجر متخصص في  المنتجات الرقمية الجاهزة للاستخدام.
-            استخدم التطبيق  فورًا - بكل سهولة وأمان.
+            تخفيضات وخصومات و كوبونات - امازون مصر - نون السعودية 
           </p>
         </div>
 

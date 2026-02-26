@@ -1,30 +1,29 @@
 import { supabase } from "@/lib/supabase";
 
 type Store = {
-  id: number;
+  id: string; // uuid مش number
   name: string;
   slug: string;
-  products_table: string;
 };
 
 type Product = {
-  id: number;
+  id: string;
   title: string;
   description?: string;
   price: number;
   rating?: number;
-  image?: string;
-  affiliate_url?: string; // ✅ الاسم الصحيح
+  image_url?: string;
+  affiliate_url?: string;
 };
 
 export default async function StorePage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
-  const { slug } = await params;
+  const { slug } = params;
 
-  // 🔹 جلب بيانات المتجر
+  // 🔹 جلب بيانات المتجر بالـ slug
   const { data: store, error: storeError } = await supabase
     .from("stores")
     .select("*")
@@ -39,19 +38,14 @@ export default async function StorePage({
     );
   }
 
-  // 🔹 جلب المنتجات
-  let products: Product[] = [];
+  // 🔹 جلب المنتجات المرتبطة بالمتجر عبر store_id
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .eq("store_id", store.id)
+    .order("created_at", { ascending: false });
 
-  if (store.products_table) {
-    const { data, error } = await supabase
-      .from(store.products_table)
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (!error && data) {
-      products = data as Product[];
-    }
-  }
+  const products: Product[] = data || [];
 
   return (
     <section className="py-16 bg-gray-50 min-h-screen">
@@ -77,7 +71,7 @@ export default async function StorePage({
         {/* المنتجات */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {products.map((product) => {
-            const productLink = product.affiliate_url?.trim(); // ✅ هنا التعديل
+            const productLink = product.affiliate_url?.trim();
 
             return (
               <div
@@ -88,7 +82,7 @@ export default async function StorePage({
                 <div className="h-48 flex items-center justify-center mb-4 bg-gray-100 rounded-lg overflow-hidden">
                   <img
                     src={
-                      product.image ||
+                      product.image_url ||
                       "https://via.placeholder.com/300x300?text=No+Image"
                     }
                     alt={product.title}

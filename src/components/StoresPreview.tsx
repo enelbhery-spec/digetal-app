@@ -2,27 +2,38 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
 export default async function StoresPreview() {
-  const { data: stores } = await supabase
+  // جلب المتاجر
+  const { data: stores, error } = await supabase
     .from("stores")
     .select("*")
     .order("created_at", { ascending: false });
 
+  if (error) {
+    console.error("Error fetching stores:", error);
+    return null;
+  }
+
   if (!stores || stores.length === 0) return null;
 
-  // نحسب عدد المنتجات لكل متجر
+  // حساب عدد المنتجات لكل متجر من جدول products
   const storesWithCount = await Promise.all(
     stores.map(async (store: any) => {
-      let count = 0;
+      const { count, error: countError } = await supabase
+        .from("products")
+        .select("*", {
+          count: "exact",
+          head: true,
+        })
+        .eq("store_id", store.id);
 
-      if (store.products_table) {
-        const { count: productCount } = await supabase
-          .from(store.products_table)
-          .select("*", { count: "exact", head: true });
-
-        count = productCount || 0;
+      if (countError) {
+        console.error("Error counting products:", countError);
       }
 
-      return { ...store, count };
+      return {
+        ...store,
+        count: count || 0,
+      };
     })
   );
 
@@ -49,7 +60,6 @@ export default async function StoresPreview() {
               className="group bg-white rounded-3xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border"
             >
               <Link href={`/store/${store.slug}`}>
-
                 <div className="p-10 text-center">
 
                   {/* اللوجو */}
@@ -77,7 +87,6 @@ export default async function StoresPreview() {
                   </div>
 
                 </div>
-
               </Link>
             </div>
           ))}
