@@ -1,7 +1,13 @@
 import { supabase } from "@/lib/supabase";
 
+interface PageProps {
+  params: {
+    slug: string;
+  };
+}
+
 type Store = {
-  id: string; // uuid مش number
+  id: string; // uuid
   name: string;
   slug: string;
 };
@@ -16,11 +22,7 @@ type Product = {
   affiliate_url?: string;
 };
 
-export default async function StorePage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function StorePage({ params }: PageProps) {
   const { slug } = params;
 
   // 🔹 جلب بيانات المتجر بالـ slug
@@ -38,12 +40,16 @@ export default async function StorePage({
     );
   }
 
-  // 🔹 جلب المنتجات المرتبطة بالمتجر عبر store_id
+  // 🔹 جلب المنتجات المرتبطة بالمتجر
   const { data, error } = await supabase
     .from("products")
     .select("*")
     .eq("store_id", store.id)
     .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+  }
 
   const products: Product[] = data || [];
 
@@ -72,6 +78,13 @@ export default async function StorePage({
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {products.map((product) => {
             const productLink = product.affiliate_url?.trim();
+
+            const finalLink =
+              productLink && productLink.startsWith("http")
+                ? productLink
+                : productLink
+                ? `https://${productLink}`
+                : null;
 
             return (
               <div
@@ -115,13 +128,9 @@ export default async function StorePage({
                 )}
 
                 {/* زر الشراء */}
-                {productLink ? (
+                {finalLink ? (
                   <a
-                    href={
-                      productLink.startsWith("http")
-                        ? productLink
-                        : `https://${product_url}`
-                    }
+                    href={finalLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-auto block text-center bg-yellow-400 text-black py-2 rounded-xl font-bold hover:bg-yellow-500 transition duration-300"
