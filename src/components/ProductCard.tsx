@@ -6,6 +6,8 @@ interface Product {
   category: string;
   link: string;
   price?: number;
+  old_price?: number; // ✅ نفس اسم العمود بالضبط
+  rating?: number;
   currency?: string;
 }
 
