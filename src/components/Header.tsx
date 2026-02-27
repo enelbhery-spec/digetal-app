@@ -17,7 +17,6 @@ export default function Header() {
             href="/videos"
             className="hover:text-green-600 transition"
           >
-            استراحة وترفيه
           </Link>
         </nav>
 
