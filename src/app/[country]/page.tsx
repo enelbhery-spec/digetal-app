@@ -4,7 +4,7 @@ import ProductCard from "@/components/ProductCard";
 import { supabase } from "@/lib/supabase";
 
 type Props = {
-  params: { country: string };
+  params: Promise<{ country: string }>;
 };
 
 /* =========================
@@ -15,7 +15,8 @@ export async function generateMetadata(
   { params }: Props
 ): Promise<Metadata> {
 
-  const countrySlug = params.country.toLowerCase().trim();
+  const resolvedParams = await params;
+  const countrySlug = resolvedParams.country.toLowerCase().trim();
 
   const { data: countryData } = await supabase
     .from("countries")
@@ -49,8 +50,8 @@ export async function generateMetadata(
 
 export default async function CountryPage({ params }: Props) {
 
-  const countrySlug = params.country.toLowerCase().trim();
-  const baseUrl = "https://digital-app-q1mf.vercel.app";
+  const resolvedParams = await params;
+  const countrySlug = resolvedParams.country.toLowerCase().trim();
 
   /* 1️⃣ جلب الدولة */
 
@@ -88,7 +89,6 @@ export default async function CountryPage({ params }: Props) {
           أحدث كوبونات وخصومات التسوق في {countryData.name}
         </p>
       </section>
-
 
       <section className="max-w-6xl mx-auto p-6 grid md:grid-cols-3 gap-6">
         {products?.length ? (
