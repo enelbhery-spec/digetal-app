@@ -2,42 +2,34 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
-  const url = request.nextUrl.clone();
-
-  /* =========================
-     1️⃣ لو المستخدم محدد الدولة
-  ========================= */
-
-  if (url.searchParams.has("country")) {
+  // لو المستخدم داخل على مسار دولة بالفعل → سيبه يكمل
+  if (
+    pathname.startsWith("/eg") ||
+    pathname.startsWith("/sa") ||
+    pathname.startsWith("/ae") ||
+    pathname.startsWith("/_next") ||
+    pathname.includes(".")
+  ) {
     return NextResponse.next();
   }
 
-  /* =========================
-     2️⃣ تحديد الدولة من IP
-  ========================= */
-
+  // تحديد الدولة من Vercel
   const ipCountry =
     request.headers.get("x-vercel-ip-country")?.toLowerCase();
 
-  // fallback للـ localhost
-  const detectedCountry = ipCountry || "eg";
+  let selectedCountry = "eg"; // default
 
-  let selectedCountry = "eg";
+  if (ipCountry === "sa") selectedCountry = "sa";
+  if (ipCountry === "ae") selectedCountry = "ae";
 
-  if (detectedCountry === "sa") selectedCountry = "sa";
-  if (detectedCountry === "ae") selectedCountry = "ae";
-
-  /* =========================
-     3️⃣ إضافة الدولة للرابط
-  ========================= */
-
-  url.searchParams.set("country", selectedCountry);
-
-  // ✅ rewrite أفضل من redirect
-  return NextResponse.rewrite(url);
+  // إعادة توجيه إلى مسار الدولة
+  return NextResponse.redirect(
+    new URL(`/${selectedCountry}`, request.url)
+  );
 }
 
 export const config = {
-  matcher: ["/"],
+  matcher: ["/((?!api).*)"],
 };
