@@ -2,9 +2,9 @@ interface Product {
   id: string;
   title: string;
   description: string;
-  image: string;
+  image_url: string; // مطابق لاسم العمود في الداتابيز
   category: string;
-   product_url: string; // ← هذا هو رابط الأفلييت
+  product_url: string;
   price?: number;
   old_price?: number;
   rating?: number;
@@ -17,18 +17,21 @@ interface Props {
 
 export default function ProductCard({ product }: Props) {
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition">
+    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition duration-300">
 
       {/* صورة المنتج */}
-      <div className="h-48 bg-gray-100 flex items-center justify-center">
-        {product.image ? (
+      <div className="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
+        {product.image_url ? (
           <img
-            src={product.image}
+            src={product.image_url}
             alt={product.title}
-            className="h-full object-contain"
+            className="h-full w-full object-contain p-2"
+            loading="lazy"
           />
         ) : (
-          <span className="text-gray-400">لا توجد صورة</span>
+          <span className="text-gray-400 text-sm">
+            لا توجد صورة
+          </span>
         )}
       </div>
 
@@ -52,14 +55,14 @@ export default function ProductCard({ product }: Props) {
         )}
 
         {/* زر الشراء */}
-       <a
-  href={product.product_url}
-  target="_blank"
-  rel="noopener noreferrer"
-  className="block text-center bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
->
-  عرض المنتج
-</a>
+        <a
+          href={product.product_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block text-center bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
+        >
+          عرض المنتج
+        </a>
 
       </div>
     </div>

@@ -1,79 +1,76 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { supabase } from "@/lib/supabase";
 
 const baseUrl = "https://digetal-app-q1mf.vercel.app";
-const appDir = path.join(process.cwd(), "src/app");
 
 // ===== Helpers =====
-function getPriority(page: string): string {
-  if (page === "/") return "1.0";
-  if (page.startsWith("/services")) return "0.9";
-  if (page.startsWith("/applications")) return "0.8";
-  return "0.7";
-}
+function buildUrl(
+  loc: string,
+  changefreq = "weekly",
+  priority = "0.8"
+) {
+  const lastMod = new Date().toISOString();
 
-function getChangeFreq(page: string): string {
-  if (page === "/") return "daily";
-  if (page.startsWith("/services")) return "weekly";
-  return "monthly";
-}
-
-// ===== Read pages =====
-function getPages(dir: string, basePath = ""): string[] {
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-  let pages: string[] = [];
-
-  for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name);
-
-    if (entry.isDirectory()) {
-      if (entry.name.startsWith("_")) continue;
-      if (entry.name.startsWith("(")) continue; // route groups
-      if (entry.name === "api") continue;
-
-      pages.push(
-        ...getPages(fullPath, `${basePath}/${entry.name}`)
-      );
-    }
-
-    if (entry.isFile() && entry.name === "page.tsx") {
-      pages.push(basePath || "/");
-    }
-  }
-
-  return pages;
+  return `
+  <url>
+    <loc>${loc}</loc>
+    <lastmod>${lastMod}</lastmod>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
+  </url>`;
 }
 
 // ===== GET =====
 export async function GET() {
-  const lastMod = new Date().toISOString();
+  let urls = "";
 
-  const pages = getPages(appDir)
-    .filter((p) => !p.includes("[")) // exclude dynamic routes
-    .map((p) => p.replace(/\/+/g, "/"));
+  /* =========================
+     1️⃣ الصفحة الرئيسية
+  ========================= */
+  urls += buildUrl(baseUrl, "daily", "1.0");
 
-  const urls = pages
-    .map(
-      (page) => `
-  <url>
-    <loc>${baseUrl}${page === "/" ? "" : page}</loc>
-    <lastmod>${lastMod}</lastmod>
-    <changefreq>${getChangeFreq(page)}</changefreq>
-    <priority>${getPriority(page)}</priority>
-  </url>`
-    )
-    .join("");
+  /* =========================
+     2️⃣ صفحات الدول
+  ========================= */
+  const { data: countries } = await supabase
+    .from("countries")
+    .select("slug");
+
+  countries?.forEach((country) => {
+    urls += buildUrl(`${baseUrl}/${country.slug}`, "daily", "0.9");
+  });
+
+  /* =========================
+     3️⃣ صفحات المنتجات
+  ========================= */
+  const { data: products } = await supabase
+    .from("products")
+    .select("slug");
+
+  products?.forEach((product) => {
+    urls += buildUrl(`${baseUrl}/product/${product.slug}`, "weekly", "0.8");
+  });
+
+  /* =========================
+     4️⃣ صفحات المتاجر (اختياري)
+  ========================= */
+  const { data: stores } = await supabase
+    .from("stores")
+    .select("slug");
+
+  stores?.forEach((store) => {
+    urls += buildUrl(`${baseUrl}/store/${store.slug}`, "weekly", "0.8");
+  });
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls}
-</urlset>`;
+  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${urls}
+  </urlset>`;
 
   return new NextResponse(sitemap, {
     headers: {
       "Content-Type": "application/xml",
-      "Cache-Control": "public, s-maxage=86400",
+      "Cache-Control": "public, s-maxage=86400, stale-while-revalidate",
     },
   });
 }

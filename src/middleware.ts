@@ -3,28 +3,41 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
 
-  // ✅ وضع المطور (اختبار الدولة)
-  const devCountry = request.nextUrl.searchParams.get("dev_country");
+  const url = request.nextUrl.clone();
 
-  // ✅ الدولة الحقيقية
-  const realCountry =
-    request.headers.get("x-vercel-ip-country") ||
-    request.headers.get("cf-ipcountry") ||
-    "EG";
+  /* =========================
+     1️⃣ لو المستخدم محدد الدولة
+  ========================= */
 
-  // لو فى اختبار استخدمه
-  const country = devCountry || realCountry;
+  if (url.searchParams.has("country")) {
+    return NextResponse.next();
+  }
 
-  const response = NextResponse.next();
+  /* =========================
+     2️⃣ تحديد الدولة من IP
+  ========================= */
 
-  response.cookies.set("user_country", country, {
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30,
-  });
+  const ipCountry =
+    request.headers.get("x-vercel-ip-country")?.toLowerCase();
 
-  return response;
+  // fallback للـ localhost
+  const detectedCountry = ipCountry || "eg";
+
+  let selectedCountry = "eg";
+
+  if (detectedCountry === "sa") selectedCountry = "sa";
+  if (detectedCountry === "ae") selectedCountry = "ae";
+
+  /* =========================
+     3️⃣ إضافة الدولة للرابط
+  ========================= */
+
+  url.searchParams.set("country", selectedCountry);
+
+  // ✅ rewrite أفضل من redirect
+  return NextResponse.rewrite(url);
 }
 
 export const config = {
-  matcher: ["/((?!_next|api|favicon.ico).*)"],
+  matcher: ["/"],
 };
