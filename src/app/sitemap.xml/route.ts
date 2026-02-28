@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
-const baseUrl = "https://digetal-app-q1mf.vercel.app";
+const baseUrl = "https://www.extracode.online/eg";
 
 // ===== Helpers =====
 function buildUrl(

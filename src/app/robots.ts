@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/_next/", "/admin/", "/search", "/*?*"],
       },
     ],
-    sitemap: "https://digetal-app-q1mf.vercel.app/sitemap.xml",
+    sitemap: "https://www.extracode.online/eg",
   };
 }
