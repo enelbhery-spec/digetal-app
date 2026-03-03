@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
-const baseUrl = "https://www.extracode.online/eg";
+const baseUrl = "https://www.extracode.online";
 
-// ===== Helpers =====
+// ===== Helper =====
 function buildUrl(
   loc: string,
   changefreq = "weekly",
@@ -25,42 +25,76 @@ export async function GET() {
   let urls = "";
 
   /* =========================
-     1️⃣ الصفحة الرئيسية
+     1️⃣ الصفحة الرئيسية العامة
   ========================= */
   urls += buildUrl(baseUrl, "daily", "1.0");
 
   /* =========================
-     2️⃣ صفحات الدول
+     2️⃣ الدول
   ========================= */
   const { data: countries } = await supabase
     .from("countries")
     .select("slug");
 
-  countries?.forEach((country) => {
-    urls += buildUrl(`${baseUrl}/${country.slug}`, "daily", "0.9");
-  });
+  if (countries) {
+    for (const country of countries) {
+      const countryBase = `${baseUrl}/${country.slug}`;
 
-  /* =========================
-     3️⃣ صفحات المنتجات
-  ========================= */
-  const { data: products } = await supabase
-    .from("products")
-    .select("slug");
+      // صفحة الدولة
+      urls += buildUrl(countryBase, "daily", "0.9");
 
-  products?.forEach((product) => {
-    urls += buildUrl(`${baseUrl}/product/${product.slug}`, "weekly", "0.8");
-  });
+      // صفحة المقارنات الرئيسية
+      urls += buildUrl(`${countryBase}/compare`, "weekly", "0.8");
 
-  /* =========================
-     4️⃣ صفحات المتاجر (اختياري)
-  ========================= */
-  const { data: stores } = await supabase
-    .from("stores")
-    .select("slug");
+      /* =========================
+         3️⃣ منتجات الدولة
+      ========================= */
+      const { data: products } = await supabase
+        .from("products")
+        .select("slug")
+        .eq("country", country.slug);
 
-  stores?.forEach((store) => {
-    urls += buildUrl(`${baseUrl}/store/${store.slug}`, "weekly", "0.8");
-  });
+      products?.forEach((product) => {
+        urls += buildUrl(
+          `${countryBase}/product/${product.slug}`,
+          "weekly",
+          "0.8"
+        );
+      });
+
+      /* =========================
+         4️⃣ المقارنات
+      ========================= */
+      const { data: comparisons } = await supabase
+        .from("comparisons")
+        .select("slug")
+        .eq("country", country.slug);
+
+      comparisons?.forEach((comparison) => {
+        urls += buildUrl(
+          `${countryBase}/compare/${comparison.slug}`,
+          "weekly",
+          "0.7"
+        );
+      });
+
+      /* =========================
+         5️⃣ المتاجر
+      ========================= */
+      const { data: stores } = await supabase
+        .from("stores")
+        .select("slug")
+        .eq("country", country.slug);
+
+      stores?.forEach((store) => {
+        urls += buildUrl(
+          `${countryBase}/store/${store.slug}`,
+          "weekly",
+          "0.7"
+        );
+      });
+    }
+  }
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
