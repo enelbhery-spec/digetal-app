@@ -27,7 +27,6 @@ export default function Header() {
              href={`/${country}/compare`}
             className="hover:text-green-600 transition"
           >
-            مقارنات
           </Link>
 
         </nav>

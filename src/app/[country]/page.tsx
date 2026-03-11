@@ -1,107 +1,189 @@
-import type { Metadata } from "next";
-import Categories from "@/components/Categories";
-import ProductCard from "@/components/ProductCard";
-import { supabase } from "@/lib/supabase";
+import type { Metadata } from "next"
+import ProductCard from "@/components/ProductCard"
+import { supabase } from "@/lib/supabase"
 
 type Props = {
-  params: Promise<{ country: string }>;
-};
+  params: Promise<{
+    country: string
+  }>
+}
 
-/* =========================
-   Dynamic SEO Metadata
-========================= */
+/* ================================
+   SEO
+================================ */
 
-export async function generateMetadata(
-  { params }: Props
-): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
-  const resolvedParams = await params;
-  const countrySlug = resolvedParams.country.toLowerCase().trim();
+  const { country } = await params
+  const countrySlug = country.toLowerCase().trim()
 
   const { data: countryData } = await supabase
     .from("countries")
-    .select("id,name,code,currency")
+    .select("id,name,code")
     .eq("code", countrySlug)
-    .single();
+    .single()
 
   if (!countryData) {
     return {
       title: "الدولة غير موجودة",
-      description: "هذه الدولة غير متاحة حالياً.",
-      robots: { index: false, follow: false },
-    };
+      description: "هذه الدولة غير متاحة حالياً"
+    }
   }
 
-  const baseUrl = "https://digital-app-q1mf.vercel.app";
-
   return {
-    title: `كوبونات نون وأمازون ${countryData.name} | خصومات محدثة يوميًا`,
-    description: `احصل على أحدث كوبونات نون وكود خصم أمازون في ${countryData.name} بخصومات حصرية محدثة يوميًا.`,
-    alternates: {
-      canonical: `${baseUrl}/${countrySlug}`,
-    },
-    robots: { index: true, follow: true },
-  };
+    title: `أفضل عروض ${countryData.name}`,
+    description: `أفضل المنتجات والعروض في ${countryData.name}`
+  }
 }
 
-/* =========================
+/* ================================
    الصفحة
-========================= */
+================================ */
 
 export default async function CountryPage({ params }: Props) {
 
-  const resolvedParams = await params;
-  const countrySlug = resolvedParams.country.toLowerCase().trim();
+  const { country } = await params
+  const countrySlug = country.toLowerCase().trim()
 
-  /* 1️⃣ جلب الدولة */
+  /* ======================
+     جلب الدولة
+  ====================== */
 
-  const { data: countryData, error: countryError } = await supabase
+  const { data: countryData } = await supabase
     .from("countries")
-    .select("id,name,code,currency")
+    .select("id,name,code")
     .eq("code", countrySlug)
-    .single();
+    .single()
 
-  if (countryError || !countryData) {
+  if (!countryData) {
     return (
-      <div className="text-center py-20 text-xl">
+      <div className="p-10 text-center text-xl">
         الدولة غير موجودة
       </div>
-    );
+    )
   }
 
-  /* 2️⃣ جلب المنتجات */
+  /* ======================
+     جلب المنتجات
+  ====================== */
 
   const { data: products } = await supabase
     .from("products")
     .select("*")
     .eq("country_id", countryData.id)
     .order("created_at", { ascending: false })
-    .limit(12);
+    .limit(12)
+
+  /* ======================
+     جلب التصنيفات التي بها منتجات فقط
+  ====================== */
+
+  const { data: categories } = await supabase
+    .from("categories")
+    .select(`
+      id,
+      title,
+      slug,
+      products!inner(id)
+    `)
+
+  /* ======================
+     الصفحة
+  ====================== */
 
   return (
-    <main className="bg-gray-50 min-h-screen">
 
-      <section className="text-center py-14 bg-white shadow-sm">
-        <h1 className="text-3xl font-bold">
-          أفضل عروض {countryData.name}
-        </h1>
-        <p className="mt-3 text-gray-600">
-          أحدث كوبونات وخصومات التسوق في {countryData.name}
-        </p>
+    <main className="bg-gray-50 min-h-screen" dir="rtl">
+
+      {/* الهيدر */}
+
+      <section className="bg-white py-16 shadow-sm">
+
+        <div className="max-w-7xl mx-auto text-center px-6">
+
+          <h1 className="text-4xl font-bold mb-4">
+            أفضل عروض {countryData.name}
+          </h1>
+
+          <p className="text-gray-600 text-lg">
+            اكتشف أحدث المنتجات وأفضل الأسعار في {countryData.name}
+          </p>
+
+        </div>
+
       </section>
 
-      <section className="max-w-6xl mx-auto p-6 grid md:grid-cols-3 gap-6">
-        {products?.length ? (
-          products.map((product: any) => (
-            <ProductCard key={product.id} product={product} />
-          ))
-        ) : (
-          <div className="col-span-3 text-center py-10 text-gray-500">
-            لا توجد منتجات حالياً
-          </div>
-        )}
+
+      {/* المنتجات أولاً */}
+
+      <section className="max-w-7xl mx-auto p-6">
+
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          أحدث المنتجات
+        </h2>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+          {products?.length ? (
+
+            products.map((product: any) => (
+
+              <ProductCard
+                key={product.id}
+                product={product}
+                country={countrySlug}
+              />
+
+            ))
+
+          ) : (
+
+            <div className="col-span-4 text-center py-10 text-gray-500">
+              لا توجد منتجات حالياً
+            </div>
+
+          )}
+
+        </div>
+
+      </section>
+
+
+      {/* التصنيفات */}
+
+      <section className="max-w-7xl mx-auto p-6">
+
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          تصفح حسب التصنيف
+        </h2>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+
+          {categories?.map((cat: any) => (
+
+            <a
+              key={cat.id}
+              href={`/${countrySlug}/category/${cat.slug}`}
+              className="bg-white rounded-xl shadow-sm hover:shadow-md transition p-5 text-center"
+            >
+
+              <div className="text-3xl mb-2">
+                📦
+              </div>
+
+              <div className="font-semibold text-gray-800">
+                {cat.title}
+              </div>
+
+            </a>
+
+          ))}
+
+        </div>
+
       </section>
 
     </main>
-  );
+
+  )
 }
