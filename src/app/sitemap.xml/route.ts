@@ -1,146 +1,79 @@
-import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
-
-const baseUrl = "https://www.extracode.online";
-
-/* =========================
-   Helper
-========================= */
-
-function buildUrl(
-  loc: string,
-  changefreq: string = "weekly",
-  priority: string = "0.8"
-) {
-  const lastMod = new Date().toISOString();
-
-  return `
-  <url>
-    <loc>${loc}</loc>
-    <lastmod>${lastMod}</lastmod>
-    <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>
-  </url>`;
-}
-
-/* =========================
-   GET
-========================= */
+import { NextResponse } from "next/server"
+import { supabase } from "@/lib/supabase"
 
 export async function GET() {
 
-  let urls = "";
+  const baseUrl = "https://www.extracode.online"
 
-  /* =========================
-     1️⃣ الصفحة الرئيسية
-  ========================= */
-
-  urls += buildUrl(baseUrl, "daily", "1.0");
-
-  /* =========================
-     2️⃣ جلب الدول
-  ========================= */
+  /* 1️⃣ جلب الدول */
 
   const { data: countries } = await supabase
-    .from("countries")
-    .select("id,slug");
+    .from("products")
+    .select("country")
 
-  if (!countries) {
-    return NextResponse.json({ error: "No countries found" });
+  if (!countries || countries.length === 0) {
+    return NextResponse.json({ error: "No countries found" })
   }
 
-  for (const country of countries) {
+  const uniqueCountries = [...new Set(countries.map(c => c.country))]
 
-    const countryBase = `${baseUrl}/${country.slug}`;
+  let urls: string[] = []
 
-    /* =========================
-       صفحة الدولة
-    ========================= */
+  /* 2️⃣ صفحات الدول */
 
-    urls += buildUrl(countryBase, "daily", "0.9");
+  uniqueCountries.forEach(country => {
+    urls.push(`${baseUrl}/${country}`)
+  })
 
-    /* =========================
-       صفحة المقارنات
-    ========================= */
+  /* 3️⃣ جلب المنتجات */
 
-    urls += buildUrl(`${countryBase}/compare`, "weekly", "0.8");
+  const { data: products } = await supabase
+    .from("products")
+    .select("slug,country")
 
-    /* =========================
-       3️⃣ المنتجات
-    ========================= */
+  products?.forEach(product => {
+    urls.push(`${baseUrl}/${product.country}/product/${product.slug}`)
+  })
 
-    const { data: products } = await supabase
-      .from("products")
-      .select("slug")
-      .eq("country_id", country.id);
+  /* 4️⃣ جلب المقارنات */
 
-    products?.forEach((product) => {
+  const { data: comparisons } = await supabase
+    .from("comparisons")
+    .select("slug,country")
 
-      urls += buildUrl(
-        `${countryBase}/product/${product.slug}`,
-        "weekly",
-        "0.8"
-      );
+  comparisons?.forEach(compare => {
+    urls.push(`${baseUrl}/${compare.country}/compare/${compare.slug}`)
+  })
 
-    });
+  /* 5️⃣ جلب التصنيفات */
 
-    /* =========================
-       4️⃣ المقارنات
-    ========================= */
+  const { data: categories } = await supabase
+    .from("categories")
+    .select("slug,country")
 
-    const { data: comparisons } = await supabase
-      .from("comparisons")
-      .select("slug")
-      .eq("country_id", country.id);
+  categories?.forEach(category => {
+    urls.push(`${baseUrl}/${category.country}/category/${category.slug}`)
+  })
 
-    comparisons?.forEach((comparison) => {
+  /* إنشاء XML */
 
-      urls += buildUrl(
-        `${countryBase}/compare/${comparison.slug}`,
-        "weekly",
-        "0.7"
-      );
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls
+  .map(
+    (url) => `
+<url>
+<loc>${url}</loc>
+<changefreq>weekly</changefreq>
+<priority>0.8</priority>
+</url>`
+  )
+  .join("")}
+</urlset>`
 
-    });
-
-    /* =========================
-       5️⃣ المتاجر
-    ========================= */
-
-    const { data: stores } = await supabase
-      .from("stores")
-      .select("slug")
-      .eq("country_id", country.id);
-
-    stores?.forEach((store) => {
-
-      urls += buildUrl(
-        `${countryBase}/store/${store.slug}`,
-        "weekly",
-        "0.7"
-      );
-
-    });
-
-  }
-
-  /* =========================
-     إنشاء Sitemap
-  ========================= */
-
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-
-  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-  ${urls}
-
-  </urlset>`;
-
-  return new NextResponse(sitemap, {
+  return new NextResponse(xml, {
     headers: {
       "Content-Type": "application/xml",
-      "Cache-Control":
-        "public, s-maxage=86400, stale-while-revalidate",
     },
-  });
+  })
 }
