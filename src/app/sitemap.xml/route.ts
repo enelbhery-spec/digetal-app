@@ -1,79 +1,41 @@
-import { NextResponse } from "next/server"
-import { supabase } from "@/lib/supabase"
+import { MetadataRoute } from "next";
+import { createClient } from "@supabase/supabase-js";
 
-export async function GET() {
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
-  const baseUrl = "https://www.extracode.online"
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = "https://digetal-app-q1mf.vercel.app/";
 
-  /* 1️⃣ جلب الدول */
-
-  const { data: countries } = await supabase
-    .from("products")
-    .select("country")
-
-  if (!countries || countries.length === 0) {
-    return NextResponse.json({ error: "No countries found" })
-  }
-
-  const uniqueCountries = [...new Set(countries.map(c => c.country))]
-
-  let urls: string[] = []
-
-  /* 2️⃣ صفحات الدول */
-
-  uniqueCountries.forEach(country => {
-    urls.push(`${baseUrl}/${country}`)
-  })
-
-  /* 3️⃣ جلب المنتجات */
-
+  // جلب المنتجات
   const { data: products } = await supabase
     .from("products")
-    .select("slug,country")
+    .select("slug,country");
 
-  products?.forEach(product => {
-    urls.push(`${baseUrl}/${product.country}/product/${product.slug}`)
-  })
+  if (!products) return [];
 
-  /* 4️⃣ جلب المقارنات */
+  const urls: MetadataRoute.Sitemap = [];
 
-  const { data: comparisons } = await supabase
-    .from("comparisons")
-    .select("slug,country")
+  // صفحات الدول
+  urls.push({
+    url: `${baseUrl}/eg`,
+    lastModified: new Date(),
+  });
 
-  comparisons?.forEach(compare => {
-    urls.push(`${baseUrl}/${compare.country}/compare/${compare.slug}`)
-  })
+  urls.push({
+    url: `${baseUrl}/sa`,
+    lastModified: new Date(),
+  });
 
-  /* 5️⃣ جلب التصنيفات */
+  // صفحات المنتجات
+  products.forEach((product) => {
+    urls.push({
+      url: `${baseUrl}/${product.country}/product/${product.slug}`,
+      lastModified: new Date(),
+    });
+  });
 
-  const { data: categories } = await supabase
-    .from("categories")
-    .select("slug,country")
-
-  categories?.forEach(category => {
-    urls.push(`${baseUrl}/${category.country}/category/${category.slug}`)
-  })
-
-  /* إنشاء XML */
-
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls
-  .map(
-    (url) => `
-<url>
-<loc>${url}</loc>
-<changefreq>weekly</changefreq>
-<priority>0.8</priority>
-</url>`
-  )
-  .join("")}
-</urlset>`
-
-  return new NextResponse(xml, {
-    headers: {
-      "Content-Type": "application/xml",
-    },
-  })
+  return urls;
 }
