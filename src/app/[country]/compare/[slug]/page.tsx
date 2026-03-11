@@ -2,23 +2,25 @@ import Image from "next/image"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 
-type PageProps = {
-  params: {
+type Props = {
+  params: Promise<{
     country: string
     slug: string
-  }
+  }>
 }
 
-export default async function ComparePage({ params }: PageProps) {
-  const country = params.country.toLowerCase().trim()
-  const slug = params.slug
+export default async function ComparePage({ params }: Props) {
+
+  const { country, slug } = await params
+  const cleanCountry = country.toLowerCase().trim()
 
   /* 1️⃣ جلب المقارنة */
+
   const { data: comparison, error: comparisonError } = await supabase
     .from("comparisons")
     .select("*")
     .eq("slug", slug)
-    .eq("country", country)
+    .eq("country", cleanCountry)
     .single()
 
   if (comparisonError || !comparison) {
@@ -30,6 +32,7 @@ export default async function ComparePage({ params }: PageProps) {
   }
 
   /* 2️⃣ جلب المنتجين */
+
   const { data: products, error: productsError } = await supabase
     .from("products")
     .select("*")
@@ -67,6 +70,7 @@ export default async function ComparePage({ params }: PageProps) {
       </h1>
 
       {/* بطاقات المنتجات */}
+
       <div className="grid md:grid-cols-2 gap-8 mb-12">
 
         {[product1, product2].map((product) => (
@@ -74,6 +78,7 @@ export default async function ComparePage({ params }: PageProps) {
             key={product.slug}
             className="bg-white shadow-lg rounded-2xl p-6 text-center border hover:shadow-xl transition"
           >
+
             <Image
               src={product.image_url || "/placeholder.png"}
               alt={product.title}
@@ -88,21 +93,27 @@ export default async function ComparePage({ params }: PageProps) {
 
             <p className="text-green-600 font-bold text-lg mb-4">
               {product.price}{" "}
-              {country === "eg" ? "EGP" : country === "sa" ? "SAR" : ""}
+              {cleanCountry === "eg"
+                ? "EGP"
+                : cleanCountry === "sa"
+                ? "SAR"
+                : ""}
             </p>
 
             <Link
-              href={`/${country}`}
+              href={`/${cleanCountry}/product/${product.slug}`}
               className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg inline-block transition"
             >
               عرض المنتج
             </Link>
+
           </div>
         ))}
 
       </div>
 
       {/* جدول المقارنة */}
+
       <div className="bg-white shadow-lg rounded-2xl overflow-hidden">
 
         <h3 className="text-xl font-bold text-center py-4 bg-gray-100">
@@ -110,6 +121,7 @@ export default async function ComparePage({ params }: PageProps) {
         </h3>
 
         <table className="w-full text-center border-collapse">
+
           <thead>
             <tr className="bg-gray-200">
               <th className="p-3 border">الميزة</th>
@@ -119,6 +131,7 @@ export default async function ComparePage({ params }: PageProps) {
           </thead>
 
           <tbody>
+
             <tr>
               <td className="p-3 border font-semibold">المعالج</td>
               <td className="p-3 border">{product1.processor || "-"}</td>
@@ -142,7 +155,9 @@ export default async function ComparePage({ params }: PageProps) {
               <td className="p-3 border">{product1.battery || "-"}</td>
               <td className="p-3 border">{product2.battery || "-"}</td>
             </tr>
+
           </tbody>
+
         </table>
 
       </div>
