@@ -1,27 +1,41 @@
-import { MetadataRoute } from "next"
-import { supabase } from "@/lib/supabase"
+import { MetadataRoute } from "next";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = "https://www.extracode.online";
 
-  const baseUrl = "https://extracode.online"
-
+  // جلب المنتجات
   const { data: products } = await supabase
     .from("products")
-    .select("slug,country")
+    .select("slug,country");
 
-  const urls = products?.map((product) => ({
-    url: `${baseUrl}/${product.country}/product/${product.slug}`,
+  if (!products) return [];
+
+  const urls: MetadataRoute.Sitemap = [];
+
+  // صفحات الدول
+  urls.push({
+    url: `${baseUrl}/eg`,
     lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  })) || []
+  });
 
-  return [
-    {
-      url: baseUrl,
+  urls.push({
+    url: `${baseUrl}/sa`,
+    lastModified: new Date(),
+  });
+
+  // صفحات المنتجات
+  products.forEach((product) => {
+    urls.push({
+      url: `${baseUrl}/${product.country}/product/${product.slug}`,
       lastModified: new Date(),
-      priority: 1,
-    },
-    ...urls,
-  ]
+    });
+  });
+
+  return urls;
 }
