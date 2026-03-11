@@ -7,7 +7,7 @@ const supabase = createClient(
 );
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://www.extracode.online";
+  const baseUrl = "https://digetal-app-q1mf.vercel.app/";
 
   // جلب المنتجات
   const { data: products } = await supabase
