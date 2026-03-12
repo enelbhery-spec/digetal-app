@@ -14,27 +14,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .from("products")
     .select("slug,country")
 
-  const urls: MetadataRoute.Sitemap = [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/eg`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/sa`,
-      lastModified: new Date(),
-    }
-  ]
+  const urls: MetadataRoute.Sitemap = []
 
-  products?.forEach((product) => {
-    urls.push({
-      url: `${baseUrl}/${product.country}/product/${product.slug}`,
-      lastModified: new Date(),
-    })
+  // الصفحة الرئيسية
+  urls.push({
+    url: baseUrl,
+    lastModified: new Date(),
   })
+
+  // صفحات الدول
+  urls.push({
+    url: `${baseUrl}/eg`,
+    lastModified: new Date(),
+  })
+
+  urls.push({
+    url: `${baseUrl}/sa`,
+    lastModified: new Date(),
+  })
+
+  // صفحات المنتجات
+  if (products) {
+    for (const product of products) {
+      urls.push({
+        url: `${baseUrl}/${product.country}/product/${product.slug}`,
+        lastModified: new Date(),
+      })
+    }
+  }
 
   return urls
 }
