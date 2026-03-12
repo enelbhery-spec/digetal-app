@@ -1,12 +1,19 @@
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 import ProductCard from "@/components/ProductCard"
 import { supabase } from "@/lib/supabase"
 
 type Props = {
-  params: Promise<{
+  params: {
     country: string
-  }>
+  }
 }
+
+/* ================================
+   الدول المسموحة
+================================ */
+
+const allowedCountries = ["eg", "sa"]
 
 /* ================================
    SEO
@@ -14,8 +21,13 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
-  const { country } = await params
-  const countrySlug = country.toLowerCase().trim()
+  const countrySlug = params.country.toLowerCase().trim()
+
+  if (!allowedCountries.includes(countrySlug)) {
+    return {
+      title: "الصفحة غير موجودة"
+    }
+  }
 
   const { data: countryData } = await supabase
     .from("countries")
@@ -42,8 +54,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CountryPage({ params }: Props) {
 
-  const { country } = await params
-  const countrySlug = country.toLowerCase().trim()
+  const countrySlug = params.country.toLowerCase().trim()
+
+  if (!allowedCountries.includes(countrySlug)) {
+    notFound()
+  }
 
   /* ======================
      جلب الدولة
@@ -56,11 +71,7 @@ export default async function CountryPage({ params }: Props) {
     .single()
 
   if (!countryData) {
-    return (
-      <div className="p-10 text-center text-xl">
-        الدولة غير موجودة
-      </div>
-    )
+    notFound()
   }
 
   /* ======================
@@ -73,19 +84,6 @@ export default async function CountryPage({ params }: Props) {
     .eq("country_id", countryData.id)
     .order("created_at", { ascending: false })
     .limit(12)
-
-  /* ======================
-     جلب التصنيفات التي بها منتجات فقط
-  ====================== */
-
-  const { data: categories } = await supabase
-    .from("categories")
-    .select(`
-      id,
-      title,
-      slug,
-      products!inner(id)
-    `)
 
   /* ======================
      الصفحة
@@ -113,8 +111,7 @@ export default async function CountryPage({ params }: Props) {
 
       </section>
 
-
-      {/* المنتجات أولاً */}
+      {/* المنتجات */}
 
       <section className="max-w-7xl mx-auto p-6">
 
@@ -148,11 +145,6 @@ export default async function CountryPage({ params }: Props) {
 
       </section>
 
-
-      {/* التصنيفات */}
-
-
     </main>
-
   )
 }
