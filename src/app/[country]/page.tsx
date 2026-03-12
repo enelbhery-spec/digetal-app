@@ -88,7 +88,6 @@ export default async function CountryPage({ params }: Props) {
     .from("articles")
     .select("title, slug, created_at")
     .order("created_at", { ascending: false })
-    .limit(4)
 
   return (
 
