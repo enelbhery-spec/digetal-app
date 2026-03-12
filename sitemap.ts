@@ -17,23 +17,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const urls: MetadataRoute.Sitemap = [];
 
-  // الصفحة الرئيسية
+  /* الصفحة الرئيسية */
+
   urls.push({
-    url: baseUrl,
+    url: `${baseUrl}`,
     lastModified: new Date(),
   });
 
-  // صفحات الدول
-  const countries = ["eg", "sa"];
+  /* صفحات الدول */
 
-  countries.forEach((country) => {
-    urls.push({
-      url: `${baseUrl}/${country}`,
-      lastModified: new Date(),
-    });
+  urls.push({
+    url: `${baseUrl}/eg`,
+    lastModified: new Date(),
   });
 
-  // صفحات المنتجات
+  urls.push({
+    url: `${baseUrl}/sa`,
+    lastModified: new Date(),
+  });
+
+  /* صفحات المنتجات */
+
   if (products) {
     products.forEach((product) => {
       urls.push({

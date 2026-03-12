@@ -151,37 +151,6 @@ export default async function CountryPage({ params }: Props) {
 
       {/* التصنيفات */}
 
-      <section className="max-w-7xl mx-auto p-6">
-
-        <h2 className="text-2xl font-bold mb-6 text-center">
-          تصفح حسب التصنيف
-        </h2>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-
-          {categories?.map((cat: any) => (
-
-            <a
-              key={cat.id}
-              href={`/${countrySlug}/category/${cat.slug}`}
-              className="bg-white rounded-xl shadow-sm hover:shadow-md transition p-5 text-center"
-            >
-
-              <div className="text-3xl mb-2">
-                📦
-              </div>
-
-              <div className="font-semibold text-gray-800">
-                {cat.title}
-              </div>
-
-            </a>
-
-          ))}
-
-        </div>
-
-      </section>
 
     </main>
 

@@ -15,6 +15,9 @@ export default function ProductCard({ product, country }: Props) {
       ? Math.round(((oldPrice - price) / oldPrice) * 100)
       : 0
 
+  // تحديد العملة حسب الدولة
+  const currency = country === "sa" ? "ر.س" : "ج.م"
+
   return (
 
     <div className="bg-white rounded-xl shadow-sm hover:shadow-xl transition overflow-hidden border relative">
@@ -69,13 +72,13 @@ export default function ProductCard({ product, country }: Props) {
 
           {price > 0 && (
             <span className="text-green-600 font-bold text-lg">
-              {price.toLocaleString()} ج.م
+              {price.toLocaleString()} {currency}
             </span>
           )}
 
           {oldPrice > 0 && (
             <span className="text-gray-400 line-through text-sm">
-              {oldPrice.toLocaleString()} ج.م
+              {oldPrice.toLocaleString()} {currency}
             </span>
           )}
 
