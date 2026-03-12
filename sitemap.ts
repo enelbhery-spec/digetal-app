@@ -10,22 +10,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const baseUrl = "https://www.extracode.online";
 
-  // جلب المنتجات
   const { data: products } = await supabase
     .from("products")
     .select("slug,country");
 
   const urls: MetadataRoute.Sitemap = [];
 
-  /* الصفحة الرئيسية */
-
+  // الصفحة الرئيسية
   urls.push({
-    url: `${baseUrl}`,
+    url: baseUrl,
     lastModified: new Date(),
   });
 
-  /* صفحات الدول */
-
+  // صفحات الدول
   urls.push({
     url: `${baseUrl}/eg`,
     lastModified: new Date(),
@@ -36,8 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(),
   });
 
-  /* صفحات المنتجات */
-
+  // صفحات المنتجات
   if (products) {
     products.forEach((product) => {
       urls.push({
