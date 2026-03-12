@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import ProductCard from "@/components/ProductCard"
 import { supabase } from "@/lib/supabase"
+import Link from "next/link"
 
 type Props = {
   params: Promise<{
@@ -81,9 +82,19 @@ export default async function CountryPage({ params }: Props) {
     .order("created_at", { ascending: false })
     .limit(12)
 
+  /* جلب المقالات */
+
+  const { data: articles } = await supabase
+    .from("articles")
+    .select("title, slug, created_at")
+    .order("created_at", { ascending: false })
+    .limit(4)
+
   return (
 
     <main className="bg-gray-50 min-h-screen" dir="rtl">
+
+      {/* الهيدر */}
 
       <section className="bg-white py-16 shadow-sm">
 
@@ -100,6 +111,8 @@ export default async function CountryPage({ params }: Props) {
         </div>
 
       </section>
+
+      {/* المنتجات */}
 
       <section className="max-w-7xl mx-auto p-6">
 
@@ -125,6 +138,50 @@ export default async function CountryPage({ params }: Props) {
 
             <div className="col-span-4 text-center py-10 text-gray-500">
               لا توجد منتجات حالياً
+            </div>
+
+          )}
+
+        </div>
+
+      </section>
+
+      {/* المقالات */}
+
+      <section className="max-w-7xl mx-auto p-6">
+
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          أحدث المقالات
+        </h2>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+          {articles?.length ? (
+
+            articles.map((article: any) => (
+
+              <Link
+                key={article.slug}
+                href={`/${countrySlug}/articles/${article.slug}`}
+                className="bg-white p-5 rounded-lg shadow hover:shadow-lg transition"
+              >
+
+                <h3 className="font-bold text-lg mb-2 hover:text-green-600">
+                  {article.title}
+                </h3>
+
+                <p className="text-sm text-gray-500">
+                  {new Date(article.created_at).toLocaleDateString()}
+                </p>
+
+              </Link>
+
+            ))
+
+          ) : (
+
+            <div className="col-span-4 text-center text-gray-500">
+              لا توجد مقالات حالياً
             </div>
 
           )}
