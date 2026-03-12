@@ -4,9 +4,9 @@ import ProductCard from "@/components/ProductCard"
 import { supabase } from "@/lib/supabase"
 
 type Props = {
-  params: {
+  params: Promise<{
     country: string
-  }
+  }>
 }
 
 /* ================================
@@ -21,12 +21,11 @@ const allowedCountries = ["eg", "sa"]
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
-  const countrySlug = params.country.toLowerCase().trim()
+  const { country } = await params
+  const countrySlug = country.toLowerCase().trim()
 
   if (!allowedCountries.includes(countrySlug)) {
-    return {
-      title: "الصفحة غير موجودة"
-    }
+    return { title: "الصفحة غير موجودة" }
   }
 
   const { data: countryData } = await supabase
@@ -54,15 +53,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CountryPage({ params }: Props) {
 
-  const countrySlug = params.country.toLowerCase().trim()
+  const { country } = await params
+  const countrySlug = country.toLowerCase().trim()
 
   if (!allowedCountries.includes(countrySlug)) {
     notFound()
   }
 
-  /* ======================
-     جلب الدولة
-  ====================== */
+  /* جلب الدولة */
 
   const { data: countryData } = await supabase
     .from("countries")
@@ -74,9 +72,7 @@ export default async function CountryPage({ params }: Props) {
     notFound()
   }
 
-  /* ======================
-     جلب المنتجات
-  ====================== */
+  /* جلب المنتجات */
 
   const { data: products } = await supabase
     .from("products")
@@ -85,15 +81,9 @@ export default async function CountryPage({ params }: Props) {
     .order("created_at", { ascending: false })
     .limit(12)
 
-  /* ======================
-     الصفحة
-  ====================== */
-
   return (
 
     <main className="bg-gray-50 min-h-screen" dir="rtl">
-
-      {/* الهيدر */}
 
       <section className="bg-white py-16 shadow-sm">
 
@@ -110,8 +100,6 @@ export default async function CountryPage({ params }: Props) {
         </div>
 
       </section>
-
-      {/* المنتجات */}
 
       <section className="max-w-7xl mx-auto p-6">
 
