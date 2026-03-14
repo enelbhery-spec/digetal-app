@@ -41,7 +41,7 @@ export default function Footer() {
 
             <li>
               <Link href={`/${country}/products`} className="hover:text-green-500 transition">
-                المنتجات
+                
               </Link>
             </li>
 
