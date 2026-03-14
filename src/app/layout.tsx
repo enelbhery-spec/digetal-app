@@ -7,28 +7,25 @@ import RegisterSW from "@/components/RegisterSW";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://digetal-app-q1mf.vercel.app"),
+  metadataBase: new URL("https://www.extracode.online"),
 
   title: {
-    default: " عروض امازون - كوبونات نون - كبونات نون السعودية وخصومات أمازون",
-    template: "%s | حصومات وكوبونات",
+    default: "عروض امازون - كوبونات نون - كبونات نون السعودية وخصومات أمازون",
+    template: "%s | خصومات وكوبونات",
   },
 
   description:
-    "خصومات وكوبونات منصة رقمية مجانية تساعدك الحصول على كوبونات خصومان نون السعودية  وأفضل منتجات وخصومات أمازون مصر المحدثة يوميًا بسهولة ودقة.",
+    "خصومات وكوبونات منصة رقمية مجانية تساعدك الحصول على كوبونات خصم نون السعودية وأفضل منتجات وخصومات أمازون مصر المحدثة يوميًا بسهولة.",
 
   keywords: [
-    "تطبيقات بحث رقمية",
-    "بحث رقمي",
-    "خدمات رقمية",
     "خصومات وكوبونات",
-    "محرك بحث ذكي",
-    "أرقام الخط الساخن",
-    "خدمة عملاء مصر",
-    "رقم خدمة العملاء",
-    "عروض وخصومات أمازون مصر",
-    "محرك بحث أمازون",
-    "ادوات المطبخ من امازون",
+    "كوبونات نون",
+    "عروض امازون مصر",
+    "خصومات امازون",
+    "كوبونات خصم",
+    "افضل منتجات امازون",
+    "خصومات نون السعودية",
+    "عروض امازون",
   ],
 
   authors: [{ name: "خصومات وكوبونات" }],
@@ -38,18 +35,20 @@ export const metadata: Metadata = {
 
   icons: {
     icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
   },
 
   alternates: {
-    canonical: "/",
+    canonical: "https://www.extracode.online",
   },
 
   openGraph: {
-    title: "حصومات وكبونات  - نون السعودية وخصومات أمازون",
+    title: "خصومات وكوبونات - نون السعودية وخصومات أمازون",
     description:
-      "افضل المنتجات امازون مصر ونون السعودية مع كوبونا خصم مباشر  ",
-    url: "/",
-    siteName: "خصومات وكوبونات ",
+      "أفضل منتجات أمازون مصر ونون السعودية مع كوبونات خصم مباشرة.",
+    url: "https://www.extracode.online",
+    siteName: "خصومات وكوبونات",
     locale: "ar_EG",
     type: "website",
     images: [
@@ -64,10 +63,22 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "خصومات وكوبونات - خدمات رقمية وخصومات أمازون",
+    title: "خصومات وكوبونات - خصومات أمازون",
     description:
-      "خصومات وكوبونات منصة رقمية مجانية للوصول السريع إلى خدمات العملاء وخصومات أمازون.",
+      "أفضل خصومات أمازون مصر وكوبونات نون السعودية المحدثة يوميًا.",
     images: ["/og-image.png"],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 
   other: {
@@ -91,6 +102,28 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" className="scroll-smooth">
       <head>
+
+        {/* Canonical */}
+        <link rel="canonical" href="https://www.extracode.online" />
+
+        {/* Structured Data SEO */}
+        <Script id="schema-web" type="application/ld+json">
+          {`
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "خصومات وكوبونات",
+            "url": "https://www.extracode.online",
+            "description": "أفضل خصومات أمازون مصر وكوبونات نون السعودية المحدثة يوميًا.",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://www.extracode.online/search?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          }
+          `}
+        </Script>
+
         {/* Google AdSense */}
         <Script
           async
@@ -104,6 +137,7 @@ export default function RootLayout({
           src="https://www.googletagmanager.com/gtag/js?id=G-FGK2Z5C8W8"
           strategy="afterInteractive"
         />
+
         <Script id="ga4" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
