@@ -1,49 +1,69 @@
-import { createClient } from "@supabase/supabase-js"
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { supabase } from "@/lib/supabase"
 
 export async function GET() {
 
-  const baseUrl = "https://www.extracode.online"
+  const baseUrl = "https://extracode.online"
+
+  /* جلب المنتجات */
 
   const { data: products } = await supabase
     .from("products")
-    .select("slug,country,updated_at")
+    .select("id, created_at")
 
-  let xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  /* جلب المقالات */
 
-<url>
-<loc>${baseUrl}</loc>
-<lastmod>${new Date().toISOString()}</lastmod>
-</url>
+  const { data: articles } = await supabase
+    .from("articles")
+    .select("slug, created_at")
 
-<url>
-<loc>${baseUrl}/eg</loc>
-<lastmod>${new Date().toISOString()}</lastmod>
-</url>
+  let urls = []
 
-<url>
-<loc>${baseUrl}/sa</loc>
-<lastmod>${new Date().toISOString()}</lastmod>
-</url>
-`
+  /* الصفحة الرئيسية */
 
-  products?.forEach((product) => {
-    xml += `
-<url>
-<loc>${baseUrl}/${product.country}/product/${product.slug}</loc>
-<lastmod>${product.updated_at ?? new Date().toISOString()}</lastmod>
-</url>`
+  urls.push(`
+  <url>
+    <loc>${baseUrl}</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  `)
+
+  /* روابط المنتجات */
+
+  products?.forEach((p) => {
+
+    urls.push(`
+    <url>
+      <loc>${baseUrl}/eg/product/${p.id}</loc>
+      <lastmod>${p.created_at}</lastmod>
+      <changefreq>weekly</changefreq>
+      <priority>0.8</priority>
+    </url>
+    `)
+
   })
 
-  xml += `
-</urlset>`
+  /* روابط المقالات */
 
-  return new Response(xml, {
+  articles?.forEach((a) => {
+
+    urls.push(`
+    <url>
+      <loc>${baseUrl}/eg/articles/${a.slug}</loc>
+      <lastmod>${a.created_at}</lastmod>
+      <changefreq>weekly</changefreq>
+      <priority>0.7</priority>
+    </url>
+    `)
+
+  })
+
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${urls.join("")}
+  </urlset>`
+
+  return new Response(sitemap, {
     headers: {
       "Content-Type": "application/xml",
     },

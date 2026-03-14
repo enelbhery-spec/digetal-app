@@ -5,8 +5,10 @@ import { supabase } from "@/lib/supabase"
 import Link from "next/link"
 
 type Props = {
-  params: Promise<{
-    country: string
+  params: Promise<{ country: string }>
+  searchParams?: Promise<{
+    pageProducts?: string
+    pageArticles?: string
   }>
 }
 
@@ -52,16 +54,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
    الصفحة
 ================================ */
 
-export default async function CountryPage({ params }: Props) {
+export default async function CountryPage({ params, searchParams }: Props) {
 
   const { country } = await params
+  const { pageProducts, pageArticles } = (await searchParams) || {}
+
   const countrySlug = country.toLowerCase().trim()
 
   if (!allowedCountries.includes(countrySlug)) {
     notFound()
   }
 
-  /* جلب الدولة */
+  /* ======================
+     جلب الدولة
+  ====================== */
 
   const { data: countryData } = await supabase
     .from("countries")
@@ -73,21 +79,40 @@ export default async function CountryPage({ params }: Props) {
     notFound()
   }
 
-  /* جلب المنتجات */
+  /* ======================
+     Pagination المنتجات
+  ====================== */
 
-  const { data: products } = await supabase
+  const productsPage = Number(pageProducts) || 1
+  const productsLimit = 6
+  const productsFrom = (productsPage - 1) * productsLimit
+  const productsTo = productsFrom + productsLimit - 1
+
+  const { data: products, count: productsCount } = await supabase
     .from("products")
-    .select("*")
+    .select("*", { count: "exact" })
     .eq("country_id", countryData.id)
     .order("created_at", { ascending: false })
-    .limit(12)
+    .range(productsFrom, productsTo)
 
-  /* جلب المقالات */
+  const productsTotalPages = Math.ceil((productsCount || 0) / productsLimit)
 
-  const { data: articles } = await supabase
+  /* ======================
+     Pagination المقالات
+  ====================== */
+
+  const articlesPage = Number(pageArticles) || 1
+  const articlesLimit = 6
+  const articlesFrom = (articlesPage - 1) * articlesLimit
+  const articlesTo = articlesFrom + articlesLimit - 1
+
+  const { data: articles, count: articlesCount } = await supabase
     .from("articles")
-    .select("title, slug, created_at")
+    .select("title, slug, created_at", { count: "exact" })
     .order("created_at", { ascending: false })
+    .range(articlesFrom, articlesTo)
+
+  const articlesTotalPages = Math.ceil((articlesCount || 0) / articlesLimit)
 
   return (
 
@@ -111,7 +136,9 @@ export default async function CountryPage({ params }: Props) {
 
       </section>
 
-      {/* المنتجات */}
+      {/* =====================
+         المنتجات
+      ===================== */}
 
       <section className="max-w-7xl mx-auto p-6">
 
@@ -119,7 +146,7 @@ export default async function CountryPage({ params }: Props) {
           أحدث المنتجات
         </h2>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
 
           {products?.length ? (
 
@@ -135,7 +162,7 @@ export default async function CountryPage({ params }: Props) {
 
           ) : (
 
-            <div className="col-span-4 text-center py-10 text-gray-500">
+            <div className="col-span-3 text-center py-10 text-gray-500">
               لا توجد منتجات حالياً
             </div>
 
@@ -143,9 +170,43 @@ export default async function CountryPage({ params }: Props) {
 
         </div>
 
+        {/* ترقيم المنتجات */}
+
+        {productsTotalPages > 1 && (
+
+          <div className="flex justify-center gap-2 mt-10 flex-wrap">
+
+            {Array.from({ length: productsTotalPages }).map((_, i) => {
+
+              const pageNumber = i + 1
+
+              return (
+
+                <Link
+                  key={i}
+                  href={`/${countrySlug}?pageProducts=${pageNumber}&pageArticles=${articlesPage}`}
+                  className={`px-4 py-2 border rounded-md text-sm
+                  ${productsPage === pageNumber
+                      ? "bg-green-600 text-white border-green-600"
+                      : "bg-white hover:bg-gray-100"
+                    }`}
+                >
+                  {pageNumber}
+                </Link>
+
+              )
+
+            })}
+
+          </div>
+
+        )}
+
       </section>
 
-      {/* المقالات */}
+      {/* =====================
+         المقالات
+      ===================== */}
 
       <section className="max-w-7xl mx-auto p-6">
 
@@ -153,7 +214,7 @@ export default async function CountryPage({ params }: Props) {
           أحدث المقالات
         </h2>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
           {articles?.length ? (
 
@@ -179,13 +240,45 @@ export default async function CountryPage({ params }: Props) {
 
           ) : (
 
-            <div className="col-span-4 text-center text-gray-500">
+            <div className="col-span-3 text-center text-gray-500">
               لا توجد مقالات حالياً
             </div>
 
           )}
 
         </div>
+
+        {/* ترقيم المقالات */}
+
+        {articlesTotalPages > 1 && (
+
+          <div className="flex justify-center gap-2 mt-10 flex-wrap">
+
+            {Array.from({ length: articlesTotalPages }).map((_, i) => {
+
+              const pageNumber = i + 1
+
+              return (
+
+                <Link
+                  key={i}
+                  href={`/${countrySlug}?pageProducts=${productsPage}&pageArticles=${pageNumber}`}
+                  className={`px-4 py-2 border rounded-md text-sm
+                  ${articlesPage === pageNumber
+                      ? "bg-green-600 text-white border-green-600"
+                      : "bg-white hover:bg-gray-100"
+                    }`}
+                >
+                  {pageNumber}
+                </Link>
+
+              )
+
+            })}
+
+          </div>
+
+        )}
 
       </section>
 
