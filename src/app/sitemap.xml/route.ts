@@ -16,13 +16,18 @@ export async function GET() {
     .from("articles")
     .select("slug, created_at")
 
-  let urls = []
+  let urls: string[] = []
+
+  const formatDate = (date: string) => {
+    return new Date(date).toISOString().split("T")[0]
+  }
 
   /* الصفحة الرئيسية */
 
   urls.push(`
   <url>
     <loc>${baseUrl}</loc>
+    <lastmod>${formatDate(new Date().toISOString())}</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -32,10 +37,12 @@ export async function GET() {
 
   products?.forEach((p) => {
 
+    const date = p.created_at ? formatDate(p.created_at) : ""
+
     urls.push(`
     <url>
       <loc>${baseUrl}/eg/product/${p.id}</loc>
-      <lastmod>${p.created_at}</lastmod>
+      <lastmod>${date}</lastmod>
       <changefreq>weekly</changefreq>
       <priority>0.8</priority>
     </url>
@@ -47,10 +54,12 @@ export async function GET() {
 
   articles?.forEach((a) => {
 
+    const date = a.created_at ? formatDate(a.created_at) : ""
+
     urls.push(`
     <url>
       <loc>${baseUrl}/eg/articles/${a.slug}</loc>
-      <lastmod>${a.created_at}</lastmod>
+      <lastmod>${date}</lastmod>
       <changefreq>weekly</changefreq>
       <priority>0.7</priority>
     </url>
@@ -59,9 +68,9 @@ export async function GET() {
   })
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  ${urls.join("")}
-  </urlset>`
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.join("")}
+</urlset>`
 
   return new Response(sitemap, {
     headers: {
