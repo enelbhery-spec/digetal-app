@@ -7,9 +7,10 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-      }
+      },
     ],
-    sitemap: 'https://www.extracode.online/sitemap.xml',
+    sitemap: 'https://extracode.online/sitemap.xml',
+    host: 'https://extracode.online',
   }
 
 }
