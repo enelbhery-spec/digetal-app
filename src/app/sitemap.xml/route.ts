@@ -2,7 +2,7 @@ import { supabase } from "@/lib/supabase"
 
 export async function GET() {
 
-  const baseUrl = "https://extracode.online"
+  const baseUrl = "https://digetal-app-q1mf.vercel.app"
   
 
   /* جلب المنتجات */
