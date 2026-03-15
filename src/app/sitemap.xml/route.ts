@@ -1,46 +1,77 @@
-import { headers } from "next/headers"
+import { supabase } from "@/lib/supabase"
 
 export async function GET() {
+  const baseUrl = "https://extracode.online"
 
-  const host = (await headers()).get("host") || "www.extracode.online"
-  const protocol = host.includes("localhost") ? "http" : "https"
+  /* جلب المنتجات */
 
-  const baseUrl = `${protocol}://${host}`
+  const { data: products } = await supabase
+    .from("products")
+    .select("id, created_at")
 
-  const pages = [
-    {
-      url: `${baseUrl}/eg`,
-      changefreq: "daily",
-      priority: "1.0",
-    },
-    {
-      url: `${baseUrl}/eg/privacy-policy`,
-      changefreq: "monthly",
-      priority: "0.5",
-    },
-    {
-      url: `${baseUrl}/eg/terms`,
-      changefreq: "monthly",
-      priority: "0.5",
-    },
-  ]
+  /* جلب المقالات */
 
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+  const { data: articles } = await supabase
+    .from("articles")
+    .select("slug, created_at")
+
+  let urls: string[] = []
+
+  const formatDate = (date: string) => {
+    return new Date(date).toISOString().split("T")[0]
+  }
+
+  /* الصفحة الرئيسية */
+
+  urls.push(`
+  <url>
+    <loc>${baseUrl}</loc>
+    <lastmod>${formatDate(new Date().toISOString())}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  `)
+
+  /* روابط المنتجات */
+
+  products?.forEach((p) => {
+
+    const date = p.created_at ? formatDate(p.created_at) : ""
+
+    urls.push(`
+    <url>
+      <loc>${baseUrl}/eg/product/${p.id}</loc>
+      <lastmod>${date}</lastmod>
+      <changefreq>weekly</changefreq>
+      <priority>0.8</priority>
+    </url>
+    `)
+
+  })
+
+  /* روابط المقالات */
+
+  articles?.forEach((a) => {
+
+    const date = a.created_at ? formatDate(a.created_at) : ""
+
+    urls.push(`
+    <url>
+      <loc>${baseUrl}/eg/articles/${a.slug}</loc>
+      <lastmod>${date}</lastmod>
+      <changefreq>weekly</changefreq>
+      <priority>0.7</priority>
+    </url>
+    `)
+
+  })
+
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${pages
-  .map(
-    (page) => `
-<url>
-<loc>${page.url}</loc>
-<lastmod>${new Date().toISOString()}</lastmod>
-<changefreq>${page.changefreq}</changefreq>
-<priority>${page.priority}</priority>
-</url>`
-  )
-  .join("")}
+${urls.join("")}
 </urlset>`
 
-  return new Response(xml, {
+  return new Response(sitemap, {
     headers: {
       "Content-Type": "application/xml",
     },
