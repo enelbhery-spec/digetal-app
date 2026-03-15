@@ -72,13 +72,6 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
   },
 
   other: {
@@ -106,15 +99,14 @@ export default function RootLayout({
         {/* Canonical */}
         <link rel="canonical" href="https://www.extracode.online" />
 
-        {/* Structured Data SEO */}
-        <Script id="schema-web" type="application/ld+json">
+        {/* Structured Data */}
+        <Script id="schema-web" type="application/ld+json" strategy="afterInteractive">
           {`
           {
             "@context": "https://schema.org",
             "@type": "WebSite",
             "name": "خصومات وكوبونات",
             "url": "https://www.extracode.online",
-            "description": "أفضل خصومات أمازون مصر وكوبونات نون السعودية المحدثة يوميًا.",
             "potentialAction": {
               "@type": "SearchAction",
               "target": "https://www.extracode.online/search?q={search_term_string}",
@@ -127,30 +119,39 @@ export default function RootLayout({
         {/* Google AdSense */}
         <Script
           async
+          strategy="afterInteractive"
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4973672854580770"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
         />
 
-        {/* Google Analytics */}
+        {/* Google Analytics Script */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-FGK2Z5C8W8"
           strategy="afterInteractive"
         />
 
+        {/* GA Config + Bot Filter */}
         <Script id="ga4" strategy="afterInteractive">
           {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-FGK2Z5C8W8', {
-              page_path: window.location.pathname,
-            });
+            const isBot = /bot|crawler|spider|crawling/i.test(navigator.userAgent);
+
+            if(!isBot){
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+
+              gtag('config', 'G-FGK2Z5C8W8', {
+                page_path: window.location.pathname,
+                anonymize_ip: true
+              });
+            }
           `}
         </Script>
+
       </head>
 
       <body className="min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased">
+
         <Header />
 
         <main className="flex-1 container mx-auto px-4">
@@ -160,6 +161,7 @@ export default function RootLayout({
         <Footer />
 
         <RegisterSW />
+
       </body>
     </html>
   );
