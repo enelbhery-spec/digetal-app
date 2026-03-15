@@ -1,7 +1,6 @@
 import { supabase } from "@/lib/supabase"
 
 export async function GET() {
-
   const baseUrl = "https://extracode.online"
 
   /* جلب المنتجات */

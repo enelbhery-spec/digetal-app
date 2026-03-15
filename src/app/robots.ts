@@ -10,7 +10,7 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: 'https://extracode.online/sitemap.xml',
-    host: 'https://extracode.online',
+    
   }
 
 }
