@@ -1,77 +1,46 @@
-import { supabase } from "@/lib/supabase"
+import { headers } from "next/headers"
 
 export async function GET() {
-  const baseUrl = "https://extracode.online"
 
-  /* جلب المنتجات */
+  const host = (await headers()).get("host") || "www.extracode.online"
+  const protocol = host.includes("localhost") ? "http" : "https"
 
-  const { data: products } = await supabase
-    .from("products")
-    .select("id, created_at")
+  const baseUrl = `${protocol}://${host}`
 
-  /* جلب المقالات */
+  const pages = [
+    {
+      url: `${baseUrl}/eg`,
+      changefreq: "daily",
+      priority: "1.0",
+    },
+    {
+      url: `${baseUrl}/eg/privacy-policy`,
+      changefreq: "monthly",
+      priority: "0.5",
+    },
+    {
+      url: `${baseUrl}/eg/terms`,
+      changefreq: "monthly",
+      priority: "0.5",
+    },
+  ]
 
-  const { data: articles } = await supabase
-    .from("articles")
-    .select("slug, created_at")
-
-  let urls: string[] = []
-
-  const formatDate = (date: string) => {
-    return new Date(date).toISOString().split("T")[0]
-  }
-
-  /* الصفحة الرئيسية */
-
-  urls.push(`
-  <url>
-    <loc>${baseUrl}</loc>
-    <lastmod>${formatDate(new Date().toISOString())}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-  `)
-
-  /* روابط المنتجات */
-
-  products?.forEach((p) => {
-
-    const date = p.created_at ? formatDate(p.created_at) : ""
-
-    urls.push(`
-    <url>
-      <loc>${baseUrl}/eg/product/${p.id}</loc>
-      <lastmod>${date}</lastmod>
-      <changefreq>weekly</changefreq>
-      <priority>0.8</priority>
-    </url>
-    `)
-
-  })
-
-  /* روابط المقالات */
-
-  articles?.forEach((a) => {
-
-    const date = a.created_at ? formatDate(a.created_at) : ""
-
-    urls.push(`
-    <url>
-      <loc>${baseUrl}/eg/articles/${a.slug}</loc>
-      <lastmod>${date}</lastmod>
-      <changefreq>weekly</changefreq>
-      <priority>0.7</priority>
-    </url>
-    `)
-
-  })
-
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.join("")}
+${pages
+  .map(
+    (page) => `
+<url>
+<loc>${page.url}</loc>
+<lastmod>${new Date().toISOString()}</lastmod>
+<changefreq>${page.changefreq}</changefreq>
+<priority>${page.priority}</priority>
+</url>`
+  )
+  .join("")}
 </urlset>`
 
-  return new Response(sitemap, {
+  return new Response(xml, {
     headers: {
       "Content-Type": "application/xml",
     },
