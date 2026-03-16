@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 
 sites = [
     "https://www.extracode.online",
-    "https://digetal-app-q1mf.vercel.app"
+    
 ]
 
 headers = {
