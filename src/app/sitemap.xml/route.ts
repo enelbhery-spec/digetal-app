@@ -1,28 +1,29 @@
 import { supabase } from "@/lib/supabase"
+import { headers } from "next/headers"
 
-// منع التخزين المؤقت لضمان تحديث السايت ماب مع كل إضافة منتج
 export const revalidate = 0;
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const baseUrl = "https://www.extracode.online"
+  // التعديل هنا: إضافة await لأن headers() أصبحت Promise في النسخ الجديدة
+  const headersList = await headers(); 
+  const host = headersList.get("host"); 
+  
+  // تحديد البروتوكول والدومين ديناميكياً
+  const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+  const baseUrl = `${protocol}://${host}`;
 
-  /* 1. جلب كافة المنتجات مرتبة من الأحدث للأقدم لضمان الأرشفة السريعة */
-  const { data: products, error: pError } = await supabase
+  /* جلب البيانات من Supabase */
+  const { data: products } = await supabase
     .from("products")
-    .select("id, created_at, code, slug")
-    .order("created_at", { ascending: false }) // الأحدث أولاً
-    .range(0, 5000); 
+    .select("id, created_at, code")
+    .order("created_at", { ascending: false })
+    .range(0, 5000);
 
-  /* 2. جلب المقالات */
-  const { data: articles, error: aError } = await supabase
+  const { data: articles } = await supabase
     .from("articles")
     .select("slug, created_at")
     .order("created_at", { ascending: false });
-
-  if (pError || aError) {
-    console.error("Supabase Fetch Error:", pError || aError);
-  }
 
   const formatDate = (date: string) => {
     try {
@@ -34,7 +35,7 @@ export async function GET() {
 
   let urls: string[] = []
 
-  // أ. الصفحة الرئيسية
+  // 1. الصفحة الرئيسية
   urls.push(`
     <url>
       <loc>${baseUrl}</loc>
@@ -44,17 +45,13 @@ export async function GET() {
     </url>
   `);
 
-  // ب. روابط المنتجات (دعم كامل لـ sa و eg)
+  // 2. روابط المنتجات
   products?.forEach((p) => {
     const date = p.created_at ? formatDate(p.created_at) : formatDate(new Date().toISOString());
     const countryPath = p.code === 'sa' ? 'sa' : 'eg';
-    
-    // ملاحظة هندسية: نستخدم الـ id كمعرف أساسي للرابط كما في هيكلة موقعك
-    const identifier = p.id; 
-
     urls.push(`
     <url>
-      <loc>${baseUrl}/${countryPath}/product/${identifier}</loc>
+      <loc>${baseUrl}/${countryPath}/product/${p.id}</loc>
       <lastmod>${date}</lastmod>
       <changefreq>weekly</changefreq>
       <priority>0.8</priority>
@@ -62,7 +59,7 @@ export async function GET() {
     `);
   });
 
-  // ج. روابط المقالات
+  // 3. روابط المقالات
   articles?.forEach((a) => {
     const date = a.created_at ? formatDate(a.created_at) : formatDate(new Date().toISOString());
     urls.push(`
@@ -84,7 +81,6 @@ ${urls.join("")}
     headers: {
       "Content-Type": "application/xml",
       "Cache-Control": "public, s-maxage=0, max-age=0, must-revalidate",
-      "CDN-Cache-Control": "no-store",
     },
   });
 }
