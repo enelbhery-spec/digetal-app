@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import ProductCard from "@/components/ProductCard"
+import Pagination from "@/components/Pagination"
 import { supabase } from "@/lib/supabase"
 import Link from "next/link"
 
@@ -11,10 +12,6 @@ type Props = {
     pageArticles?: string
   }>
 }
-
-/* ================================
-   الدول المسموحة
-================================ */
 
 const allowedCountries = ["eg", "sa"]
 
@@ -119,27 +116,20 @@ export default async function CountryPage({ params, searchParams }: Props) {
     <main className="bg-gray-50 min-h-screen" dir="rtl">
 
       {/* الهيدر */}
-
       <section className="bg-white py-16 shadow-sm">
-
         <div className="max-w-7xl mx-auto text-center px-6">
-
           <h1 className="text-4xl font-bold mb-4">
             أفضل عروض {countryData.name}
           </h1>
-
           <p className="text-gray-600 text-lg">
             اكتشف أحدث المنتجات وأفضل الأسعار في {countryData.name}
           </p>
-
         </div>
-
       </section>
 
       {/* =====================
          المنتجات
       ===================== */}
-
       <section className="max-w-7xl mx-auto p-6">
 
         <h2 className="text-2xl font-bold mb-6 text-center">
@@ -149,57 +139,28 @@ export default async function CountryPage({ params, searchParams }: Props) {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
 
           {products?.length ? (
-
             products.map((product: any) => (
-
               <ProductCard
                 key={product.id}
                 product={product}
                 country={countrySlug}
               />
-
             ))
-
           ) : (
-
             <div className="col-span-3 text-center py-10 text-gray-500">
               لا توجد منتجات حالياً
             </div>
-
           )}
 
         </div>
 
-        {/* ترقيم المنتجات */}
-
+        {/* ✅ Pagination منتجات */}
         {productsTotalPages > 1 && (
-
-          <div className="flex justify-center gap-2 mt-10 flex-wrap">
-
-            {Array.from({ length: productsTotalPages }).map((_, i) => {
-
-              const pageNumber = i + 1
-
-              return (
-
-                <Link
-                  key={i}
-                  href={`/${countrySlug}?pageProducts=${pageNumber}&pageArticles=${articlesPage}`}
-                  className={`px-4 py-2 border rounded-md text-sm
-                  ${productsPage === pageNumber
-                      ? "bg-green-600 text-white border-green-600"
-                      : "bg-white hover:bg-gray-100"
-                    }`}
-                >
-                  {pageNumber}
-                </Link>
-
-              )
-
-            })}
-
-          </div>
-
+          <Pagination
+            currentPage={productsPage}
+            totalPages={productsTotalPages}
+            baseUrl={`/${countrySlug}?pageArticles=${articlesPage}&pageProducts=`}
+          />
         )}
 
       </section>
@@ -207,7 +168,6 @@ export default async function CountryPage({ params, searchParams }: Props) {
       {/* =====================
          المقالات
       ===================== */}
-
       <section className="max-w-7xl mx-auto p-6">
 
         <h2 className="text-2xl font-bold mb-6 text-center">
@@ -217,67 +177,35 @@ export default async function CountryPage({ params, searchParams }: Props) {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
           {articles?.length ? (
-
             articles.map((article: any) => (
-
               <Link
                 key={article.slug}
                 href={`/${countrySlug}/articles/${article.slug}`}
                 className="bg-white p-5 rounded-lg shadow hover:shadow-lg transition"
               >
-
                 <h3 className="font-bold text-lg mb-2 hover:text-green-600">
                   {article.title}
                 </h3>
-
                 <p className="text-sm text-gray-500">
                   {new Date(article.created_at).toLocaleDateString()}
                 </p>
-
               </Link>
-
             ))
-
           ) : (
-
             <div className="col-span-3 text-center text-gray-500">
               لا توجد مقالات حالياً
             </div>
-
           )}
 
         </div>
 
-        {/* ترقيم المقالات */}
-
+        {/* ✅ Pagination مقالات */}
         {articlesTotalPages > 1 && (
-
-          <div className="flex justify-center gap-2 mt-10 flex-wrap">
-
-            {Array.from({ length: articlesTotalPages }).map((_, i) => {
-
-              const pageNumber = i + 1
-
-              return (
-
-                <Link
-                  key={i}
-                  href={`/${countrySlug}?pageProducts=${productsPage}&pageArticles=${pageNumber}`}
-                  className={`px-4 py-2 border rounded-md text-sm
-                  ${articlesPage === pageNumber
-                      ? "bg-green-600 text-white border-green-600"
-                      : "bg-white hover:bg-gray-100"
-                    }`}
-                >
-                  {pageNumber}
-                </Link>
-
-              )
-
-            })}
-
-          </div>
-
+          <Pagination
+            currentPage={articlesPage}
+            totalPages={articlesTotalPages}
+            baseUrl={`/${countrySlug}?pageProducts=${productsPage}&pageArticles=`}
+          />
         )}
 
       </section>

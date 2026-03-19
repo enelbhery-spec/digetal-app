@@ -74,6 +74,7 @@
   }
 }
 
+
 @layer base {
   * {
     @apply border-border;
@@ -81,4 +82,37 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+@layer components {
+
+  .pagination {
+    @apply flex justify-center items-center gap-2 mt-8 flex-wrap;
+  }
+
+  .page-btn {
+    @apply min-w-[40px] h-[40px] flex items-center justify-center rounded-lg border text-sm font-semibold transition-all duration-200;
+
+    background-color: hsl(var(--card));
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--border));
+  }
+
+  .page-btn:hover {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    transform: translateY(-2px);
+  }
+
+  .page-btn.active {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  .page-btn.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
 }

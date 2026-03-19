@@ -11,12 +11,13 @@ type Props = {
 
 export default async function ArticlePage({ params }: Props) {
 
-  const { slug } = await params
+  const { country, slug } = await params
 
   const { data: article } = await supabase
     .from("articles")
     .select("*")
     .eq("slug", slug)
+    .eq("country", country) // ✅ التعديل هنا
     .single()
 
   if (!article) {
@@ -24,7 +25,6 @@ export default async function ArticlePage({ params }: Props) {
   }
 
   return (
-
     <main className="max-w-3xl mx-auto p-6" dir="rtl">
 
       <h1 className="text-3xl font-bold mb-6">
@@ -38,6 +38,5 @@ export default async function ArticlePage({ params }: Props) {
       </div>
 
     </main>
-
   )
 }
