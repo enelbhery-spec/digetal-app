@@ -41,9 +41,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
   }
 
+  const countryName = countryData.name
+
   return {
-    title: `أفضل عروض ${countryData.name}`,
-    description: `أفضل المنتجات والعروض في ${countryData.name}`
+    title: `أفضل خصومات وكوبونات ${countryName} 2026 | عروض يومية`,
+
+    description: `اكتشف أفضل الخصومات والكوبونات في ${countryName} يوميًا على أمازون ونون. عروض حصرية وتحديث مستمر لأقوى التخفيضات.`,
+
+    alternates: {
+      canonical: `https://www.extracode.online/${countrySlug}`,
+    },
+
+    robots: {
+      index: true,
+      follow: true,
+    },
   }
 }
 
@@ -106,7 +118,7 @@ export default async function CountryPage({ params, searchParams }: Props) {
   const { data: articles, count: articlesCount } = await supabase
     .from("articles")
     .select("title, slug, created_at, country", { count: "exact" })
-    .ilike("country", countrySlug) // ✅ مهم جدًا
+    .ilike("country", countrySlug)
     .order("created_at", { ascending: false })
     .range(articlesFrom, articlesTo)
 
@@ -129,7 +141,7 @@ export default async function CountryPage({ params, searchParams }: Props) {
             اكتشف أحدث المنتجات وأفضل الأسعار في {countryData.name}
           </p>
 
-          {/* ✅ روابط المقالات حسب الدولة */}
+          {/* روابط المقالات */}
           <div className="mt-6 flex justify-center gap-4">
 
             <Link

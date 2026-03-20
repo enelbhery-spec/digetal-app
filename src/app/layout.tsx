@@ -39,9 +39,7 @@ export const metadata: Metadata = {
     apple: "/favicon.ico",
   },
 
-  alternates: {
-    canonical: "https://www.extracode.online",
-  },
+  // ❌ حذف canonical من هنا
 
   openGraph: {
     title: "خصومات وكوبونات - نون السعودية وخصومات أمازون",
@@ -96,8 +94,7 @@ export default function RootLayout({
     <html lang="ar" dir="rtl" className="scroll-smooth">
       <head>
 
-        {/* Canonical */}
-        <link rel="canonical" href="https://www.extracode.online" />
+        {/* ❌ حذف canonical من هنا */}
 
         {/* Structured Data */}
         <Script id="schema-web" type="application/ld+json" strategy="afterInteractive">
@@ -124,13 +121,12 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
 
-        {/* Google Analytics Script */}
+        {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-FGK2Z5C8W8"
           strategy="afterInteractive"
         />
 
-        {/* GA Config + Bot Filter */}
         <Script id="ga4" strategy="afterInteractive">
           {`
             const isBot = /bot|crawler|spider|crawling/i.test(navigator.userAgent);
