@@ -1,106 +1,48 @@
-import { createClient } from "@supabase/supabase-js"
-import Link from "next/link"
-import { notFound } from "next/navigation"
+import { createClient } from "@supabase/supabase-js";
+import Link from "next/link";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
-)
+type Props = {
+  params: Promise<{ country: string }>;
+};
 
-const allowedCountries = ["eg", "sa"]
+export default async function ArticlesPage({ params }: Props) {
 
-export default async function CountryArticlesPage({
-  params,
-}: {
-  params: { country: string }
-}) {
+  const { country } = await params;
 
-  const country = params.country.toLowerCase()
-
-  /* ======================
-     تحقق من الدولة
-  ====================== */
-
-  if (!allowedCountries.includes(country)) {
-    notFound()
-  }
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
   /* ======================
      جلب المقالات حسب الدولة
   ====================== */
-
   const { data: articles } = await supabase
     .from("articles")
-    .select("title, slug, created_at, country")
-    .ilike("country", country)
-    .order("created_at", { ascending: false })
-
-  /* ======================
-     Schema
-  ====================== */
-
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    name: `مقالات ${country === "eg" ? "مصر" : "السعودية"}`,
-    url: `https://www.extracode.online/${country}/articles`,
-  }
+    .select("title, slug")
+    .eq("country", country) // مهم جدا
+    .order("created_at", { ascending: false });
 
   return (
-    <div style={{ maxWidth: "900px", margin: "auto", padding: "20px" }} dir="rtl">
+    <div className="max-w-6xl mx-auto p-6">
 
-      {/* ✅ Schema */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(schema),
-        }}
-      />
-
-      <h1 style={{ fontSize: "28px", marginBottom: "20px" }}>
+      <h1 className="text-2xl font-bold mb-6">
         مقالات {country === "eg" ? "مصر" : "السعودية"}
       </h1>
 
-      {articles?.length ? (
-        articles.map((article) => (
-
-          <div
+      <div className="grid md:grid-cols-2 gap-4">
+        {articles?.map((article: any) => (
+          <Link
             key={article.slug}
-            style={{
-              borderBottom: "1px solid #eee",
-              padding: "15px 0"
-            }}
+            href={`/${country}/articles/${article.slug}`}
           >
-
-            <Link href={`/${country}/articles/${article.slug}`}>
-
-              <h2
-                style={{
-                  fontSize: "20px",
-                  color: "#0070f3",
-                  cursor: "pointer"
-                }}
-              >
-                {article.title}
-              </h2>
-
-            </Link>
-
-            <small>
-              {new Date(article.created_at).toLocaleDateString()}
-            </small>
-
-          </div>
-
-        ))
-      ) : (
-
-        <p style={{ textAlign: "center", color: "#777" }}>
-          لا توجد مقالات حالياً
-        </p>
-
-      )}
+            <div className="p-4 border rounded hover:bg-gray-50 transition">
+              {article.title}
+            </div>
+          </Link>
+        ))}
+      </div>
 
     </div>
-  )
+  );
 }
