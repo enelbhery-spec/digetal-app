@@ -238,6 +238,135 @@ export default async function CountryPage({ params, searchParams }: Props) {
         )}
 
       </section>
+      {/* =====================
+   SEO Content
+===================== */}
+<section className="max-w-5xl mx-auto p-6 bg-white mt-10 rounded-lg shadow">
+
+  <h2 className="text-2xl font-bold mb-4 text-center">
+    أفضل الخصومات والكوبونات في {countryData.name}
+  </h2>
+
+  <p className="text-gray-700 leading-8 mb-4">
+    إذا كنت تبحث عن أفضل الخصومات والكوبونات في {countryData.name} فأنت في المكان الصحيح. نقدم لك يوميًا أحدث عروض أمازون ونون مع تحديث مستمر لأقوى التخفيضات على المنتجات المختلفة مثل الإلكترونيات، الملابس، والعطور.
+  </p>
+
+  <p className="text-gray-700 leading-8 mb-4">
+    يمكنك من خلال موقعنا متابعة أفضل العروض الحصرية التي تساعدك على توفير المال عند الشراء، بالإضافة إلى كوبونات خصم مفعلة تعمل مباشرة على مواقع التسوق المختلفة.
+  </p>
+
+  <h3 className="text-xl font-semibold mt-6 mb-3">
+    لماذا تستخدم الكوبونات؟
+  </h3>
+
+  <ul className="list-disc pr-6 text-gray-700 space-y-2">
+    <li>توفير المال عند الشراء</li>
+    <li>الحصول على خصومات حصرية</li>
+    <li>الوصول لأفضل العروض اليومية</li>
+  </ul>
+
+  <h3 className="text-xl font-semibold mt-6 mb-3">
+    أشهر المتاجر في {countryData.name}
+  </h3>
+
+  <p className="text-gray-700 leading-8">
+    من أشهر المتاجر التي نقدم لها عروض يومية: أمازون، نون، والعديد من المتاجر الإلكترونية الأخرى التي توفر منتجات عالية الجودة بأسعار تنافسية.
+  </p>
+
+</section>
+{/* =====================
+   FAQ Section
+===================== */}
+<section className="max-w-5xl mx-auto p-6 bg-white mt-10 rounded-lg shadow">
+
+  <h2 className="text-2xl font-bold mb-6 text-center">
+    الأسئلة الشائعة
+  </h2>
+
+  <div className="space-y-4">
+
+    <div>
+      <h3 className="font-semibold text-lg">
+        ما هي أفضل مواقع الخصومات في {countryData.name}؟
+      </h3>
+      <p className="text-gray-700">
+        من أفضل المواقع: أمازون ونون حيث توفر عروض يومية وكوبونات خصم قوية على مختلف المنتجات.
+      </p>
+    </div>
+
+    <div>
+      <h3 className="font-semibold text-lg">
+        هل الكوبونات تعمل فعلاً؟
+      </h3>
+      <p className="text-gray-700">
+        نعم، يتم تحديث الكوبونات بشكل مستمر لضمان عملها وتوفير أفضل خصومات للمستخدمين.
+      </p>
+    </div>
+
+    <div>
+      <h3 className="font-semibold text-lg">
+        كيف أحصل على أفضل العروض؟
+      </h3>
+      <p className="text-gray-700">
+        تابع الموقع يوميًا للحصول على أحدث العروض والكوبونات الحصرية على أمازون ونون.
+      </p>
+    </div>
+
+    <div>
+      <h3 className="font-semibold text-lg">
+        هل العروض محدثة يوميًا؟
+      </h3>
+      <p className="text-gray-700">
+        نعم، يتم تحديث المحتوى بشكل يومي لعرض أحدث الخصومات والمنتجات.
+      </p>
+    </div>
+
+  </div>
+
+</section>
+<script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": `ما هي أفضل مواقع الخصومات في ${countryData.name}؟`,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "من أفضل المواقع: أمازون ونون حيث توفر عروض يومية وكوبونات خصم قوية."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "هل الكوبونات تعمل فعلاً؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "نعم، يتم تحديث الكوبونات باستمرار لضمان فعاليتها."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "كيف أحصل على أفضل العروض؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "يمكنك متابعة الموقع يوميًا للحصول على أحدث العروض والكوبونات."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "هل العروض محدثة يوميًا؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "نعم، يتم تحديث الموقع بشكل يومي بأحدث الخصومات."
+          }
+        }
+      ]
+    })
+  }}
+/>
 
     </main>
   )
