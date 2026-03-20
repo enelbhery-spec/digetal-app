@@ -105,7 +105,8 @@ export default async function CountryPage({ params, searchParams }: Props) {
 
   const { data: articles, count: articlesCount } = await supabase
     .from("articles")
-    .select("title, slug, created_at", { count: "exact" })
+    .select("title, slug, created_at, country", { count: "exact" })
+    .ilike("country", countrySlug) // ✅ مهم جدًا
     .order("created_at", { ascending: false })
     .range(articlesFrom, articlesTo)
 
@@ -117,14 +118,31 @@ export default async function CountryPage({ params, searchParams }: Props) {
 
       {/* الهيدر */}
       <section className="bg-white py-16 shadow-sm">
+
         <div className="max-w-7xl mx-auto text-center px-6">
+
           <h1 className="text-4xl font-bold mb-4">
             أفضل عروض {countryData.name}
           </h1>
+
           <p className="text-gray-600 text-lg">
             اكتشف أحدث المنتجات وأفضل الأسعار في {countryData.name}
           </p>
+
+          {/* ✅ روابط المقالات حسب الدولة */}
+          <div className="mt-6 flex justify-center gap-4">
+
+            <Link
+              href={`/${countrySlug}/articles`}
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+            >
+              عرض كل مقالات {countryData.name}
+            </Link>
+
+          </div>
+
         </div>
+
       </section>
 
       {/* =====================
@@ -154,7 +172,6 @@ export default async function CountryPage({ params, searchParams }: Props) {
 
         </div>
 
-        {/* ✅ Pagination منتجات */}
         {productsTotalPages > 1 && (
           <Pagination
             currentPage={productsPage}
@@ -186,6 +203,7 @@ export default async function CountryPage({ params, searchParams }: Props) {
                 <h3 className="font-bold text-lg mb-2 hover:text-green-600">
                   {article.title}
                 </h3>
+
                 <p className="text-sm text-gray-500">
                   {new Date(article.created_at).toLocaleDateString()}
                 </p>
@@ -199,7 +217,6 @@ export default async function CountryPage({ params, searchParams }: Props) {
 
         </div>
 
-        {/* ✅ Pagination مقالات */}
         {articlesTotalPages > 1 && (
           <Pagination
             currentPage={articlesPage}
