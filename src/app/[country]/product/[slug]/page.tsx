@@ -80,7 +80,7 @@ export default async function ProductPage({ params }: Props) {
   }
 
   /* ======================
-     منتجات مشابهة (معدلة)
+     منتجات مشابهة
   ====================== */
   let relatedProducts: any[] = [];
 
@@ -130,83 +130,160 @@ export default async function ProductPage({ params }: Props) {
   const rating = product.rating || 4.5;
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <>
+      {/* ======================
+          Product Schema (SEO)
+      ====================== */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: product.title,
+            image: product.image_url,
+            description: product.description,
+            sku: product.id,
 
-      {/* المنتج */}
-      <div className="grid md:grid-cols-2 gap-10 items-center">
+            brand: {
+              "@type": "Brand",
+              name: "ExtraCode"
+            },
 
-        <div className="relative flex justify-center">
-          {discount > 0 && (
-            <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-lg text-sm font-bold">
-              -{discount}%
-            </div>
-          )}
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue: rating,
+              reviewCount: 20
+            },
 
-          <Image
-            src={product.image_url}
-            alt={product.title}
-            width={450}
-            height={450}
-            className="rounded-xl shadow-lg object-contain"
-          />
-        </div>
+            offers: {
+              "@type": "Offer",
+              url: `https://www.extracode.online/${country}/product/${slug}`,
+              priceCurrency: product.currency || "EGP",
+              price: product.price,
+              availability: "https://schema.org/InStock",
 
-        <div>
-          <h1 className="text-2xl font-bold mb-3">
-            {product.title}
-          </h1>
+            priceValidUntil: "2026-12-31",
 
-          <div className="flex items-center gap-2 text-yellow-500 mb-4">
-            {"⭐".repeat(Math.round(rating))}
-            <span className="text-gray-600 text-sm">
-              {rating} / 5
-            </span>
-          </div>
+         shippingDetails: {
+         "@type": "OfferShippingDetails",
+          shippingRate: {
+         "@type": "MonetaryAmount",
+         value: "50",
+       currency: "EGP"
+     },
+    shippingDestination: {
+      "@type": "DefinedRegion",
+      addressCountry: "EG"
+    },
+    deliveryTime: {
+      "@type": "ShippingDeliveryTime",
+      handlingTime: {
+        "@type": "QuantitativeValue",
+        minValue: 1,
+        maxValue: 2,
+        unitCode: "DAY"
+      },
+      transitTime: {
+        "@type": "QuantitativeValue",
+        minValue: 2,
+        maxValue: 5,
+        unitCode: "DAY"
+      }
+    }
+  },
 
-          <div className="flex items-center gap-4 mb-5">
-            <span className="text-3xl font-bold text-green-600">
-              {product.price} {product.currency}
-            </span>
+  hasMerchantReturnPolicy: {
+    "@type": "MerchantReturnPolicy",
+    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+    merchantReturnDays: 14,
+    returnMethod: "https://schema.org/ReturnByMail",
+    returnFees: "https://schema.org/FreeReturn"
+  }
+}
+          })
+        }}
+      />
 
-            {product.old_price && (
-              <span className="text-gray-400 line-through text-lg">
-                {product.old_price}
-              </span>
+      {/* ======================
+          الصفحة
+      ====================== */}
+      <div className="max-w-6xl mx-auto p-6">
+
+        {/* المنتج */}
+        <div className="grid md:grid-cols-2 gap-10 items-center">
+
+          <div className="relative flex justify-center">
+            {discount > 0 && (
+              <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-lg text-sm font-bold">
+                -{discount}%
+              </div>
             )}
+
+            <Image
+              src={product.image_url}
+              alt={product.title}
+              width={450}
+              height={450}
+              className="rounded-xl shadow-lg object-contain"
+            />
           </div>
 
-          <p className="text-gray-700 mb-6">
-            {product.description}
-          </p>
+          <div>
+            <h1 className="text-2xl font-bold mb-3">
+              {product.title}
+            </h1>
 
-          <a
-            href={product.product_url}
-            target="_blank"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg"
-          >
-            مشاهدة المنتج
-          </a>
+            <div className="flex items-center gap-2 text-yellow-500 mb-4">
+              {"⭐".repeat(Math.round(rating))}
+              <span className="text-gray-600 text-sm">
+                {rating} / 5
+              </span>
+            </div>
+
+            <div className="flex items-center gap-4 mb-5">
+              <span className="text-3xl font-bold text-green-600">
+                {product.price} {product.currency}
+              </span>
+
+              {product.old_price && (
+                <span className="text-gray-400 line-through text-lg">
+                  {product.old_price}
+                </span>
+              )}
+            </div>
+
+            <p className="text-gray-700 mb-6">
+              {product.description}
+            </p>
+
+            <a
+              href={product.product_url}
+              target="_blank"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg"
+            >
+              مشاهدة المنتج
+            </a>
+          </div>
+
+        </div>
+
+        {/* منتجات مشابهة */}
+        <h2 className="text-xl font-bold mt-12 mb-6">
+          منتجات مشابهة
+        </h2>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+          {relatedProducts.map((item: any) => (
+            <ProductCard
+              key={item.id}
+              product={item}
+              country={country}
+            />
+          ))}
         </div>
 
       </div>
-
-      {/* منتجات مشابهة */}
-      <h2 className="text-xl font-bold mt-12 mb-6">
-        منتجات مشابهة
-      </h2>
-
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-
-        {relatedProducts.map((item: any) => (
-          <ProductCard
-            key={item.id}
-            product={item}
-            country={country}
-          />
-        ))}
-
-      </div>
-
-    </div>
+    </>
   );
 }
