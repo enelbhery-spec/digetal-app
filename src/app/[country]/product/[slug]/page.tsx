@@ -29,17 +29,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    title: `${product.title} | أفضل سعر`,
-    description: product.description?.slice(0, 160),
+    title: `${product.title} في مصر | أفضل سعر 2026`,
+    description: `${product.description?.slice(0, 140)} في مصر بأفضل سعر`,
 
     alternates: {
       canonical: `https://www.extracode.online/${country}/product/${slug}`,
     },
 
     openGraph: {
-      title: product.title,
+      title: `${product.title} في مصر`,
       description: product.description,
       images: [product.image_url],
+      locale: "ar_EG",
     },
   };
 }
@@ -139,68 +140,91 @@ export default async function ProductPage({ params }: Props) {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "Product",
-            name: product.title,
-            image: product.image_url,
-            description: product.description,
-            sku: product.id,
 
-            brand: {
-              "@type": "Brand",
-              name: "ExtraCode"
-            },
+            /* 🔥 مهم: موقعك مصري */
+            "@graph": [
+              {
+                "@type": "WebSite",
+                name: "ExtraCode",
+                url: "https://www.extracode.online",
+                inLanguage: "ar-EG",
+                areaServed: {
+                  "@type": "Country",
+                  name: "Egypt"
+                }
+              },
 
-            aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue: rating,
-              reviewCount: 20
-            },
+              {
+                "@type": "Product",
+                name: product.title + " في مصر",
+                image: product.image_url,
+                description: product.description,
+                sku: product.id,
 
-            offers: {
-              "@type": "Offer",
-              url: `https://www.extracode.online/${country}/product/${slug}`,
-              priceCurrency: product.currency || "EGP",
-              price: product.price,
-              availability: "https://schema.org/InStock",
+                brand: {
+                  "@type": "Brand",
+                  name: "ExtraCode"
+                },
 
-            priceValidUntil: "2026-12-31",
+                aggregateRating: {
+                  "@type": "AggregateRating",
+                  ratingValue: rating,
+                  reviewCount: 20
+                },
 
-         shippingDetails: {
-         "@type": "OfferShippingDetails",
-          shippingRate: {
-         "@type": "MonetaryAmount",
-         value: "50",
-       currency: "EGP"
-     },
-    shippingDestination: {
-      "@type": "DefinedRegion",
-      addressCountry: "EG"
-    },
-    deliveryTime: {
-      "@type": "ShippingDeliveryTime",
-      handlingTime: {
-        "@type": "QuantitativeValue",
-        minValue: 1,
-        maxValue: 2,
-        unitCode: "DAY"
-      },
-      transitTime: {
-        "@type": "QuantitativeValue",
-        minValue: 2,
-        maxValue: 5,
-        unitCode: "DAY"
-      }
-    }
-  },
+                offers: {
+                  "@type": "Offer",
+                  url: `https://www.extracode.online/${country}/product/${slug}`,
+                  priceCurrency: "EGP",
+                  price: product.price,
+                  availability: "https://schema.org/InStock",
+                  priceValidUntil: "2026-12-31",
 
-  hasMerchantReturnPolicy: {
-    "@type": "MerchantReturnPolicy",
-    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-    merchantReturnDays: 14,
-    returnMethod: "https://schema.org/ReturnByMail",
-    returnFees: "https://schema.org/FreeReturn"
-  }
-}
+                  /* 🔥 استهداف مصر */
+                  eligibleRegion: {
+                    "@type": "Country",
+                    name: "Egypt"
+                  },
+
+                  shippingDetails: {
+                    "@type": "OfferShippingDetails",
+                    shippingRate: {
+                      "@type": "MonetaryAmount",
+                      value: "50",
+                      currency: "EGP"
+                    },
+                    shippingDestination: {
+                      "@type": "DefinedRegion",
+                      addressCountry: "EG"
+                    },
+                    deliveryTime: {
+                      "@type": "ShippingDeliveryTime",
+                      handlingTime: {
+                        "@type": "QuantitativeValue",
+                        minValue: 1,
+                        maxValue: 2,
+                        unitCode: "DAY"
+                      },
+                      transitTime: {
+                        "@type": "QuantitativeValue",
+                        minValue: 2,
+                        maxValue: 5,
+                        unitCode: "DAY"
+                      }
+                    }
+                  },
+
+                  hasMerchantReturnPolicy: {
+                    "@type": "MerchantReturnPolicy",
+                    returnPolicyCategory:
+                      "https://schema.org/MerchantReturnFiniteReturnWindow",
+                    merchantReturnDays: 14,
+                    returnMethod: "https://schema.org/ReturnByMail",
+                    returnFees: "https://schema.org/FreeReturn"
+                  }
+                }
+              }
+            ]
           })
         }}
       />
@@ -210,7 +234,6 @@ export default async function ProductPage({ params }: Props) {
       ====================== */}
       <div className="max-w-6xl mx-auto p-6">
 
-        {/* المنتج */}
         <div className="grid md:grid-cols-2 gap-10 items-center">
 
           <div className="relative flex justify-center">
@@ -222,7 +245,7 @@ export default async function ProductPage({ params }: Props) {
 
             <Image
               src={product.image_url}
-              alt={product.title}
+              alt={product.title + " في مصر"}
               width={450}
               height={450}
               className="rounded-xl shadow-lg object-contain"
@@ -231,7 +254,7 @@ export default async function ProductPage({ params }: Props) {
 
           <div>
             <h1 className="text-2xl font-bold mb-3">
-              {product.title}
+              {product.title} في مصر
             </h1>
 
             <div className="flex items-center gap-2 text-yellow-500 mb-4">
@@ -243,7 +266,7 @@ export default async function ProductPage({ params }: Props) {
 
             <div className="flex items-center gap-4 mb-5">
               <span className="text-3xl font-bold text-green-600">
-                {product.price} {product.currency}
+                {product.price} جنيه
               </span>
 
               {product.old_price && (
@@ -254,7 +277,7 @@ export default async function ProductPage({ params }: Props) {
             </div>
 
             <p className="text-gray-700 mb-6">
-              {product.description}
+              {product.description} متوفر الآن في مصر بأفضل سعر.
             </p>
 
             <a
@@ -262,15 +285,14 @@ export default async function ProductPage({ params }: Props) {
               target="_blank"
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg"
             >
-              مشاهدة المنتج
+              اشتري الآن
             </a>
           </div>
 
         </div>
 
-        {/* منتجات مشابهة */}
         <h2 className="text-xl font-bold mt-12 mb-6">
-          منتجات مشابهة
+          منتجات مشابهة في مصر
         </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
