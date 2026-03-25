@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: `${product.title}   | أفضل سعر 2026`,
-    description: `${product.description?.slice(0, 140)} في مصر بأفضل سعر`,
+    description: `${product.description?.slice(0, 140)}  بأفضل سعر`,
 
     alternates: {
       canonical: `https://www.extracode.online/${country}/product/${slug}`,
@@ -156,7 +156,7 @@ export default async function ProductPage({ params }: Props) {
 
               {
                 "@type": "Product",
-                name: product.title + " في مصر",
+                name: product.title + " ",
                 image: product.image_url,
                 description: product.description,
                 sku: product.id,
@@ -245,7 +245,7 @@ export default async function ProductPage({ params }: Props) {
 
             <Image
               src={product.image_url}
-              alt={product.title + " في مصر"}
+              alt={product.title + " "}
               width={450}
               height={450}
               className="rounded-xl shadow-lg object-contain"
@@ -254,7 +254,7 @@ export default async function ProductPage({ params }: Props) {
 
           <div>
             <h1 className="text-2xl font-bold mb-3">
-              {product.title} في مصر
+              {product.title} 
             </h1>
 
             <div className="flex items-center gap-2 text-yellow-500 mb-4">
@@ -277,7 +277,7 @@ export default async function ProductPage({ params }: Props) {
             </div>
 
             <p className="text-gray-700 mb-6">
-              {product.description} متوفر الآن في مصر بأفضل سعر.
+              {product.description} متوفر الآن  بأفضل سعر.
             </p>
 
             <a
@@ -292,7 +292,7 @@ export default async function ProductPage({ params }: Props) {
         </div>
 
         <h2 className="text-xl font-bold mt-12 mb-6">
-          منتجات مشابهة في مصر
+          منتجات مشابهة  
         </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
