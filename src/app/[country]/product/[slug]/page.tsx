@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    title: `${product.title} في مصر | أفضل سعر 2026`,
+    title: `${product.title}   | أفضل سعر 2026`,
     description: `${product.description?.slice(0, 140)} في مصر بأفضل سعر`,
 
     alternates: {
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
 
     openGraph: {
-      title: `${product.title} في مصر`,
+      title: `${product.title}  `,
       description: product.description,
       images: [product.image_url],
       locale: "ar_EG",
