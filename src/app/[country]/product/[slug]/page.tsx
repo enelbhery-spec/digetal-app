@@ -266,7 +266,7 @@ export default async function ProductPage({ params }: Props) {
 
             <div className="flex items-center gap-4 mb-5">
               <span className="text-3xl font-bold text-green-600">
-                {product.price} جنيه
+                {product.price} 
               </span>
 
               {product.old_price && (
@@ -285,7 +285,7 @@ export default async function ProductPage({ params }: Props) {
               target="_blank"
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg"
             >
-              اشتري الآن
+              مزيد من التفاصيل
             </a>
           </div>
 
