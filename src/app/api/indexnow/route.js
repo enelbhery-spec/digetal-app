@@ -6,7 +6,7 @@ export async function POST(request) {
     const { urlToIndex } = body;
 
     const host = 'www.extracode.online';
-    const key = 'c52f22f4436c47989ade655feb54cdcd';
+    const key = '347fd6db84d94dbcbbc677802bc652cc';
     const keyLocation = `https://${host}/${key}.txt`;
 
     const response = await fetch('https://www.bing.com/indexnow', {
