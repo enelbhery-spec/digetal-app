@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
 
     openGraph: {
-      title: `${product.title}  `,
+      title: `${product.title}`,
       description: product.description,
       images: [product.image_url],
       locale: "ar_EG",
@@ -140,8 +140,6 @@ export default async function ProductPage({ params }: Props) {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-
-            /* 🔥 مهم: موقعك مصري */
             "@graph": [
               {
                 "@type": "WebSite",
@@ -153,75 +151,27 @@ export default async function ProductPage({ params }: Props) {
                   name: "Egypt"
                 }
               },
-
               {
                 "@type": "Product",
-                name: product.title + " ",
+                name: product.title,
                 image: product.image_url,
                 description: product.description,
                 sku: product.id,
-
                 brand: {
                   "@type": "Brand",
                   name: "ExtraCode"
                 },
-
                 aggregateRating: {
                   "@type": "AggregateRating",
                   ratingValue: rating,
                   reviewCount: 20
                 },
-
                 offers: {
                   "@type": "Offer",
                   url: `https://www.extracode.online/${country}/product/${slug}`,
                   priceCurrency: "EGP",
                   price: product.price,
-                  availability: "https://schema.org/InStock",
-                  priceValidUntil: "2026-12-31",
-
-                  /* 🔥 استهداف مصر */
-                  eligibleRegion: {
-                    "@type": "Country",
-                    name: "Egypt"
-                  },
-
-                  shippingDetails: {
-                    "@type": "OfferShippingDetails",
-                    shippingRate: {
-                      "@type": "MonetaryAmount",
-                      value: "50",
-                      currency: "EGP"
-                    },
-                    shippingDestination: {
-                      "@type": "DefinedRegion",
-                      addressCountry: "EG"
-                    },
-                    deliveryTime: {
-                      "@type": "ShippingDeliveryTime",
-                      handlingTime: {
-                        "@type": "QuantitativeValue",
-                        minValue: 1,
-                        maxValue: 2,
-                        unitCode: "DAY"
-                      },
-                      transitTime: {
-                        "@type": "QuantitativeValue",
-                        minValue: 2,
-                        maxValue: 5,
-                        unitCode: "DAY"
-                      }
-                    }
-                  },
-
-                  hasMerchantReturnPolicy: {
-                    "@type": "MerchantReturnPolicy",
-                    returnPolicyCategory:
-                      "https://schema.org/MerchantReturnFiniteReturnWindow",
-                    merchantReturnDays: 14,
-                    returnMethod: "https://schema.org/ReturnByMail",
-                    returnFees: "https://schema.org/FreeReturn"
-                  }
+                  availability: "https://schema.org/InStock"
                 }
               }
             ]
@@ -229,9 +179,6 @@ export default async function ProductPage({ params }: Props) {
         }}
       />
 
-      {/* ======================
-          الصفحة
-      ====================== */}
       <div className="max-w-6xl mx-auto p-6">
 
         <div className="grid md:grid-cols-2 gap-10 items-center">
@@ -245,7 +192,7 @@ export default async function ProductPage({ params }: Props) {
 
             <Image
               src={product.image_url}
-              alt={product.title + " "}
+              alt={product.title}
               width={450}
               height={450}
               className="rounded-xl shadow-lg object-contain"
@@ -254,7 +201,7 @@ export default async function ProductPage({ params }: Props) {
 
           <div>
             <h1 className="text-2xl font-bold mb-3">
-              {product.title} 
+              {product.title}
             </h1>
 
             <div className="flex items-center gap-2 text-yellow-500 mb-4">
@@ -266,33 +213,35 @@ export default async function ProductPage({ params }: Props) {
 
             <div className="flex items-center gap-4 mb-5">
               <span className="text-3xl font-bold text-green-600">
-                {product.price} 
+                {product.price} EGP
               </span>
 
               {product.old_price && (
                 <span className="text-gray-400 line-through text-lg">
-                  {product.old_price}
+                  {product.old_price} EGP
                 </span>
               )}
             </div>
 
             <p className="text-gray-700 mb-6">
-              {product.description} متوفر الآن  بأفضل سعر.
+              {product.description} متوفر الآن بأفضل سعر.
             </p>
 
+            {/* 🔥 التعديل هنا فقط */}
             <a
-              href={product.product_url}
+              href={`/api/redirect?id=${product.id}`}
               target="_blank"
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg"
             >
               مزيد من التفاصيل
             </a>
+
           </div>
 
         </div>
 
         <h2 className="text-xl font-bold mt-12 mb-6">
-          منتجات مشابهة  
+          منتجات مشابهة
         </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
