@@ -36,26 +36,33 @@ export async function GET() {
 <description>Best deals and coupons</description>
 
 ${safeProducts
-  .filter((p) => p.product_url && p.image_url && p.price)
+  .filter((p) => p.slug && p.image_url && p.price)
   .map((p) => {
-    // 🔥 حل مشكلة الرابط الناقص
-    const fullLink = p.product_url.startsWith("http")
-      ? p.product_url
-      : `https://www.noon.com/${p.product_url}`;
+    // ✅ الرابط الصحيح (موقعك مش أفلييت)
+    const productLink = `https://www.extracode.online/eg/product/${p.slug}`;
 
     return `
 <item>
   <g:id>${escapeXml(String(p.id))}</g:id>
+
   <g:title>${escapeXml(p.title)}</g:title>
-  <g:description>${escapeXml(p.description || p.title)}</g:description>
-  <g:link>${escapeXml(fullLink)}</g:link>
+
+  <g:description>
+    ${escapeXml((p.description || p.title).slice(0, 500))}
+  </g:description>
+
+  <g:link>${escapeXml(productLink)}</g:link>
+
   <g:image_link>${escapeXml(p.image_url)}</g:image_link>
+
   <g:price>${escapeXml(`${p.price} ${p.currency || "EGP"}`)}</g:price>
+
   <g:availability>in stock</g:availability>
+
   <g:condition>new</g:condition>
 
-  <!-- تحسينات إضافية -->
-  <g:brand>ExtraCode</g:brand>
+  <!-- تحسين القبول -->
+  <g:brand>Generic</g:brand>
   <g:identifier_exists>false</g:identifier_exists>
 
 </item>`;
