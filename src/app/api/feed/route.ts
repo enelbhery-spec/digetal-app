@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-// 🛡️ دالة تنظيف XML
+// 🛡️ تنظيف XML
 function escapeXml(unsafe: string) {
   return unsafe
     ?.replace(/&/g, "&amp;")
@@ -13,14 +13,10 @@ function escapeXml(unsafe: string) {
 
 export async function GET() {
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    if (!supabaseUrl || !supabaseKey) {
-      return new NextResponse("Supabase env missing", { status: 500 });
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
 
     const { data: products, error } = await supabase
       .from("products")
@@ -41,19 +37,29 @@ export async function GET() {
 
 ${safeProducts
   .filter((p) => p.product_url && p.image_url && p.price)
-  .map(
-    (p) => `
+  .map((p) => {
+    // 🔥 حل مشكلة الرابط الناقص
+    const fullLink = p.product_url.startsWith("http")
+      ? p.product_url
+      : `https://www.noon.com/${p.product_url}`;
+
+    return `
 <item>
-  <g:id>${escapeXml(p.id)}</g:id>
+  <g:id>${escapeXml(String(p.id))}</g:id>
   <g:title>${escapeXml(p.title)}</g:title>
   <g:description>${escapeXml(p.description || p.title)}</g:description>
-  <g:link>${escapeXml(p.product_url)}</g:link>
+  <g:link>${escapeXml(fullLink)}</g:link>
   <g:image_link>${escapeXml(p.image_url)}</g:image_link>
   <g:price>${escapeXml(`${p.price} ${p.currency || "EGP"}`)}</g:price>
   <g:availability>in stock</g:availability>
   <g:condition>new</g:condition>
-</item>`
-  )
+
+  <!-- تحسينات إضافية -->
+  <g:brand>ExtraCode</g:brand>
+  <g:identifier_exists>false</g:identifier_exists>
+
+</item>`;
+  })
   .join("")}
 
 </channel>
@@ -64,7 +70,6 @@ ${safeProducts
         "Content-Type": "application/xml",
       },
     });
-
   } catch (err: any) {
     return new NextResponse(err.message || "Server Error", {
       status: 500,
