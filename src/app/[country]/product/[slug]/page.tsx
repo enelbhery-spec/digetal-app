@@ -213,12 +213,12 @@ export default async function ProductPage({ params }: Props) {
 
             <div className="flex items-center gap-4 mb-5">
               <span className="text-3xl font-bold text-green-600">
-                {product.price} EGP
+                {product.price} 
               </span>
 
               {product.old_price && (
                 <span className="text-gray-400 line-through text-lg">
-                  {product.old_price} EGP
+                  {product.old_price} 
                 </span>
               )}
             </div>
