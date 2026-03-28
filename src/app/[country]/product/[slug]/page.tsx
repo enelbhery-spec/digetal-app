@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import Image from "next/image";
 import { Metadata } from "next";
 import ProductCard from "@/components/ProductCard";
+import ShareButtons from "@/components/components/ShareButtons";
 
 type Props = {
   params: Promise<{ slug: string; country: string }>;
@@ -29,18 +30,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    title: `${product.title}   | أفضل سعر 2026`,
-    description: `${product.description?.slice(0, 140)}  بأفضل سعر`,
-
+    title: `${product.title} | أفضل سعر 2026`,
+    description: `${product.description?.slice(0, 140)} بأفضل سعر`,
     alternates: {
       canonical: `https://www.extracode.online/${country}/product/${slug}`,
     },
-
     openGraph: {
-      title: `${product.title}`,
+      title: product.title,
       description: product.description,
       images: [product.image_url],
-      locale: "ar_EG",
+      locale: country === "sa" ? "ar_SA" : "ar_EG",
     },
   };
 }
@@ -55,6 +54,12 @@ export default async function ProductPage({ params }: Props) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
+
+  // 🔥 العملة
+  const currency = country === "sa" ? "SAR" : "EGP";
+
+  // 🔥 رابط المنتج (مهم للمشاركة)
+  const productUrl = `https://www.extracode.online/${country}/product/${slug}`;
 
   /* الدولة */
   const { data: countryData } = await supabase
@@ -80,9 +85,7 @@ export default async function ProductPage({ params }: Props) {
     );
   }
 
-  /* ======================
-     منتجات مشابهة
-  ====================== */
+  /* منتجات مشابهة */
   let relatedProducts: any[] = [];
 
   if (product.category_id && countryId) {
@@ -118,9 +121,6 @@ export default async function ProductPage({ params }: Props) {
     relatedProducts = data || [];
   }
 
-  /* ======================
-     حسابات
-  ====================== */
   const discount =
     product.old_price && product.price
       ? Math.round(
@@ -132,9 +132,7 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <>
-      {/* ======================
-          Product Schema (SEO)
-      ====================== */}
+      {/* SEO Schema */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -142,40 +140,21 @@ export default async function ProductPage({ params }: Props) {
             "@context": "https://schema.org",
             "@graph": [
               {
-                "@type": "WebSite",
-                name: "ExtraCode",
-                url: "https://www.extracode.online",
-                inLanguage: "ar-EG",
-                areaServed: {
-                  "@type": "Country",
-                  name: "Egypt"
-                }
-              },
-              {
                 "@type": "Product",
                 name: product.title,
                 image: product.image_url,
                 description: product.description,
                 sku: product.id,
-                brand: {
-                  "@type": "Brand",
-                  name: "ExtraCode"
-                },
-                aggregateRating: {
-                  "@type": "AggregateRating",
-                  ratingValue: rating,
-                  reviewCount: 20
-                },
                 offers: {
                   "@type": "Offer",
-                  url: `https://www.extracode.online/${country}/product/${slug}`,
-                  priceCurrency: "EGP",
+                  url: productUrl,
+                  priceCurrency: currency,
                   price: product.price,
-                  availability: "https://schema.org/InStock"
-                }
-              }
-            ]
-          })
+                  availability: "https://schema.org/InStock",
+                },
+              },
+            ],
+          }),
         }}
       />
 
@@ -213,12 +192,12 @@ export default async function ProductPage({ params }: Props) {
 
             <div className="flex items-center gap-4 mb-5">
               <span className="text-3xl font-bold text-green-600">
-                {product.price} 
+                {product.price} {currency}
               </span>
 
               {product.old_price && (
                 <span className="text-gray-400 line-through text-lg">
-                  {product.old_price} 
+                  {product.old_price} {currency}
                 </span>
               )}
             </div>
@@ -227,7 +206,6 @@ export default async function ProductPage({ params }: Props) {
               {product.description} متوفر الآن بأفضل سعر.
             </p>
 
-            {/* 🔥 التعديل هنا فقط */}
             <a
               href={`/api/redirect?id=${product.id}`}
               target="_blank"
@@ -235,6 +213,12 @@ export default async function ProductPage({ params }: Props) {
             >
               مزيد من التفاصيل
             </a>
+
+            {/* 🔥 أزرار المشاركة */}
+            <ShareButtons
+              title={product.title}
+              url={productUrl}
+            />
 
           </div>
 
