@@ -17,11 +17,20 @@ export async function GET() {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
-    // 👇 فلترة منتجات السعودية فقط
+    // 🔥 نجيب ID السعودية
+    const { data: country } = await supabase
+      .from("countries")
+      .select("id")
+      .eq("code", "sa")
+      .single();
+
+    const countryId = country?.id;
+
+    // 🔥 نجيب منتجات السعودية فقط
     const { data: products, error } = await supabase
       .from("products")
       .select("*")
-      .eq("country_code", "sa"); // مهم
+      .eq("country_id", countryId);
 
     if (error) {
       return new NextResponse(error.message, { status: 500 });
@@ -53,11 +62,9 @@ ${(products || [])
 
   <g:image_link>${escapeXml(p.image_url)}</g:image_link>
 
-  <!-- 🔥 العملة السعودية -->
   <g:price>${escapeXml(`${p.price} SAR`)}</g:price>
 
   <g:availability>in stock</g:availability>
-
   <g:condition>new</g:condition>
 
   <g:brand>Generic</g:brand>
