@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -64,10 +65,6 @@
     "tailwindcss": "^3.4.10",
     "typescript": "^5.6.3",
     "eslint": "^9.0.0",
-    "eslint-config-next": "^15.0.30",
-    "cross-env": "^7.0.3"
-  },
-  "engines": {
-    "node": "20.x"
+    "eslint-config-next": "^15.0.30"
   }
 }
