@@ -6,8 +6,7 @@
     "dev": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "clean": "rd /s /q .next && rd /s /q node_modules && npm install"
+    "lint": "next lint"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -70,6 +69,6 @@
     "cross-env": "^7.0.3"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": "20.x"
   }
 }
