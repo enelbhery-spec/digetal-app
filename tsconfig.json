@@ -14,8 +14,6 @@
     "jsx": "preserve",
     "incremental": true,
 
-    /* الحل النهائي للمشكلة الظاهرة في الصورة */
-    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "forceConsistentCasingInFileNames": true,
 
