@@ -11,28 +11,32 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
-        {/* Logo */}
+        {/* Logo Section */}
         <Link
           href={`/${country}`}
-          className="text-2xl font-extrabold text-green-600"
+          className="flex flex-col items-start leading-tight"
         >
-          خصومات و كوبونات
+          <span className="text-2xl font-extrabold text-green-600 tracking-tight">
+            إكسترا كود
+          </span>
+          <span className="text-[10px] uppercase font-bold text-gray-400 tracking-[0.2em] -mt-1">
+            Extracode
+          </span>
         </Link>
 
         {/* Navigation */}
         <nav className="flex items-center gap-6 font-semibold text-gray-700">
-
-          {/* رابط المقارنات */}
           <Link
-             href={`/${country}/compare`}
-            className="hover:text-green-600 transition"
+            href={`/${country}/compare`}
+            className="hover:text-green-600 transition text-sm"
           >
+           
           </Link>
-
+          
+          {/* يمكنك إضافة روابط أخرى هنا مثل: المتاجر، الأقسام */}
         </nav>
 
       </div>
-      
     </header>
   );
 }
