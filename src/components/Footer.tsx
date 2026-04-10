@@ -12,17 +12,22 @@ export default function Footer() {
     <footer className="bg-gray-900 text-gray-300 mt-20" dir="rtl">
       <div className="max-w-7xl mx-auto px-6 py-14 grid grid-cols-1 md:grid-cols-4 gap-10">
 
-        {/* About */}
+        {/* About & Corporate Info */}
         <div>
           <h3 className="text-xl font-bold text-white mb-4 italic">
             ExtraCode
           </h3>
-          <p className="text-sm leading-relaxed">
+          <p className="text-sm leading-relaxed mb-4">
             دليلك الأول لأقوى الخصومات والكوبونات الحصرية لمتاجر أمازون ونون. نحن نساعدك على التسوق بذكاء وتوفير المال.
           </p>
+          <div className="text-xs text-gray-400 border-r-2 border-green-600 pr-3">
+            <p className="font-bold text-gray-200">إدارة وتشغيل:</p>
+            <p>مؤسسة ركائز العمران للتسويق</p>
+            <p>📍 الدولية بلازا، مدينة 6 أكتوبر، الجيزة</p>
+          </div>
         </div>
 
-        {/* سياسات الموقع - تم إضافة ${country} للمسارات */}
+        {/* سياسات الموقع */}
         <div>
           <h4 className="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">سياسات الموقع</h4>
           <ul className="space-y-3 text-sm">
@@ -49,10 +54,10 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Quick Links */}
+        {/* Quick Links & Disclosure */}
         <div>
           <h4 className="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">روابط سريعة</h4>
-          <ul className="space-y-3 text-sm">
+          <ul className="space-y-3 text-sm mb-4">
             <li>
               <Link href={`/${country}`} className="hover:text-white transition">
                 الرئيسية
@@ -64,6 +69,10 @@ export default function Footer() {
               </Link>
             </li>
           </ul>
+          <div className="text-[10px] text-gray-500 leading-tight">
+            <p className="font-bold text-gray-400 mb-1">إفصاح التسويق:</p>
+            موقع إكسترا كود هو منصة وسيطة؛ الروابط المنشورة قد تمنحنا عمولة عند الشراء دون أي تكلفة إضافية عليك.
+          </div>
         </div>
 
         {/* Contact */}
@@ -75,7 +84,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             className="inline-block w-full text-center bg-green-600 text-white px-5 py-3 rounded-xl font-bold hover:bg-green-700 transition mb-3 shadow-lg"
           >
-            واتساب مباشر
+            واتساب: 01021732703
           </a>
           <p className="text-xs text-gray-400 text-center font-mono">support@extracode.online</p>
         </div>
@@ -86,7 +95,7 @@ export default function Footer() {
         <div className="mb-2">
           جميع العلامات التجارية (نون، أمازون) ملك لأصحابها وتستخدم لأغراض توضيحية فقط.
         </div>
-        © {new Date().getFullYear()} ExtraCode - جميع الحقوق محفوظة
+        © {new Date().getFullYear()} ركائز العمران للتسويق - ExtraCode - جميع الحقوق محفوظة
       </div>
     </footer>
   );
