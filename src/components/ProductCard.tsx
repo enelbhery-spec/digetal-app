@@ -102,7 +102,7 @@ export default function ProductCard({ product, country }: Props) {
             rel="nofollow sponsored"
             className="w-full bg-green-600 text-white text-sm py-3 rounded-lg text-center font-semibold hover:bg-green-700 transition"
           >
-            شاهد العرض 🔥
+            اشترى الان🔥
           </a>
         </div>
       </div>
