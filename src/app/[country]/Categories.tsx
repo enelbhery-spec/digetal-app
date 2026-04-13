@@ -5,19 +5,14 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { 
-  Glasses, Footprints, Watch, Smartphone, Home, CarFront, 
-  ShoppingBag, LayoutGrid, Laptop, Cat, BookText, Briefcase, 
-  Lightbulb, HeartPulse, LoaderCircle, Tablet, Utensils, 
-  Gamepad2, Bike, Headphones, Camera, Sparkles, Baby, 
-  Wind, Shirt, Bath
+  Glasses, Footprints, Watch, Smartphone, LayoutGrid, Laptop, Cat, 
+  LoaderCircle, Utensils, Shirt, CarFront 
 } from "lucide-react";
 
 export default function Categories() {
   const params = useParams();
   
-  /** * حل مشكلة Property 'toUpperCase' does not exist
-   * نقوم بالتأكد أن القيمة نصية وليست مصفوفة (Array)
-   */
+  // التأكد من الحصول على كود الدولة (مصر أو السعودية) بشكل نصي
   const rawCountry = params?.country;
   const country = Array.isArray(rawCountry) ? rawCountry[0] : (rawCountry || 'eg'); 
   
@@ -47,7 +42,6 @@ export default function Categories() {
     const iconSize = 28;
     const slug = categorySlug.toLowerCase().trim();
 
-    // خريطة الأيقونات المحدثة لتناسب تصنيفاتك
     if (slug.includes('mobile')) return <Smartphone size={iconSize} />;
     if (slug.includes('laptop')) return <Laptop size={iconSize} />;
     if (slug.includes('watch')) return <Watch size={iconSize} />;
@@ -63,7 +57,7 @@ export default function Categories() {
 
   if (loading) {
     return (
-      <div className="text-center py-20 flex justify-center items-center gap-3 text-gray-400">
+      <div className="text-center py-20 flex justify-center items-center gap-3 text-gray-400 font-bold">
         <LoaderCircle className="animate-spin" size={24} />
         <span>جاري تحميل الأقسام...</span>
       </div>
@@ -76,8 +70,7 @@ export default function Categories() {
         <div className="flex flex-col md:flex-row items-center justify-between mb-12 border-r-4 border-green-500 pr-4">
           <div className="text-right">
             <h2 className="text-3xl font-black text-gray-900">تصنيف المنتجات</h2>
-            <p className="text-gray-500 mt-1">
-               {/* استخدام المتغير بعد التأكد من نوعه */}
+            <p className="text-gray-500 mt-1 font-bold">
               عرض الأقسام المتاحة في السوق ({country.toUpperCase()})
             </p>
           </div>
@@ -87,15 +80,15 @@ export default function Categories() {
           {categories.map((category) => (
             <Link 
               key={category.id} 
-              // الرابط يتبع هيكلة: /[country]/product/[slug]
-              href={`/${country}/product/${category.slug}`}
-              className="relative group bg-gray-50 rounded-2xl p-6 border border-transparent hover:border-green-400 hover:bg-green-600 transition-all duration-300 shadow-sm hover:shadow-xl flex flex-col items-center text-center"
+              /* التعديل هنا: استخدام category بدلاً من product لفك التداخل */
+              href={`/${country}/category/${category.slug}`}
+              className="relative group bg-gray-50 rounded-[2rem] p-6 border border-transparent hover:border-green-400 hover:bg-green-600 transition-all duration-300 shadow-sm hover:shadow-xl flex flex-col items-center text-center"
             >
               <div className="mb-4 inline-flex p-3 bg-white rounded-xl text-green-600 group-hover:bg-white/20 group-hover:text-white transition-all duration-300 shadow-sm">
                 {getCategoryIcon(category.slug)}
               </div>
               
-              <h3 className="text-sm font-bold text-gray-800 group-hover:text-white transition-colors line-clamp-2">
+              <h3 className="text-sm font-black text-gray-800 group-hover:text-white transition-colors line-clamp-2">
                 {category.title}
               </h3>
             </Link>

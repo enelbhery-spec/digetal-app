@@ -1,100 +1,110 @@
 import { createClient } from "@supabase/supabase-js";
 import { Metadata } from "next";
-import ProductCard from "@/components/ProductCard";
+import { notFound } from "next/navigation";
+import Link from "next/link"; // استيراد Link للتنقل
 
 type Props = {
   params: Promise<{ slug: string; country: string }>;
 };
 
-// إنشاء عميل Supabase
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-/* ======================
-    SEO
-====================== */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug, country } = await params;
-
-  // جلب بيانات القسم بدلاً من المنتج
-  const { data: category } = await supabase
-    .from("categories")
-    .select("title")
+  const { slug } = await params;
+  const { data: product } = await supabase
+    .from("products")
+    .select("title, description")
     .eq("slug", slug)
     .single();
 
-  if (!category) return { title: "القسم غير موجود" };
+  if (!product) return { title: "المنتج غير موجود" };
 
   return {
-    title: `عروض ${category.title} في ${country === 'sa' ? 'السعودية' : 'مصر'} | إكسترا كود`,
-    description: `استكشف أفضل عروض وكوبونات خصم على ${category.title} في ${country}.`,
+    title: `${product.title} | إكسترا كود`,
+    description: product.description,
   };
 }
 
-/* ======================
-    الصفحة
-====================== */
-export default async function CategoryPage({ params }: Props) {
+export default async function ProductDetailsPage({ params }: Props) {
   const { slug, country } = await params;
 
-  // 1. جلب بيانات القسم بناءً على الـ slug
-  const { data: category } = await supabase
-    .from("categories")
-    .select("id, title")
+  // جلب بيانات المنتج مع اسم القسم عبر Relation
+  const { data: product } = await supabase
+    .from("products")
+    .select("*, categories(title)")
     .eq("slug", slug)
     .single();
 
-  if (!category) {
-    return <div className="text-center p-10 text-xl font-bold">هذا القسم غير موجود حالياً.</div>;
-  }
-
-  // 2. جلب ID الدولة لفلترة المنتجات
-  const { data: countryData } = await supabase
-    .from("countries")
-    .select("id")
-    .eq("code", country)
-    .single();
-
-  const countryId = countryData?.id;
-
-  // 3. جلب جميع المنتجات التابعة لهذا القسم وفي هذه الدولة
-  const { data: products, error } = await supabase
-    .from("products")
-    .select("*")
-    .eq("category_id", category.id)
-    .eq("country_id", countryId)
-    .order('created_at', { ascending: false });
+  if (!product) notFound();
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      {/* رأس الصفحة */}
-      <div className="mb-10 border-r-4 border-green-600 pr-4">
-        <h1 className="text-3xl font-black text-gray-900">
-          عروض {category.title}
-        </h1>
-        <p className="text-gray-500 mt-2">
-          تم العثور على {products?.length || 0} منتج في {country === 'sa' ? 'المملكة العربية السعودية' : 'جمهورية مصر العربية'}
-        </p>
-      </div>
-
-      {/* شبكة المنتجات */}
-      {products && products.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map((item) => (
-            <ProductCard
-              key={item.id}
-              product={item}
-              country={country}
+    <main className="max-w-7xl mx-auto p-6" dir="rtl">
+      <div className="bg-white rounded-[3rem] shadow-sm border border-gray-100 overflow-hidden">
+        <div className="grid md:grid-cols-2 gap-10 p-8 md:p-12">
+          
+          {/* صورة المنتج */}
+          <div className="bg-gray-50 rounded-[2.5rem] flex items-center justify-center p-6 border border-gray-50">
+            <img 
+              src={product.image_url} 
+              alt={product.title} 
+              className="max-h-[400px] object-contain transition-transform duration-500 hover:scale-105"
             />
-          ))}
+          </div>
+
+          {/* تفاصيل المنتج */}
+          <div className="flex flex-col justify-center">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="bg-green-100 text-green-700 px-4 py-1 rounded-full text-xs font-black">
+                {product.categories?.title || "قسم عام"}
+              </span>
+              <span className="text-gray-400 text-xs font-bold">
+                كود المنتج: {product.id.toString().slice(0, 8)}
+              </span>
+            </div>
+
+            <h1 className="text-3xl font-black text-gray-900 mb-6 leading-tight">
+              {product.title}
+            </h1>
+
+            <div className="flex items-baseline gap-4 mb-8">
+              <span className="text-4xl font-black text-green-600">
+                {product.price} {country === 'sa' ? 'ر.س' : 'ج.م'}
+              </span>
+              {product.old_price && (
+                <span className="text-xl text-gray-400 line-through font-bold">
+                  {product.old_price}
+                </span>
+              )}
+            </div>
+
+            <p className="text-gray-600 leading-relaxed mb-10 font-medium">
+              {product.description}
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <a 
+                href={product.affiliate_link}
+                target="_blank"
+                rel="nofollow noopener"
+                className="flex-1 bg-green-600 text-white text-center py-5 rounded-2xl font-black text-xl shadow-lg shadow-green-100 transition-all hover:bg-green-700 active:scale-95"
+              >
+                اشتري الآن ⚡
+              </a>
+              
+              {/* التعديل هنا: استخدام Link بدلاً من زر يحتوي على onClick */}
+              <Link 
+                href={`/${country}`}
+                className="px-8 py-5 border-2 border-gray-100 text-gray-400 text-center rounded-2xl font-bold transition-all hover:bg-gray-50"
+              >
+                رجوع
+              </Link>
+            </div>
+          </div>
         </div>
-      ) : (
-        <div className="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
-          <p className="text-gray-400 text-lg">قريباً.. سنضيف عروضاً جديدة في قسم {category.title}</p>
-        </div>
-      )}
-    </div>
+      </div>
+    </main>
   );
 }
