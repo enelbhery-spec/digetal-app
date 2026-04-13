@@ -1,67 +1,56 @@
 import { createClient } from "@supabase/supabase-js";
-import Image from "next/image";
 import { Metadata } from "next";
 import ProductCard from "@/components/ProductCard";
-import ShareButtons from "@/components/components/ShareButtons";
 
 type Props = {
   params: Promise<{ slug: string; country: string }>;
 };
 
+// إنشاء عميل Supabase
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
 /* ======================
-   SEO
+    SEO
 ====================== */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, country } = await params;
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-
-  const { data: product } = await supabase
-    .from("products")
-    .select("title, description, image_url")
+  // جلب بيانات القسم بدلاً من المنتج
+  const { data: category } = await supabase
+    .from("categories")
+    .select("title")
     .eq("slug", slug)
     .single();
 
-  if (!product) {
-    return { title: "المنتج غير موجود" };
-  }
+  if (!category) return { title: "القسم غير موجود" };
 
   return {
-    title: `${product.title} | أفضل سعر 2026`,
-    description: `${product.description?.slice(0, 140)} بأفضل سعر`,
-    alternates: {
-      canonical: `https://www.extracode.online/${country}/product/${slug}`,
-    },
-    openGraph: {
-      title: product.title,
-      description: product.description,
-      images: [product.image_url],
-      locale: country === "sa" ? "ar_SA" : "ar_EG",
-    },
+    title: `عروض ${category.title} في ${country === 'sa' ? 'السعودية' : 'مصر'} | إكسترا كود`,
+    description: `استكشف أفضل عروض وكوبونات خصم على ${category.title} في ${country}.`,
   };
 }
 
 /* ======================
-   الصفحة
+    الصفحة
 ====================== */
-export default async function ProductPage({ params }: Props) {
+export default async function CategoryPage({ params }: Props) {
   const { slug, country } = await params;
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  // 1. جلب بيانات القسم بناءً على الـ slug
+  const { data: category } = await supabase
+    .from("categories")
+    .select("id, title")
+    .eq("slug", slug)
+    .single();
 
-  // 🔥 العملة
-  const currency = country === "sa" ? "SAR" : "EGP";
+  if (!category) {
+    return <div className="text-center p-10 text-xl font-bold">هذا القسم غير موجود حالياً.</div>;
+  }
 
-  // 🔥 رابط المنتج (مهم للمشاركة)
-  const productUrl = `https://www.extracode.online/${country}/product/${slug}`;
-
-  /* الدولة */
+  // 2. جلب ID الدولة لفلترة المنتجات
   const { data: countryData } = await supabase
     .from("countries")
     .select("id")
@@ -70,166 +59,30 @@ export default async function ProductPage({ params }: Props) {
 
   const countryId = countryData?.id;
 
-  /* المنتج */
-  const { data: product } = await supabase
+  // 3. جلب جميع المنتجات التابعة لهذا القسم وفي هذه الدولة
+  const { data: products, error } = await supabase
     .from("products")
     .select("*")
-    .eq("slug", slug)
-    .single();
-
-  if (!product) {
-    return (
-      <div className="text-center p-10 text-xl">
-        المنتج غير موجود
-      </div>
-    );
-  }
-
-  /* منتجات مشابهة */
-  let relatedProducts: any[] = [];
-
-  if (product.category_id && countryId) {
-    const { data } = await supabase
-      .from("products")
-      .select("id, slug, title, image_url, price, old_price")
-      .eq("category_id", product.category_id)
-      .eq("country_id", countryId)
-      .neq("slug", slug)
-      .limit(6);
-
-    if (data) relatedProducts = data;
-  }
-
-  if (relatedProducts.length === 0 && countryId) {
-    const { data } = await supabase
-      .from("products")
-      .select("id, slug, title, image_url, price, old_price")
-      .eq("country_id", countryId)
-      .neq("slug", slug)
-      .limit(6);
-
-    if (data) relatedProducts = data;
-  }
-
-  if (relatedProducts.length === 0) {
-    const { data } = await supabase
-      .from("products")
-      .select("id, slug, title, image_url, price, old_price")
-      .neq("slug", slug)
-      .limit(6);
-
-    relatedProducts = data || [];
-  }
-
-  const discount =
-    product.old_price && product.price
-      ? Math.round(
-          ((product.old_price - product.price) / product.old_price) * 100
-        )
-      : 0;
-
-  const rating = product.rating || 4.5;
+    .eq("category_id", category.id)
+    .eq("country_id", countryId)
+    .order('created_at', { ascending: false });
 
   return (
-    <>
-      {/* SEO Schema */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@graph": [
-              {
-                "@type": "Product",
-                name: product.title,
-                image: product.image_url,
-                description: product.description,
-                sku: product.id,
-                offers: {
-                  "@type": "Offer",
-                  url: productUrl,
-                  priceCurrency: currency,
-                  price: product.price,
-                  availability: "https://schema.org/InStock",
-                },
-              },
-            ],
-          }),
-        }}
-      />
+    <div className="max-w-7xl mx-auto p-6">
+      {/* رأس الصفحة */}
+      <div className="mb-10 border-r-4 border-green-600 pr-4">
+        <h1 className="text-3xl font-black text-gray-900">
+          عروض {category.title}
+        </h1>
+        <p className="text-gray-500 mt-2">
+          تم العثور على {products?.length || 0} منتج في {country === 'sa' ? 'المملكة العربية السعودية' : 'جمهورية مصر العربية'}
+        </p>
+      </div>
 
-      <div className="max-w-6xl mx-auto p-6">
-
-        <div className="grid md:grid-cols-2 gap-10 items-center">
-
-          <div className="relative flex justify-center">
-            {discount > 0 && (
-              <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-lg text-sm font-bold">
-                -{discount}%
-              </div>
-            )}
-
-            <Image
-              src={product.image_url}
-              alt={product.title}
-              width={450}
-              height={450}
-              className="rounded-xl shadow-lg object-contain"
-            />
-          </div>
-
-          <div>
-            <h1 className="text-2xl font-bold mb-3">
-              {product.title}
-            </h1>
-
-            <div className="flex items-center gap-2 text-yellow-500 mb-4">
-              {"⭐".repeat(Math.round(rating))}
-              <span className="text-gray-600 text-sm">
-                {rating} / 5
-              </span>
-            </div>
-
-            <div className="flex items-center gap-4 mb-5">
-              <span className="text-3xl font-bold text-green-600">
-                {product.price} {currency}
-              </span>
-
-              {product.old_price && (
-                <span className="text-gray-400 line-through text-lg">
-                  {product.old_price} {currency}
-                </span>
-              )}
-            </div>
-
-            <p className="text-gray-700 mb-6">
-              {product.description} متوفر الآن بأفضل سعر.
-            </p>
-
-            <a
-              href={`/api/redirect?id=${product.id}`}
-              target="_blank"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg"
-            >
-              مزيد من التفاصيل
-            </a>
-
-            {/* 🔥 أزرار المشاركة */}
-            <ShareButtons
-              title={product.title}
-              url={productUrl}
-            />
-
-          </div>
-
-        </div>
-
-        <h2 className="text-xl font-bold mt-12 mb-6">
-          منتجات مشابهة
-        </h2>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-          {relatedProducts.map((item: any) => (
+      {/* شبكة المنتجات */}
+      {products && products.length > 0 ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {products.map((item) => (
             <ProductCard
               key={item.id}
               product={item}
@@ -237,8 +90,11 @@ export default async function ProductPage({ params }: Props) {
             />
           ))}
         </div>
-
-      </div>
-    </>
+      ) : (
+        <div className="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+          <p className="text-gray-400 text-lg">قريباً.. سنضيف عروضاً جديدة في قسم {category.title}</p>
+        </div>
+      )}
+    </div>
   );
 }

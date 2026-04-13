@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import "./globals.css";
+import "@/app/globals.css"; 
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import RegisterSW from "@/components/RegisterSW";
+import AppInstallLoader from "@/components/AppInstallLoader"; // ✅ استيراد المكون الجديد
 import Script from "next/script";
 
 export const metadata: Metadata = {
@@ -11,26 +12,19 @@ export const metadata: Metadata = {
 
   title: {
     default: "عروض امازون - كوبونات نون - كبونات نون السعودية وخصومات أمازون",
-    template: "%s | خصومات وكوبونات",
+    template: "%s | اكسترا كود",
   },
 
   description:
-    "خصومات وكوبونات منصة رقمية مجانية تساعدك الحصول على كوبونات خصم نون السعودية وأفضل منتجات وخصومات أمازون مصر المحدثة يوميًا بسهولة.",
+    "اكسترا كود منصة رقمية مجانية تساعدك الحصول على كوبونات خصم نون السعودية وأفضل منتجات وخصومات أمازون مصر المحدثة يوميًا بسهولة.",
 
   keywords: [
-    "خصومات وكوبونات",
-    "كوبونات نون",
-    "عروض امازون مصر",
-    "خصومات امازون",
-    "كوبونات خصم",
-    "افضل منتجات امازون",
-    "خصومات نون السعودية",
-    "عروض امازون",
+    "اكسترا كود", "كوبونات نون", "عروض امازون مصر", "خصومات امازون",
+    "كوبونات خصم", "افضل منتجات امازون", "خصومات نون السعودية", "عروض امازون",
   ],
 
-  authors: [{ name: "خصومات وكوبونات" }],
-  creator: "خصومات وكوبونات",
-
+  authors: [{ name: "اكسترا كود" }],
+  creator: "اكسترا كود",
   manifest: "/manifest.json",
 
   icons: {
@@ -39,14 +33,11 @@ export const metadata: Metadata = {
     apple: "/favicon.ico",
   },
 
-  // ❌ حذف canonical من هنا
-
   openGraph: {
-    title: "خصومات وكوبونات - نون السعودية وخصومات أمازون",
-    description:
-      "أفضل منتجات أمازون مصر ونون السعودية مع كوبونات خصم مباشرة.",
+    title: "اكسترا كود - نون السعودية وخصومات أمازون",
+    description: "أفضل منتجات أمازون مصر ونون السعودية مع كوبونات خصم مباشرة.",
     url: "https://www.extracode.online",
-    siteName: "خصومات وكوبونات",
+    siteName: "اكسترا كود",
     locale: "ar_EG",
     type: "website",
     images: [
@@ -54,16 +45,15 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "خصومات وكوبونات",
+        alt: "اكسترا كود",
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "خصومات وكوبونات - خصومات أمازون",
-    description:
-      "أفضل خصومات أمازون مصر وكوبونات نون السعودية المحدثة يوميًا.",
+    title: "اكسترا كود - خصومات أمازون",
+    description: "أفضل خصومات أمازون مصر وكوبونات نون السعودية المحدثة يوميًا.",
     images: ["/og-image.png"],
   },
 
@@ -73,14 +63,13 @@ export const metadata: Metadata = {
   },
 
   other: {
-    "google-site-verification":
-      "7XY4QFlcbO13HsbJ3M-4Pl1l9A4Pbbe-GltnYncvINA",
+    "google-site-verification": "7XY4QFlcbO13HsbJ3M-4Pl1l9A4Pbbe-GltnYncvINA",
     "google-adsense-account": "ca-pub-4973672854580770",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#16a34a",
+  themeColor: "#16a34a", // اللون الأخضر الخاص بك
   width: "device-width",
   initialScale: 1,
 };
@@ -93,16 +82,13 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" className="scroll-smooth">
       <head>
-
-        {/* ❌ حذف canonical من هنا */}
-
-        {/* Structured Data */}
+        {/* Schema Markup */}
         <Script id="schema-web" type="application/ld+json" strategy="afterInteractive">
           {`
           {
             "@context": "https://schema.org",
             "@type": "WebSite",
-            "name": "خصومات وكوبونات",
+            "name": "اكسترا كود",
             "url": "https://www.extracode.online",
             "potentialAction": {
               "@type": "SearchAction",
@@ -121,7 +107,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
 
-        {/* Google Analytics */}
+        {/* Google Analytics (Tag Manager) */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-FGK2Z5C8W8"
           strategy="afterInteractive"
@@ -129,35 +115,32 @@ export default function RootLayout({
 
         <Script id="ga4" strategy="afterInteractive">
           {`
-            const isBot = /bot|crawler|spider|crawling/i.test(navigator.userAgent);
-
-            if(!isBot){
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-
-              gtag('config', 'G-FGK2Z5C8W8', {
-                page_path: window.location.pathname,
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-FGK2Z5C8W8', {
                 anonymize_ip: true
-              });
-            }
+            });
           `}
         </Script>
-
       </head>
 
       <body className="min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased">
-
+        {/* 1. الهيدر يظل ثابتاً في الأعلى */}
         <Header />
 
-        <main className="flex-1 container mx-auto px-4">
-          {children}
-        </main>
+        {/* 2. مغلف التثبيت الذكي يغطي المحتوى الرئيسي */}
+        <AppInstallLoader>
+          <main className="flex-1 container mx-auto px-4">
+            {children}
+          </main>
+        </AppInstallLoader>
 
+        {/* 3. الفوتر */}
         <Footer />
 
+        {/* 4. تسجيل Service Worker الخاص بالـ PWA */}
         <RegisterSW />
-
       </body>
     </html>
   );

@@ -12,7 +12,7 @@ export default function ProductCard({ product, country }: Props) {
   const [isCampaignActive, setIsCampaignActive] = useState(false)
 
   useEffect(() => {
-    // تحديد تاريخ بداية الحملة (22 أبريل)
+    // تحديد تاريخ بداية الحملة (22 أبريل 2026)
     const campaignStartDate = new Date('2026-04-22T00:00:00');
     const now = new Date();
     if (now >= campaignStartDate) {
@@ -20,19 +20,21 @@ export default function ProductCard({ product, country }: Props) {
     }
   }, []);
 
-  // 🛠️ إصلاح الخطأ: إضافة علامة الاستفهام (?) للتأكد من وجود الرابط قبل الفحص
-  // هذا سيمنع خطأ TypeError ويضمن استمرار عرض الكارت
+  // التحقق الآمن من الرابط لمنع Runtime Error
   const productUrl = product?.product_url || "";
   const isNoonProduct = productUrl.includes('noon.com');
 
   const price = product.price || 0
   const oldPrice = product.old_price || 0
   const discount = oldPrice > price ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0
-  const saving = oldPrice > price ? oldPrice - price : 0
   const currency = country === "sa" ? "ر.س" : "ج.م"
 
-  // تحديد الكوبون بناءً على الدولة
+  // الكوبون الافتراضي حسب الدولة
   const activeCoupon = product.coupon_code || (country === "sa" ? "AHSB" : "HLWAC");
+
+  // 🛠️ معالجة الـ Slug لضمان عدم حدوث خطأ 404
+  // نقوم بإزالة المسافات الزائدة والتأكد من صياغة الرابط بشكل سليم
+  const safeSlug = product?.slug ? encodeURIComponent(product.slug.trim()) : "";
 
   const handleCopy = () => {
     if (!isCampaignActive || !isNoonProduct) return;
@@ -44,7 +46,7 @@ export default function ProductCard({ product, country }: Props) {
   return (
     <div className="bg-white rounded-xl shadow-sm hover:shadow-2xl transition overflow-hidden border relative group">
       
-      {/* عرض نسبة الخصم */}
+      {/* نسبة الخصم */}
       {discount > 0 && (
         <div className="absolute top-2 right-2 bg-green-600 text-white text-xs px-2 py-1 rounded z-10">
           خصم {discount}%
@@ -76,7 +78,7 @@ export default function ProductCard({ product, country }: Props) {
           )}
         </div>
 
-        {/* 🏷️ منطقة الكوبون: تظهر فقط لمنتجات نون */}
+        {/* 🏷️ منطقة الكوبون: تظهر لمنتجات نون فقط */}
         {isNoonProduct && (
           <div 
             onClick={handleCopy}
@@ -94,15 +96,22 @@ export default function ProductCard({ product, country }: Props) {
           </div>
         )}
 
-        {/* الأزرار لجميع المنتجات (أمازون ونون) */}
+        {/* 🔘 الأزرار: تم إصلاح رابط التفاصيل باستخدام safeSlug */}
         <div className="mt-4 flex gap-2">
+          <a
+            href={`/${country}/product/${safeSlug}`}
+            className="w-1/2 bg-gray-200 text-black text-sm py-3 rounded-lg text-center font-semibold hover:bg-gray-300 transition"
+          >
+            التفاصيل
+          </a>
+
           <a
             href={productUrl}
             target="_blank"
             rel="nofollow sponsored"
-            className="w-full bg-green-600 text-white text-sm py-3 rounded-lg text-center font-semibold hover:bg-green-700 transition"
+            className="w-1/2 bg-green-600 text-white text-sm py-3 rounded-lg text-center font-semibold hover:bg-green-700 transition"
           >
-            اشترى الان🔥
+            اشتري الآن 🔥
           </a>
         </div>
       </div>
