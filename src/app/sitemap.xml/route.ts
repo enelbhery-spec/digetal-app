@@ -5,25 +5,10 @@ export const revalidate = 0;
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  // التعديل هنا: إضافة await لأن headers() أصبحت Promise في النسخ الجديدة
   const headersList = await headers(); 
   const host = headersList.get("host"); 
-  
-  // تحديد البروتوكول والدومين ديناميكياً
   const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
   const baseUrl = `${protocol}://${host}`;
-
-  /* جلب البيانات من Supabase */
-  const { data: products } = await supabase
-    .from("products")
-    .select("id, created_at, code")
-    .order("created_at", { ascending: false })
-    .range(0, 5000);
-
-  const { data: articles } = await supabase
-    .from("articles")
-    .select("slug, created_at")
-    .order("created_at", { ascending: false });
 
   const formatDate = (date: string) => {
     try {
@@ -33,42 +18,67 @@ export async function GET() {
     }
   }
 
-  let urls: string[] = []
+  /* 1. جلب البيانات من الجداول المختلفة */
+  // جلب المنتجات مع كود الدولة
+  const { data: products } = await supabase.from("products").select("id, created_at, code").limit(2000);
+  
+  // جلب المقالات مع كود الدولة الخاص بها (تأكد أن عمود code موجود في جدول articles)
+  const { data: articles } = await supabase.from("articles").select("slug, created_at, code");
 
-  // 1. الصفحة الرئيسية
-  urls.push(`
-    <url>
-      <loc>${baseUrl}</loc>
-      <lastmod>${formatDate(new Date().toISOString())}</lastmod>
-      <changefreq>daily</changefreq>
-      <priority>1.0</priority>
-    </url>
-  `);
+  // جلب التصنيفات (لنفترض أن اسم الجدول categories)
+  const { data: categories } = await supabase.from("categories").select("slug");
 
-  // 2. روابط المنتجات
-  products?.forEach((p) => {
-    const date = p.created_at ? formatDate(p.created_at) : formatDate(new Date().toISOString());
-    const countryPath = p.code === 'sa' ? 'sa' : 'eg';
+  const countries = ['eg', 'sa'];
+  let urls: string[] = [];
+
+  // 1. الصفحات الرئيسية للدول (Priority 1.0)
+  countries.forEach(code => {
     urls.push(`
-    <url>
-      <loc>${baseUrl}/${countryPath}/product/${p.id}</loc>
-      <lastmod>${date}</lastmod>
-      <changefreq>weekly</changefreq>
-      <priority>0.8</priority>
-    </url>
+      <url>
+        <loc>${baseUrl}/${code}</loc>
+        <lastmod>${formatDate(new Date().toISOString())}</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+      </url>
     `);
   });
 
-  // 3. روابط المقالات
-  articles?.forEach((a) => {
-    const date = a.created_at ? formatDate(a.created_at) : formatDate(new Date().toISOString());
+  // 2. روابط التصنيفات لكل دولة (Priority 0.9)
+  countries.forEach(code => {
+    categories?.forEach(cat => {
+      urls.push(`
+        <url>
+          <loc>${baseUrl}/${code}/category/${cat.slug}</loc>
+          <changefreq>weekly</changefreq>
+          <priority>0.9</priority>
+        </url>
+      `);
+    });
+  });
+
+  // 3. روابط المنتجات (ديناميكية حسب كود المنتج)
+  products?.forEach((p) => {
+    const countryPath = p.code?.toLowerCase() || 'eg';
     urls.push(`
-    <url>
-      <loc>${baseUrl}/eg/articles/${a.slug}</loc>
-      <lastmod>${date}</lastmod>
-      <changefreq>weekly</changefreq>
-      <priority>0.7</priority>
-    </url>
+      <url>
+        <loc>${baseUrl}/${countryPath}/product/${p.id}</loc>
+        <lastmod>${formatDate(p.created_at)}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+    `);
+  });
+
+  // 4. روابط المقالات (ديناميكية حسب كود المقال)
+  articles?.forEach((a) => {
+    const countryPath = a.code?.toLowerCase() || 'eg';
+    urls.push(`
+      <url>
+        <loc>${baseUrl}/${countryPath}/articles/${a.slug}</loc>
+        <lastmod>${formatDate(a.created_at)}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+      </url>
     `);
   });
 

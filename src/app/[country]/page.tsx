@@ -4,6 +4,7 @@ import ProductCard from "@/components/ProductCard"
 import Pagination from "@/components/Pagination"
 import Categories from "@/app/[country]/Categories"
 import { supabase } from "@/lib/supabase"
+import ArticlesSection from '@/components/ArticlesSection'
 import Link from "next/link"
 
 type Props = {
@@ -37,7 +38,7 @@ export default async function CountryPage({ params, searchParams }: Props) {
   if (!countryData) notFound()
 
   /* ======================
-      جلب المنتجات (بناءً على country_id)
+      جلب المنتجات
   ====================== */
   const productsLimit = 6
   const productsFrom = (pageProducts - 1) * productsLimit
@@ -53,7 +54,7 @@ export default async function CountryPage({ params, searchParams }: Props) {
   const productsTotalPages = Math.ceil((productsCount || 0) / productsLimit)
 
   /* ======================
-      جلب الخطوط الساخنة (Hotlines) بناءً على country_code
+      جلب الخطوط الساخنة
   ====================== */
   const hotlinesLimit = 6
   const hotlinesFrom = (pageHotlines - 1) * hotlinesLimit
@@ -120,8 +121,8 @@ export default async function CountryPage({ params, searchParams }: Props) {
          <Categories /> 
       </div>
 
-      {/* 4. الخطوط الساخنة (Hotlines) */}
-      <section className="max-w-7xl mx-auto p-6">
+      {/* 4. الخطوط الساخنة */}
+      <section className="max-w-7xl mx-auto p-6 mb-16">
         <div className="flex items-center justify-between mb-10">
             <h2 className="text-2xl font-black text-gray-900">📞 أرقام تهمك في {countryData.name}</h2>
             <div className="h-1 flex-1 mx-6 bg-gray-200/50 rounded-full hidden md:block"></div>
@@ -157,6 +158,10 @@ export default async function CountryPage({ params, searchParams }: Props) {
           </div>
         )}
       </section>
+
+      {/* 5. قسم المقالات (تمت إضافته هنا ليكون فوق الفوتر) */}
+      <ArticlesSection countryCode={countrySlug} />
+
     </main>
   )
 }
