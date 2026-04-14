@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import { Eye, Star } from 'lucide-react' // تأكد من تثبيت lucide-react
 
 type Props = {
   product: any
@@ -12,7 +13,6 @@ export default function ProductCard({ product, country }: Props) {
   const [isCampaignActive, setIsCampaignActive] = useState(false)
 
   useEffect(() => {
-    // تحديد تاريخ بداية الحملة (22 أبريل 2026)
     const campaignStartDate = new Date('2026-04-22T00:00:00');
     const now = new Date();
     if (now >= campaignStartDate) {
@@ -20,7 +20,6 @@ export default function ProductCard({ product, country }: Props) {
     }
   }, []);
 
-  // التحقق الآمن من الرابط لمنع Runtime Error
   const productUrl = product?.product_url || "";
   const isNoonProduct = productUrl.includes('noon.com');
 
@@ -28,12 +27,12 @@ export default function ProductCard({ product, country }: Props) {
   const oldPrice = product.old_price || 0
   const discount = oldPrice > price ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0
   const currency = country === "sa" ? "ر.س" : "ج.م"
+  
+  // جلب عدد المراجعات أو المشاهدات من العمود الجديد
+  const reviewsCount = product.reviewsCount || 0;
+  const stars = product.stars || 0;
 
-  // الكوبون الافتراضي حسب الدولة
   const activeCoupon = product.coupon_code || (country === "sa" ? "AHSB" : "HLWAC");
-
-  // 🛠️ معالجة الـ Slug لضمان عدم حدوث خطأ 404
-  // نقوم بإزالة المسافات الزائدة والتأكد من صياغة الرابط بشكل سليم
   const safeSlug = product?.slug ? encodeURIComponent(product.slug.trim()) : "";
 
   const handleCopy = () => {
@@ -63,6 +62,20 @@ export default function ProductCard({ product, country }: Props) {
       </div>
 
       <div className="p-4">
+        {/* التقييم وعدد المشاهدات/المراجعات */}
+        <div className="flex items-center gap-3 mb-2">
+          {stars > 0 && (
+            <div className="flex items-center gap-1 text-yellow-500 bg-yellow-50 px-2 py-0.5 rounded text-xs font-bold">
+              <Star size={12} fill="currentColor" />
+              {stars}
+            </div>
+          )}
+          <div className="flex items-center gap-1 text-gray-400 text-xs">
+            <Eye size={12} />
+            <span>{reviewsCount > 0 ? reviewsCount.toLocaleString() : "0"} مشاهدة</span>
+          </div>
+        </div>
+
         <h3 className="text-sm font-semibold leading-6 h-12 overflow-hidden text-gray-800">
           {product?.title}
         </h3>
@@ -78,7 +91,7 @@ export default function ProductCard({ product, country }: Props) {
           )}
         </div>
 
-        {/* 🏷️ منطقة الكوبون: تظهر لمنتجات نون فقط */}
+        {/* منطقة الكوبون */}
         {isNoonProduct && (
           <div 
             onClick={handleCopy}
@@ -96,7 +109,7 @@ export default function ProductCard({ product, country }: Props) {
           </div>
         )}
 
-        {/* 🔘 الأزرار: تم إصلاح رابط التفاصيل باستخدام safeSlug */}
+        {/* الأزرار */}
         <div className="mt-4 flex gap-2">
           <a
             href={`/${country}/product/${safeSlug}`}
