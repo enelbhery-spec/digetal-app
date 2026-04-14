@@ -123,7 +123,10 @@ export default function ProductCard({ product, country }: Props) {
           <a
             href={productUrl}
             target="_blank"
-            rel="nofollow sponsored"
+            /* تحسين SEO: إضافة nofollow sponsored لمنع زحف جوجل للروابط الخارجية 
+               تحسين أمان: إضافة noopener noreferrer لمنع تسريب بيانات الموقع
+            */
+            rel="nofollow sponsored noopener noreferrer"
             className="w-1/2 bg-green-600 text-white text-sm py-3 rounded-lg text-center font-semibold hover:bg-green-700 transition"
           >
             اشتري الآن 🔥
