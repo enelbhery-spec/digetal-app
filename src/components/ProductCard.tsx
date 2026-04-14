@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { Eye, Star } from 'lucide-react' // تأكد من تثبيت lucide-react
+import { Eye, Star } from 'lucide-react'
 
 type Props = {
   product: any
@@ -13,6 +13,7 @@ export default function ProductCard({ product, country }: Props) {
   const [isCampaignActive, setIsCampaignActive] = useState(false)
 
   useEffect(() => {
+    // تحديد تاريخ بداية الحملة (22 أبريل 2026)
     const campaignStartDate = new Date('2026-04-22T00:00:00');
     const now = new Date();
     if (now >= campaignStartDate) {
@@ -28,7 +29,7 @@ export default function ProductCard({ product, country }: Props) {
   const discount = oldPrice > price ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0
   const currency = country === "sa" ? "ر.س" : "ج.م"
   
-  // جلب عدد المراجعات أو المشاهدات من العمود الجديد
+  // جلب عدد المراجعات/المشاهدات والنجوم من قاعدة البيانات
   const reviewsCount = product.reviewsCount || 0;
   const stars = product.stars || 0;
 
@@ -47,7 +48,7 @@ export default function ProductCard({ product, country }: Props) {
       
       {/* نسبة الخصم */}
       {discount > 0 && (
-        <div className="absolute top-2 right-2 bg-green-600 text-white text-xs px-2 py-1 rounded z-10">
+        <div className="absolute top-2 right-2 bg-green-600 text-white text-xs px-2 py-1 rounded z-10 font-bold">
           خصم {discount}%
         </div>
       )}
@@ -62,16 +63,17 @@ export default function ProductCard({ product, country }: Props) {
       </div>
 
       <div className="p-4">
-        {/* التقييم وعدد المشاهدات/المراجعات */}
-        <div className="flex items-center gap-3 mb-2">
+        {/* التقييم وعدد المشاهدات - نسخة محسنة الوضوح */}
+        <div className="flex items-center gap-2 mb-3">
           {stars > 0 && (
-            <div className="flex items-center gap-1 text-yellow-500 bg-yellow-50 px-2 py-0.5 rounded text-xs font-bold">
+            <div className="flex items-center gap-1 text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded text-[11px] font-bold border border-yellow-100">
               <Star size={12} fill="currentColor" />
               {stars}
             </div>
           )}
-          <div className="flex items-center gap-1 text-gray-400 text-xs">
-            <Eye size={12} />
+          
+          <div className="flex items-center gap-1 text-slate-700 bg-slate-100 px-2 py-0.5 rounded text-[11px] font-semibold border border-slate-200">
+            <Eye size={13} className="text-slate-500" />
             <span>{reviewsCount > 0 ? reviewsCount.toLocaleString() : "0"} مشاهدة</span>
           </div>
         </div>
@@ -85,7 +87,7 @@ export default function ProductCard({ product, country }: Props) {
             {price.toLocaleString()} {currency}
           </span>
           {oldPrice > price && (
-            <span className="text-gray-400 line-through text-sm">
+            <span className="text-gray-400 line-through text-sm font-medium">
               {oldPrice.toLocaleString()} {currency}
             </span>
           )}
