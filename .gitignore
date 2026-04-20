@@ -1,8 +1,22 @@
+# Dependency directories
 node_modules/
 .next/
+out/
+
+# Environments
 .env*
-venv/
-__pycache__/
+.env.local
+
+# API & Secrets
 service_account.json
 indexed_urls.txt
 index_now.py
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# OS files
+.DS_Store
+Thumbs.db
