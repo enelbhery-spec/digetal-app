@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# منع أرشفة الملفات البرمجية والخاصة بـ Next.js و Supabase
+Disallow: /_next/
+Disallow: /api/
+Disallow: /admin/
+Disallow: /static/
+
+# رابط خريطة الموقع (Sitemap) لمساعدة جوجل في العثور على الـ 800 منتج
+Sitemap: https://www.extracode.online/sitemap.xml

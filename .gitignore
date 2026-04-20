@@ -4,3 +4,4 @@ __pycache__/
 node_modules/
 .next/
 .env
+service_account.json.json
