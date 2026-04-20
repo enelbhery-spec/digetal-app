@@ -7,15 +7,19 @@ import { supabase } from "@/lib/supabase"
 import ArticlesSection from '@/components/ArticlesSection'
 import Link from "next/link"
 
+export const dynamic = "force-dynamic"
+
 type Props = {
   params: Promise<{ country: string }>
-  searchParams?: Promise<{
-    pageProducts?: string
-    pageHotlines?: string
-  }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 const allowedCountries = ["eg", "sa"]
+
+const allowedBrandsByCountry: Record<string, string[]> = {
+  eg: ["amazon", "temu"],
+  sa: ["noon"]
+}
 
 export default async function CountryPage({ params, searchParams }: Props) {
   const { country } = await params
@@ -23,144 +27,153 @@ export default async function CountryPage({ params, searchParams }: Props) {
   
   const countrySlug = country.toLowerCase().trim()
   const pageProducts = Number(sParams?.pageProducts) || 1
-  const pageHotlines = Number(sParams?.pageHotlines) || 1
+  const brandFilter = typeof sParams?.brand === 'string' ? sParams.brand : null
 
+  /* ================= 1. التحقق من البيانات والجلب الأولي ================= */
   if (!allowedCountries.includes(countrySlug)) {
     notFound()
   }
 
+  const allowedBrandsSlugs = allowedBrandsByCountry[countrySlug]
+  if (brandFilter && !allowedBrandsSlugs.includes(brandFilter)) {
+    notFound()
+  }
+
+  const { data: brandsData } = await supabase
+    .from("brands")
+    .select("slug, logo")
+    .in("slug", allowedBrandsSlugs)
+
   const { data: countryData } = await supabase
     .from("countries")
-    .select("id,name,code")
+    .select("id, name, code")
     .eq("code", countrySlug)
     .single()
 
-  if (!countryData) notFound()
+  if (!countryData) {
+    notFound()
+  }
 
-  /* ======================
-      جلب المنتجات
-  ====================== */
-  const productsLimit = 6
+  const countryId = countryData.id
+
+  /* ================= 2. جلب المنتجات (تعديل العدد والترتيب) ================= */
+  const productsLimit = 9 // ✅ تم زيادة العدد إلى 9
   const productsFrom = (pageProducts - 1) * productsLimit
   const productsTo = productsFrom + productsLimit - 1
 
-  const { data: products, count: productsCount } = await supabase
+  let query = supabase
     .from("products")
-    .select("*", { count: "exact" })
-    .eq("country_id", countryData.id)
-    .order("created_at", { ascending: false })
+    .select(`
+      *,
+      brands!fk_products_brand (
+        logo,
+        slug
+      )
+    `, { count: "exact" })
+    .eq("country_id", countryId)
+
+  if (brandFilter) {
+    query = query.eq("brand_slug", brandFilter)
+    // عند اختيار براند معين، نظهر الأحدث أولاً
+    query = query.order("created_at", { ascending: false })
+  } else {
+    // ✅ حل مشكلة التشويق: الترتيب العشوائي أو بكسر التتابع عبر ID
+    // في Supabase لا يوجد random() مباشر بكفاءة، لذا نستخدم الترتيب بـ ID 
+    // لضمان عدم تتابع المنتجات المضافة في نفس الدقيقة.
+    query = query.order("id", { ascending: true }) 
+  }
+
+  const { data: products, count: productsCount } = await query
     .range(productsFrom, productsTo)
+
+  // ✅ خطوة إضافية: بعثرة عشوائية للمنتجات المجلوبة في الصفحة الحالية فقط لزيادة التنوع
+  const shuffledProducts = products ? [...products].sort(() => Math.random() - 0.5) : [];
 
   const productsTotalPages = Math.ceil((productsCount || 0) / productsLimit)
 
-  /* ======================
-      جلب الخطوط الساخنة
-  ====================== */
-  const hotlinesLimit = 6
-  const hotlinesFrom = (pageHotlines - 1) * hotlinesLimit
-  const hotlinesTo = hotlinesFrom + hotlinesLimit - 1
-
-  const { data: hotlines, count: hotlinesCount } = await supabase
-    .from("hotlines")
-    .select("*", { count: "exact" })
-    .eq("country_code", countrySlug) 
-    .range(hotlinesFrom, hotlinesTo)
-
-  const hotlinesTotalPages = Math.ceil((hotlinesCount || 0) / hotlinesLimit)
-
   return (
-    <main className="bg-gray-50 min-h-screen" dir="rtl">
-      {/* 1. الهيدر */}
-      <section className="bg-white py-16 shadow-sm border-b">
-        <div className="max-w-7xl mx-auto text-center px-6">
-          <h1 className="text-4xl font-black mb-4 text-gray-900">
-            أفضل عروض {countryData.name}
-          </h1>
-          <p className="text-gray-500 text-lg max-w-2xl mx-auto font-bold">
-            منصة اكسترا كود تضمن لك الوصول لأحدث كوبونات الخصم، المنتجات الرائجة، وأرقام الخدمات الحيوية.
-          </p>
-        </div>
-      </section>
+    <main className="bg-gray-50 min-h-screen pb-20" dir="rtl">
 
-      {/* 2. المنتجات */}
-      <section className="max-w-7xl mx-auto p-6 mt-12">
-        <div className="flex items-center justify-between mb-10">
-            <h2 className="text-2xl font-black text-gray-900">⚡ أحدث المنتجات</h2>
-            <div className="h-1 flex-1 mx-6 bg-gray-200/50 rounded-full hidden md:block"></div>
+      {/* ✅ العنوان العلوي */}
+      <div className="max-w-7xl mx-auto px-6 pt-10 text-center">
+        <h1 className="text-3xl md:text-4xl font-black text-gray-900 leading-tight">
+           {brandFilter ? `عروض ماركة ${brandFilter.toUpperCase()}` : `أفضل عروض التسوق في ${countrySlug === 'eg' ? 'مصر' : 'السعودية'}`}
+        </h1>
+        <p className="text-gray-500 mt-2 font-bold">تسوق بذكاء ووفر أكثر مع عروضنا الحصرية</p>
+      </div>
+
+      <section className="max-w-7xl mx-auto p-6 mt-4">
+        
+        {/* ✅ أزرار الفلاتر المطورة */}
+        <div className="flex gap-3 mb-10 flex-wrap justify-center md:justify-start">
+          <Link
+            href={`/${countrySlug}`}
+            className={`px-8 py-2.5 rounded-xl font-bold transition-all shadow-sm border ${
+              !brandFilter 
+              ? "bg-green-600 text-white border-green-600 shadow-green-200" 
+              : "bg-white text-gray-600 border-gray-100 hover:bg-green-50"
+            }`}
+          >
+            الكل
+          </Link>
+
+          {brandsData?.map((brand) => (
+            <Link
+              key={brand.slug}
+              href={`/${countrySlug}?brand=${brand.slug}`}
+              className={`px-4 py-2 rounded-xl font-bold transition-all capitalize shadow-sm flex items-center gap-3 border ${
+                brandFilter === brand.slug 
+                ? "bg-green-600 text-white border-green-600 shadow-green-200" 
+                : "bg-white text-gray-600 border-gray-100 hover:border-green-300"
+              }`}
+            >
+              <div className="w-8 h-8 bg-white rounded-full p-1 flex items-center justify-center overflow-hidden border border-gray-100 shadow-sm">
+                <img 
+                  src={brand.logo} 
+                  alt={brand.slug} 
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <span className="hidden sm:inline">{brand.slug}</span>
+            </Link>
+          ))}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {products && products.length > 0 ? (
-            products.map((product: any) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                country={countrySlug}
-              />
-            ))
-          ) : (
-            <div className="col-span-full text-center py-20 bg-white rounded-[2.5rem] border-2 border-dashed border-gray-100">
-              <p className="text-gray-400 font-bold">لا توجد منتجات متاحة حالياً لـ {countryData.name}</p>
-            </div>
-          )}
-        </div>
+        {/* ✅ شبكة المنتجات (تستخدم المصفوفة المبعثرة) */}
+        {shuffledProducts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {shuffledProducts.map((product) => (
+              <ProductCard key={product.id} product={product} country={countrySlug} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-24 bg-white rounded-[2rem] border border-gray-100 shadow-inner">
+            <p className="text-gray-400 font-bold text-xl italic">لا توجد منتجات متوفرة حالياً</p>
+          </div>
+        )}
 
+        {/* ✅ الترقيم */}
         {productsTotalPages > 1 && (
-          <div className="mt-12">
+          <div className="mt-16 flex justify-center">
             <Pagination
               currentPage={pageProducts}
               totalPages={productsTotalPages}
-              baseUrl={`/${countrySlug}?pageHotlines=${pageHotlines}&pageProducts=`}
+              baseUrl={`/${countrySlug}?brand=${brandFilter || ""}&pageProducts=`}
             />
           </div>
         )}
       </section>
 
-      {/* 3. التصنيفات */}
-      <div className="bg-white py-12 border-y border-gray-100 my-16">
-         <Categories /> 
+      {/* الأقسام والمقالات كما هي */}
+      <div className="bg-white py-16 border-y border-gray-100 my-16 shadow-inner">
+        <div className="max-w-7xl mx-auto">
+           <Categories /> 
+        </div>
       </div>
 
-      {/* 4. الخطوط الساخنة */}
-      <section className="max-w-7xl mx-auto p-6 mb-16">
-        <div className="flex items-center justify-between mb-10">
-            <h2 className="text-2xl font-black text-gray-900">📞 أرقام تهمك في {countryData.name}</h2>
-            <div className="h-1 flex-1 mx-6 bg-gray-200/50 rounded-full hidden md:block"></div>
-        </div>
-        
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {hotlines && hotlines.length > 0 ? (
-            hotlines.map((item: any) => (
-              <div key={item.id} className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex justify-between items-center group hover:border-green-500 transition-all">
-                <div>
-                  <h3 className="font-black text-gray-900 mb-1">{item.name}</h3>
-                  <p className="text-green-600 font-black text-xl tracking-wider">{item.number}</p>
-                </div>
-                <div className="bg-gray-50 px-3 py-1 rounded-full text-xs text-gray-400 font-bold">
-                  {item.category}
-                </div>
-              </div>
-            ))
-          ) : (
-             <div className="col-span-full text-center py-10 bg-white rounded-3xl border border-dashed">
-                <p className="text-gray-400 font-bold">لا توجد أرقام مسجلة حالياً.</p>
-             </div>
-          )}
-        </div>
-
-        {hotlinesTotalPages > 1 && (
-          <div className="mt-12">
-            <Pagination
-              currentPage={pageHotlines}
-              totalPages={hotlinesTotalPages}
-              baseUrl={`/${countrySlug}?pageProducts=${pageProducts}&pageHotlines=`}
-            />
-          </div>
-        )}
-      </section>
-
-      {/* 5. قسم المقالات (تمت إضافته هنا ليكون فوق الفوتر) */}
-      <ArticlesSection countryCode={countrySlug} />
+      <div className="max-w-7xl mx-auto px-6 mb-20">
+        <ArticlesSection countryCode={countrySlug} />
+      </div>
 
     </main>
   )
