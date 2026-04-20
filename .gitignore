@@ -5,3 +5,8 @@ node_modules/
 .next/
 .env
 service_account.json.json
+service_account.json
+indexed_urls.txt
+index_now.py
+.env
+.env.local
