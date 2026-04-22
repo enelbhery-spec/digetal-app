@@ -75,7 +75,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Contact */}
+        {/* Contact - تم تعديله لإخفاء الرقم */}
         <div>
           <h4 className="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">تواصل معنا</h4>
           <a
@@ -84,7 +84,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             className="inline-block w-full text-center bg-green-600 text-white px-5 py-3 rounded-xl font-bold hover:bg-green-700 transition mb-3 shadow-lg"
           >
-            واتساب: 01021732703
+            تواصل عبر واتساب
           </a>
           <p className="text-xs text-gray-400 text-center font-mono">support@extracode.online</p>
         </div>
@@ -95,7 +95,7 @@ export default function Footer() {
         <div className="mb-2">
           جميع العلامات التجارية (نون، أمازون) ملك لأصحابها وتستخدم لأغراض توضيحية فقط.
         </div>
-        © {new Date().getFullYear()} ركائز العمران للتسويق - ExtraCode - جميع الحقوق محفوظة
+        © {new Date().getFullYear()} - ExtraCode - جميع الحقوق محفوظة
       </div>
     </footer>
   );

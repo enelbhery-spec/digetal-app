@@ -4,27 +4,28 @@ import "@/app/globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import RegisterSW from "@/components/RegisterSW";
-import AppInstallLoader from "@/components/AppInstallLoader"; // ✅ استيراد المكون الجديد
+import AppInstallLoader from "@/components/AppInstallLoader"; 
 import Script from "next/script";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.extracode.online"),
 
   title: {
-    default: "عروض امازون - كوبونات نون - كبونات نون السعودية وخصومات أمازون",
-    template: "%s | اكسترا كود",
+    default: "إكسترا كود | عروض أمازون، كوبونات نون، وخصومات تيمو الحصرية",
+    template: "%s | إكسترا كود",
   },
 
   description:
-    "اكسترا كود منصة رقمية مجانية تساعدك الحصول على كوبونات خصم نون السعودية وأفضل منتجات وخصومات أمازون مصر المحدثة يوميًا بسهولة.",
+    "دليلك الشامل للتوفير؛ احصل على أحدث كوبونات خصم نون السعودية، أقوى عروض أمازون مصر، وخصومات تيمو (Temu) المحدثة يومياً لتسوق أذكى بأقل الأسعار.",
 
   keywords: [
     "اكسترا كود", "كوبونات نون", "عروض امازون مصر", "خصومات امازون",
-    "كوبونات خصم", "افضل منتجات امازون", "خصومات نون السعودية", "عروض امازون",
+    "كوبونات خصم نون السعودية", "كود خصم تيمو", "عروض Temu مصر", "توفير المال",
+    "افضل منتجات امازون", "اكواد خصم نون", "عروض تيمو السعودية"
   ],
 
-  authors: [{ name: "اكسترا كود" }],
-  creator: "اكسترا كود",
+  authors: [{ name: "إكسترا كود" }],
+  creator: "إكسترا كود",
   manifest: "/manifest.json",
 
   icons: {
@@ -34,10 +35,10 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "اكسترا كود - نون السعودية وخصومات أمازون",
-    description: "أفضل منتجات أمازون مصر ونون السعودية مع كوبونات خصم مباشرة.",
+    title: "إكسترا كود - عروض نون، أمازون، وتيمو",
+    description: "منصة رقمية مجانية توفر لك أفضل منتجات أمازون مصر وكوبونات نون وتيمو المحدثة لحظة بلحظة.",
     url: "https://www.extracode.online",
-    siteName: "اكسترا كود",
+    siteName: "إكسترا كود",
     locale: "ar_EG",
     type: "website",
     images: [
@@ -45,15 +46,15 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "اكسترا كود",
+        alt: "إكسترا كود - دليلك للتوفير",
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "اكسترا كود - خصومات أمازون",
-    description: "أفضل خصومات أمازون مصر وكوبونات نون السعودية المحدثة يوميًا.",
+    title: "إكسترا كود | خصومات أمازون ونون وتيمو",
+    description: "وفر أموالك مع أحدث خصومات أمازون مصر وكوبونات نون السعودية وعروض تيمو.",
     images: ["/og-image.png"],
   },
 
@@ -69,7 +70,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#16a34a", // اللون الأخضر الخاص بك
+  themeColor: "#16a34a", 
   width: "device-width",
   initialScale: 1,
 };
@@ -88,7 +89,7 @@ export default function RootLayout({
           {
             "@context": "https://schema.org",
             "@type": "WebSite",
-            "name": "اكسترا كود",
+            "name": "إكسترا كود",
             "url": "https://www.extracode.online",
             "potentialAction": {
               "@type": "SearchAction",
@@ -107,7 +108,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
 
-        {/* Google Analytics (Tag Manager) */}
+        {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-FGK2Z5C8W8"
           strategy="afterInteractive"
@@ -125,21 +126,21 @@ export default function RootLayout({
         </Script>
       </head>
 
-      <body className="min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased">
-        {/* 1. الهيدر يظل ثابتاً في الأعلى */}
+      <body className="min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased font-sans">
+        {/* الهيدر */}
         <Header />
 
-        {/* 2. مغلف التثبيت الذكي يغطي المحتوى الرئيسي */}
+        {/* مغلف التثبيت الذكي */}
         <AppInstallLoader>
           <main className="flex-1 container mx-auto px-4">
             {children}
           </main>
         </AppInstallLoader>
 
-        {/* 3. الفوتر */}
+        {/* الفوتر */}
         <Footer />
 
-        {/* 4. تسجيل Service Worker الخاص بالـ PWA */}
+        {/* تسجيل Service Worker */}
         <RegisterSW />
       </body>
     </html>

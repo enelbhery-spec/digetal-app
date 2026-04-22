@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link"; // استيراد Link للتنقل
+import Link from "next/link";
 
 type Props = {
   params: Promise<{ slug: string; country: string }>;
@@ -57,11 +57,9 @@ export default async function ProductDetailsPage({ params }: Props) {
           {/* تفاصيل المنتج */}
           <div className="flex flex-col justify-center">
             <div className="flex items-center gap-2 mb-4">
+              {/* القسم فقط بدون كود المنتج لضمان توافق Google Merchant */}
               <span className="bg-green-100 text-green-700 px-4 py-1 rounded-full text-xs font-black">
                 {product.categories?.title || "قسم عام"}
-              </span>
-              <span className="text-gray-400 text-xs font-bold">
-                كود المنتج: {product.id.toString().slice(0, 8)}
               </span>
             </div>
 
@@ -71,11 +69,11 @@ export default async function ProductDetailsPage({ params }: Props) {
 
             <div className="flex items-baseline gap-4 mb-8">
               <span className="text-4xl font-black text-green-600">
-                {product.price} {country === 'sa' ? 'ر.س' : 'ج.م'}
+                {product.price.toLocaleString()} {country === 'sa' ? 'ر.س' : 'ج.م'}
               </span>
               {product.old_price && (
                 <span className="text-xl text-gray-400 line-through font-bold">
-                  {product.old_price}
+                  {product.old_price.toLocaleString()}
                 </span>
               )}
             </div>
@@ -88,13 +86,12 @@ export default async function ProductDetailsPage({ params }: Props) {
               <a 
                 href={product.affiliate_link}
                 target="_blank"
-                rel="nofollow noopener"
+                rel="nofollow sponsored noopener noreferrer"
                 className="flex-1 bg-green-600 text-white text-center py-5 rounded-2xl font-black text-xl shadow-lg shadow-green-100 transition-all hover:bg-green-700 active:scale-95"
               >
                 اشتري الآن ⚡
               </a>
               
-              {/* التعديل هنا: استخدام Link بدلاً من زر يحتوي على onClick */}
               <Link 
                 href={`/${country}`}
                 className="px-8 py-5 border-2 border-gray-100 text-gray-400 text-center rounded-2xl font-bold transition-all hover:bg-gray-50"

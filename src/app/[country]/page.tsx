@@ -56,8 +56,8 @@ export default async function CountryPage({ params, searchParams }: Props) {
 
   const countryId = countryData.id
 
-  /* ================= 2. جلب المنتجات (تعديل العدد والترتيب) ================= */
-  const productsLimit = 9 // ✅ تم زيادة العدد إلى 9
+  /* ================= 2. جلب المنتجات (ترتيب الأحدث أولاً) ================= */
+  const productsLimit = 9 
   const productsFrom = (pageProducts - 1) * productsLimit
   const productsTo = productsFrom + productsLimit - 1
 
@@ -74,37 +74,33 @@ export default async function CountryPage({ params, searchParams }: Props) {
 
   if (brandFilter) {
     query = query.eq("brand_slug", brandFilter)
-    // عند اختيار براند معين، نظهر الأحدث أولاً
-    query = query.order("created_at", { ascending: false })
-  } else {
-    // ✅ حل مشكلة التشويق: الترتيب العشوائي أو بكسر التتابع عبر ID
-    // في Supabase لا يوجد random() مباشر بكفاءة، لذا نستخدم الترتيب بـ ID 
-    // لضمان عدم تتابع المنتجات المضافة في نفس الدقيقة.
-    query = query.order("id", { ascending: true }) 
   }
+
+  // ✅ التعديل الجوهري: الترتيب حسب التاريخ (الأحدث أولاً) في كل الحالات
+  query = query.order("created_at", { ascending: false })
 
   const { data: products, count: productsCount } = await query
     .range(productsFrom, productsTo)
 
-  // ✅ خطوة إضافية: بعثرة عشوائية للمنتجات المجلوبة في الصفحة الحالية فقط لزيادة التنوع
-  const shuffledProducts = products ? [...products].sort(() => Math.random() - 0.5) : [];
+  // ✅ تم حذف كود "shuffledProducts" لضمان بقاء الترتيب حسب الأحدث
+  const finalProducts = products || [];
 
   const productsTotalPages = Math.ceil((productsCount || 0) / productsLimit)
 
   return (
     <main className="bg-gray-50 min-h-screen pb-20" dir="rtl">
 
-      {/* ✅ العنوان العلوي */}
+      {/* العنوان العلوي */}
       <div className="max-w-7xl mx-auto px-6 pt-10 text-center">
         <h1 className="text-3xl md:text-4xl font-black text-gray-900 leading-tight">
            {brandFilter ? `عروض ماركة ${brandFilter.toUpperCase()}` : `أفضل عروض التسوق في ${countrySlug === 'eg' ? 'مصر' : 'السعودية'}`}
         </h1>
-        <p className="text-gray-500 mt-2 font-bold">تسوق بذكاء ووفر أكثر مع عروضنا الحصرية</p>
+        <p className="text-gray-500 mt-2 font-bold">تسوق بذكاء ووفر أكثر مع أحدث العروض المضافة</p>
       </div>
 
       <section className="max-w-7xl mx-auto p-6 mt-4">
         
-        {/* ✅ أزرار الفلاتر المطورة */}
+        {/* أزرار الفلاتر */}
         <div className="flex gap-3 mb-10 flex-wrap justify-center md:justify-start">
           <Link
             href={`/${countrySlug}`}
@@ -139,10 +135,10 @@ export default async function CountryPage({ params, searchParams }: Props) {
           ))}
         </div>
 
-        {/* ✅ شبكة المنتجات (تستخدم المصفوفة المبعثرة) */}
-        {shuffledProducts.length > 0 ? (
+        {/* شبكة المنتجات (تظهر الأحدث الآن) */}
+        {finalProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {shuffledProducts.map((product) => (
+            {finalProducts.map((product) => (
               <ProductCard key={product.id} product={product} country={countrySlug} />
             ))}
           </div>
@@ -152,7 +148,7 @@ export default async function CountryPage({ params, searchParams }: Props) {
           </div>
         )}
 
-        {/* ✅ الترقيم */}
+        {/* الترقيم */}
         {productsTotalPages > 1 && (
           <div className="mt-16 flex justify-center">
             <Pagination
@@ -164,7 +160,6 @@ export default async function CountryPage({ params, searchParams }: Props) {
         )}
       </section>
 
-      {/* الأقسام والمقالات كما هي */}
       <div className="bg-white py-16 border-y border-gray-100 my-16 shadow-inner">
         <div className="max-w-7xl mx-auto">
            <Categories /> 
