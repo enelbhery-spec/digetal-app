@@ -1,39 +1,44 @@
 import type { Metadata, Viewport } from "next";
 import "@/app/globals.css"; 
 
+// 1. استيراد الخط بشكل محسن من Next.js
+import { Tajawal } from "next/font/google";
+
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import RegisterSW from "@/components/RegisterSW";
 import AppInstallLoader from "@/components/AppInstallLoader"; 
 import Script from "next/script";
 
+// 2. إعداد الخط (سيتم تحميله محلياً وتلقائياً)
+const tajawal = Tajawal({
+  subsets: ["arabic"],
+  weight: ["400", "500", "700", "800", "900"],
+  display: "swap", // يضمن ظهور النص فوراً بخط بديل لحين اكتمال التحميل
+  variable: "--font-tajawal", // تعريف متغير CSS لاستخدامه إذا لزم الأمر
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.extracode.online"),
-
   title: {
     default: "إكسترا كود | عروض أمازون، كوبونات نون، وخصومات تيمو الحصرية",
     template: "%s | إكسترا كود",
   },
-
   description:
     "دليلك الشامل للتوفير؛ احصل على أحدث كوبونات خصم نون السعودية، أقوى عروض أمازون مصر، وخصومات تيمو (Temu) المحدثة يومياً لتسوق أذكى بأقل الأسعار.",
-
   keywords: [
     "اكسترا كود", "كوبونات نون", "عروض امازون مصر", "خصومات امازون",
     "كوبونات خصم نون السعودية", "كود خصم تيمو", "عروض Temu مصر", "توفير المال",
     "افضل منتجات امازون", "اكواد خصم نون", "عروض تيمو السعودية"
   ],
-
   authors: [{ name: "إكسترا كود" }],
   creator: "إكسترا كود",
   manifest: "/manifest.json",
-
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
     apple: "/favicon.ico",
   },
-
   openGraph: {
     title: "إكسترا كود - عروض نون، أمازون، وتيمو",
     description: "منصة رقمية مجانية توفر لك أفضل منتجات أمازون مصر وكوبونات نون وتيمو المحدثة لحظة بلحظة.",
@@ -50,19 +55,16 @@ export const metadata: Metadata = {
       },
     ],
   },
-
   twitter: {
     card: "summary_large_image",
     title: "إكسترا كود | خصومات أمازون ونون وتيمو",
     description: "وفر أموالك مع أحدث خصومات أمازون مصر وكوبونات نون السعودية وعروض تيمو.",
     images: ["/og-image.png"],
   },
-
   robots: {
     index: true,
     follow: true,
   },
-
   other: {
     "google-site-verification": "7XY4QFlcbO13HsbJ3M-4Pl1l9A4Pbbe-GltnYncvINA",
     "google-adsense-account": "ca-pub-4973672854580770",
@@ -81,7 +83,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ar" dir="rtl" className="scroll-smooth">
+    <html lang="ar" dir="rtl" className={`scroll-smooth ${tajawal.variable}`}>
       <head>
         {/* Schema Markup */}
         <Script id="schema-web" type="application/ld+json" strategy="afterInteractive">
@@ -126,7 +128,8 @@ export default function RootLayout({
         </Script>
       </head>
 
-      <body className="min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased font-sans">
+      {/* 3. تطبيق الخط على الجسم (Body) بالكامل مع تحسين جودة الخط */}
+      <body className={`${tajawal.className} min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased`}>
         {/* الهيدر */}
         <Header />
 
