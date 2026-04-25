@@ -17,8 +17,8 @@ type Props = {
 const allowedCountries = ["eg", "sa"]
 
 const allowedBrandsByCountry: Record<string, string[]> = {
-  eg: ["amazon", "temu"],
-  sa: ["noon"]
+  eg: ["amazon", "temu","shin"],
+  sa: ["noon","shin","temu"]
 }
 
 export default async function CountryPage({ params, searchParams }: Props) {
