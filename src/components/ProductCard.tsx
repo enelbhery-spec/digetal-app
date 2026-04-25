@@ -91,35 +91,35 @@ export default function ProductCard({ product, country }: Props) {
         </div>
 
         {/* 6. الكوبون الاحترافي - أخضر زمردي Emerald */}
-        {isSaudiPage && (
-          <div 
-            onClick={handleCopy}
-            className="relative mb-6 cursor-pointer overflow-hidden transition-all active:scale-95 group/coupon"
-          >
-            <div className={`flex items-center justify-between p-4 rounded-2xl border-2 border-dashed shadow-md transition-all ${
-              copied ? 'bg-slate-800 border-slate-800' : 'bg-emerald-600 border-emerald-700 hover:bg-emerald-700'
-            }`}>
-              <div className="flex items-center gap-3">
-                <Ticket className="text-white opacity-90" size={22} />
-                <div className="flex flex-col">
-                  <span className="text-[9px] font-black text-white/70 leading-none mb-1">كود خصم إضافي</span>
-                  <span className="text-xl font-black tracking-widest text-white uppercase italic">
-                    {activeCoupon}
-                  </span>
-                </div>
-              </div>
-              <div className={`px-4 py-2 rounded-xl font-black text-[11px] uppercase shadow-sm transition-all ${
-                copied ? 'bg-emerald-500 text-white' : 'bg-white text-emerald-700'
-              }`}>
-                {copied ? <CheckCheck size={16} /> : "نسخ"}
-              </div>
-            </div>
-            {/* تأثير التذكرة الجانبي */}
-            <div className="absolute top-1/2 -left-3 -translate-y-1/2 w-6 h-6 bg-white rounded-full" />
-            <div className="absolute top-1/2 -right-3 -translate-y-1/2 w-6 h-6 bg-white rounded-full" />
-          </div>
-        )}
-
+        {/* 6. الكوبون الاحترافي - يظهر فقط إذا وجد كود خصم في البيانات */}
+{product.coupon_code && (
+  <div 
+    onClick={handleCopy}
+    className="relative mb-6 cursor-pointer overflow-hidden transition-all active:scale-95 group/coupon"
+  >
+    <div className={`flex items-center justify-between p-4 rounded-2xl border-2 border-dashed shadow-md transition-all ${
+      copied ? 'bg-slate-800 border-slate-800' : 'bg-emerald-600 border-emerald-700 hover:bg-emerald-700'
+    }`}>
+      <div className="flex items-center gap-3">
+        <Ticket className="text-white opacity-90" size={22} />
+        <div className="flex flex-col">
+          <span className="text-[9px] font-black text-white/70 leading-none mb-1">كود خصم إضافي</span>
+          <span className="text-xl font-black tracking-widest text-white uppercase italic">
+            {product.coupon_code}
+          </span>
+        </div>
+      </div>
+      <div className={`px-4 py-2 rounded-xl font-black text-[11px] uppercase shadow-sm transition-all ${
+        copied ? 'bg-emerald-500 text-white' : 'bg-white text-emerald-700'
+      }`}>
+        {copied ? <CheckCheck size={16} /> : "نسخ"}
+      </div>
+    </div>
+    {/* تأثير التذكرة الجانبي */}
+    <div className="absolute top-1/2 -left-3 -translate-y-1/2 w-6 h-6 bg-white rounded-full" />
+    <div className="absolute top-1/2 -right-3 -translate-y-1/2 w-6 h-6 bg-white rounded-full" />
+  </div>
+)}
         {/* 7. أزرار الأكشن - كحلي فاخر (Slate-900) متناسق مع الأخضر */}
         <div className="flex gap-3 mt-auto">
           <a
