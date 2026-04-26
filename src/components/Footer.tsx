@@ -18,13 +18,9 @@ export default function Footer() {
             ExtraCode
           </h3>
           <p className="text-sm leading-relaxed mb-4">
-            دليلك الأول لأقوى الخصومات والكوبونات الحصرية لمتاجر أمازون ونون. نحن نساعدك على التسوق بذكاء وتوفير المال.
+            تطبيقك الافوى الذى يوفر كل اشهر المتاجر العالمية فى مكان واحد. نحن نساعدك على التسوق بذكاء وتوفير المال.
           </p>
-          <div className="text-xs text-gray-400 border-r-2 border-green-600 pr-3">
-            <p className="font-bold text-gray-200">إدارة وتشغيل:</p>
-            <p>مؤسسة ركائز العمران للتسويق</p>
-            <p>📍 الدولية بلازا، مدينة 6 أكتوبر، الجيزة</p>
-          </div>
+          
         </div>
 
         {/* سياسات الموقع */}
@@ -93,7 +89,7 @@ export default function Footer() {
 
       <div className="border-t border-gray-800 text-center py-6 text-xs text-gray-500 px-4">
         <div className="mb-2">
-          جميع العلامات التجارية (نون، أمازون) ملك لأصحابها وتستخدم لأغراض توضيحية فقط.
+          جميع العلامات التجارية  ملك لأصحابها وتستخدم لأغراض توضيحية فقط.
         </div>
         © {new Date().getFullYear()} - ExtraCode - جميع الحقوق محفوظة
       </div>

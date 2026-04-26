@@ -21,7 +21,6 @@ const tajawal = Tajawal({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.extracode.online"),
   title: {
-    // العنوان الذي استقررنا عليه مكتوب هنا بطريقة تضمن سلامة العرض
     default: "إكسترا كود | كل عروض Amazon, Noon, Temu & Shein في مكان واحد",
     template: "%s | إكسترا كود",
   },
@@ -86,6 +85,26 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" className={`scroll-smooth ${tajawal.variable}`}>
       <head>
+        {/* --- OneSignal SDK --- */}
+        <Script
+          src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
+          strategy="afterInteractive"
+        />
+        <Script id="onesignal-init" strategy="afterInteractive">
+          {`
+            window.OneSignalDeferred = window.OneSignalDeferred || [];
+            OneSignalDeferred.push(function(OneSignal) {
+              OneSignal.init({
+                appId: "6fc68aca-1ca2-47f6-96fd-9690fe507285",
+                notifyButton: {
+                  enable: true,
+                },
+                allowLocalhostAsSecureOrigin: true,
+              });
+            });
+          `}
+        </Script>
+
         {/* Schema Markup */}
         <Script id="schema-web" type="application/ld+json" strategy="afterInteractive">
           {`
