@@ -1,6 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createClient } from "@supabase/supabase-js";
+
+// إعداد Supabase (تأكد من وضع القيم الخاصة بك في ملف .env)
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 let deferredPrompt: any = null;
 
@@ -12,6 +19,19 @@ export default function AppInstallLoader({
   const [canInstall, setCanInstall] = useState(false);
   const [installed, setInstalled] = useState(false);
 
+  // وظيفة إرسال السجل لـ Supabase
+  const logInstallToSupabase = async () => {
+    try {
+      const { error } = await supabase
+        .from("app_installs")
+        .insert([{ platform: window.navigator.userAgent.includes("Mobi") ? "Mobile" : "Desktop" }]);
+      
+      if (error) console.error("Error logging install:", error);
+    } catch (err) {
+      console.error("Failed to log install:", err);
+    }
+  };
+
   useEffect(() => {
     const handler = (e: any) => {
       e.preventDefault();
@@ -21,9 +41,11 @@ export default function AppInstallLoader({
 
     window.addEventListener("beforeinstallprompt", handler);
 
+    // هذا الحدث يعمل عندما يكتمل التثبيت بنجاح
     window.addEventListener("appinstalled", () => {
       setInstalled(true);
       setCanInstall(false);
+      logInstallToSupabase(); // تسجيل العملية في قاعدة البيانات
     });
 
     return () => {
@@ -39,6 +61,7 @@ export default function AppInstallLoader({
 
     if (outcome === "accepted") {
       setInstalled(true);
+      // ملاحظة: حدث appinstalled سيقوم بالمهمة أيضاً ولكن وضعها هنا للاحتياط
     }
 
     deferredPrompt = null;
@@ -68,7 +91,7 @@ export default function AppInstallLoader({
       </h1>
 
       <p style={{ marginTop: 15, fontSize: 18 }}>
-        لتحصل على تجربة أسرع وأسهل
+        لتحصل على تجربة أسرع وأسهل لمتابعة كوبونات إكسترا كود
       </p>
 
       <button
@@ -83,6 +106,7 @@ export default function AppInstallLoader({
           border: "none",
           fontWeight: "bold",
           cursor: "pointer",
+          boxShadow: "0 4px 15px rgba(0,0,0,0.2)"
         }}
       >
         ➕ تثبيت التطبيق
