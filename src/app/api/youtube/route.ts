@@ -1,14 +1,17 @@
 // src/app/api/youtube/route.ts
+
 import Parser from "rss-parser";
 
 interface VideoItem {
   title: string;
   videoId: string;
   pubDate: string;
+  thumbnail: string;
+  link: string;
 }
 
-// تحديد مدة تحديث البيانات (مثلاً كل ساعة) لضمان سرعة الموقع
-export const revalidate = 3600; 
+export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export async function GET() {
   const parser = new Parser({
@@ -18,41 +21,105 @@ export async function GET() {
   });
 
   try {
-    // تنبيه: تأكد أن المعرف 24 حرفاً قبل النشر النهائي
-    const channelId = "UCgak46GjPPsFsVB5QnzD7pQ"; 
-    
-    // إضافة timestamp للرابط قد يساعد في تجنب الكاش القديم أحيانات
-    const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+    // ✅ استخدم Channel ID فقط (الأضمن)
+    const channelId = "UCgak46GjPPsFsVB5QnzD7pQ";
 
-    const feed = await parser.parseURL(feedUrl);
+    const url = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
 
-    if (!feed.items || feed.items.length === 0) {
-      // بدلاً من رمي خطأ، نرسل استجابة "قريباً" بشكل نظيف
-      return Response.json([{ 
-        title: "انتظروا أول فيديوهاتنا قريباً على القناة", 
-        videoId: "", 
-        pubDate: new Date().toISOString() 
-      }]);
+    // ✅ Fetch آمن
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0",
+      },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error(`YouTube RSS Error: ${res.status}`);
     }
 
-    const videos: VideoItem[] = feed.items.map((item: any) => ({
-      title: item.title || "فيديو جديد من إكسترا كود",
-      videoId: item.videoId || item["yt:videoId"] || "",
-      pubDate: item.pubDate || "",
-    }));
+    const xml = await res.text();
+    const feed = await parser.parseString(xml);
 
-    // إرسال أول فيديو (الأحدث)
-    return Response.json(videos.slice(0, 1)); 
-    
+    // 🔴 لو مفيش فيديوهات
+    if (!feed?.items || feed.items.length === 0) {
+      return Response.json(
+        [
+          {
+            title: "لا يوجد فيديوهات حالياً",
+            videoId: "",
+            pubDate: new Date().toISOString(),
+            link: "",
+            thumbnail: "",
+          },
+        ],
+        {
+          headers: {
+            "Cache-Control": "no-store",
+          },
+        }
+      );
+    }
+
+    const videos: VideoItem[] = feed.items
+      .map((item: any) => {
+        let videoId =
+          item.videoId ||
+          item["yt:videoId"] ||
+          "";
+
+        // ✅ fallback من الرابط
+        if (!videoId && item.link) {
+          const match = item.link.match(/v=([^&]+)/);
+          videoId = match ? match[1] : "";
+        }
+
+        // ❌ تجاهل لو مفيش ID
+        if (!videoId) return null;
+
+        return {
+          title: item.title || "فيديو جديد",
+          videoId,
+          pubDate: item.pubDate || new Date().toISOString(),
+
+          link: `https://www.youtube.com/watch?v=${videoId}`,
+
+          thumbnail: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+        };
+      })
+      .filter(Boolean) as VideoItem[];
+
+    // ✅ ترتيب من الأحدث للأقدم
+    videos.sort(
+      (a, b) =>
+        new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime()
+    );
+
+    return Response.json(videos, {
+      headers: {
+        "Cache-Control":
+          "public, s-maxage=3600, stale-while-revalidate=86400",
+      },
+    });
+
   } catch (error) {
-    // طباعة الخطأ في الـ Console الخاص بالسيرفر للتصحيح
-    console.error("YouTube RSS Error:", error);
+    console.error("YouTube API Error:", error);
 
-    // الرد ببيانات احتياطية (Fallback) لضمان عدم توقف الهيدر
-    return Response.json([{ 
-      title: "تابع أحدث عروض الكوبونات على قناتنا", 
-      videoId: "", 
-      pubDate: "" 
-    }]);
+    return Response.json(
+      [
+        {
+          title: "حدث خطأ في تحميل الفيديوهات",
+          videoId: "",
+          pubDate: new Date().toISOString(),
+          link: "",
+          thumbnail: "",
+        },
+      ],
+      {
+        headers: {
+          "Cache-Control": "no-store",
+        },
+      }
+    );
   }
 }
