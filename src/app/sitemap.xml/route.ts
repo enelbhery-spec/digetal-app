@@ -18,20 +18,59 @@ export async function GET() {
     }
   }
 
-  /* 1. جلب البيانات من الجداول المختلفة */
-  // جلب المنتجات مع كود الدولة
-  const { data: products } = await supabase.from("products").select("id, created_at, code").limit(2000);
-  
-  // جلب المقالات مع كود الدولة الخاص بها (تأكد أن عمود code موجود في جدول articles)
-  const { data: articles } = await supabase.from("articles").select("slug, created_at, code");
+  let urls: string[] = [];
+  const countries = ['eg', 'sa'];
 
-  // جلب التصنيفات (لنفترض أن اسم الجدول categories)
+  /* 1. جلب المنتجات (نظام الدفعات لضمان جلب كل السجلات) */
+  let products: any[] = [];
+  let pFrom = 0;
+  let pTo = 999;
+  let hasMoreProducts = true;
+
+  while (hasMoreProducts) {
+    const { data, error } = await supabase
+      .from("products")
+      .select("id, created_at, code")
+      .range(pFrom, pTo);
+
+    if (data && data.length > 0) {
+      products = [...products, ...data];
+      pFrom += 1000;
+      pTo += 1000;
+      if (data.length < 1000) hasMoreProducts = false;
+    } else {
+      hasMoreProducts = false;
+    }
+  }
+
+  /* 2. جلب المقالات بنفس النظام */
+  let articles: any[] = [];
+  let aFrom = 0;
+  let aTo = 999;
+  let hasMoreArticles = true;
+
+  while (hasMoreArticles) {
+    const { data, error } = await supabase
+      .from("articles")
+      .select("slug, created_at, code")
+      .range(aFrom, aTo);
+
+    if (data && data.length > 0) {
+      articles = [...articles, ...data];
+      aFrom += 1000;
+      aTo += 1000;
+      if (data.length < 1000) hasMoreArticles = false;
+    } else {
+      hasMoreArticles = false;
+    }
+  }
+
+  /* 3. جلب التصنيفات */
   const { data: categories } = await supabase.from("categories").select("slug");
 
-  const countries = ['eg', 'sa'];
-  let urls: string[] = [];
+  // --- بناء روابط Sitemap ---
 
-  // 1. الصفحات الرئيسية للدول (Priority 1.0)
+  // روابط الدول الرئيسية
   countries.forEach(code => {
     urls.push(`
       <url>
@@ -43,7 +82,7 @@ export async function GET() {
     `);
   });
 
-  // 2. روابط التصنيفات لكل دولة (Priority 0.9)
+  // روابط التصنيفات
   countries.forEach(code => {
     categories?.forEach(cat => {
       urls.push(`
@@ -56,8 +95,8 @@ export async function GET() {
     });
   });
 
-  // 3. روابط المنتجات (ديناميكية حسب كود المنتج)
-  products?.forEach((p) => {
+  // روابط المنتجات (كاملة)
+  products.forEach((p) => {
     const countryPath = p.code?.toLowerCase() || 'eg';
     urls.push(`
       <url>
@@ -69,8 +108,8 @@ export async function GET() {
     `);
   });
 
-  // 4. روابط المقالات (ديناميكية حسب كود المقال)
-  articles?.forEach((a) => {
+  // روابط المقالات (كاملة)
+  articles.forEach((a) => {
     const countryPath = a.code?.toLowerCase() || 'eg';
     urls.push(`
       <url>

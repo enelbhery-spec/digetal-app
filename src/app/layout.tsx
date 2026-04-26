@@ -10,26 +10,27 @@ import RegisterSW from "@/components/RegisterSW";
 import AppInstallLoader from "@/components/AppInstallLoader"; 
 import Script from "next/script";
 
-// 2. إعداد الخط (سيتم تحميله محلياً وتلقائياً)
+// 2. إعداد الخط
 const tajawal = Tajawal({
   subsets: ["arabic"],
   weight: ["400", "500", "700", "800", "900"],
-  display: "swap", // يضمن ظهور النص فوراً بخط بديل لحين اكتمال التحميل
-  variable: "--font-tajawal", // تعريف متغير CSS لاستخدامه إذا لزم الأمر
+  display: "swap",
+  variable: "--font-tajawal",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.extracode.online"),
   title: {
-    default: "إكسترا كود | عروض أمازون، كوبونات نون، وخصومات تيمو الحصرية",
+    // العنوان الذي استقررنا عليه مكتوب هنا بطريقة تضمن سلامة العرض
+    default: "إكسترا كود | كل عروض Amazon, Noon, Temu & Shein في مكان واحد",
     template: "%s | إكسترا كود",
   },
   description:
-    "دليلك الشامل للتوفير؛ احصل على أحدث كوبونات خصم نون السعودية، أقوى عروض أمازون مصر، وخصومات تيمو (Temu) المحدثة يومياً لتسوق أذكى بأقل الأسعار.",
+    "دليلك الشامل للتوفير؛ احصل على أحدث كوبونات خصم نون السعودية، أقوى عروض أمازون مصر، وخصومات تيمو (Temu) وشي إن (Shein) المحدثة يومياً لتسوق أذكى بأقل الأسعار.",
   keywords: [
-    "اكسترا كود", "كوبونات نون", "عروض امازون مصر", "خصومات امازون",
+    "إكسترا كود", "كوبونات نون", "عروض أمازون مصر", "خصومات أمازون",
     "كوبونات خصم نون السعودية", "كود خصم تيمو", "عروض Temu مصر", "توفير المال",
-    "افضل منتجات امازون", "اكواد خصم نون", "عروض تيمو السعودية"
+    "أفضل منتجات أمازون", "أكواد خصم نون", "عروض تيمو السعودية", "خصومات شي إن"
   ],
   authors: [{ name: "إكسترا كود" }],
   creator: "إكسترا كود",
@@ -40,7 +41,7 @@ export const metadata: Metadata = {
     apple: "/favicon.ico",
   },
   openGraph: {
-    title: "إكسترا كود - عروض نون، أمازون، وتيمو",
+    title: "إكسترا كود | كل عروض Amazon, Noon, Temu & Shein في مكان واحد",
     description: "منصة رقمية مجانية توفر لك أفضل منتجات أمازون مصر وكوبونات نون وتيمو المحدثة لحظة بلحظة.",
     url: "https://www.extracode.online",
     siteName: "إكسترا كود",
@@ -57,8 +58,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "إكسترا كود | خصومات أمازون ونون وتيمو",
-    description: "وفر أموالك مع أحدث خصومات أمازون مصر وكوبونات نون السعودية وعروض تيمو.",
+    title: "إكسترا كود | كل عروض Amazon, Noon, Temu & Shein في تطبيق واحد",
+    description: "وفر أموالك مع أحدث خصومات أمازون مصر وكوبونات نون السعودية وعروض تيمو وشي إن.",
     images: ["/og-image.png"],
   },
   robots: {
@@ -128,22 +129,17 @@ export default function RootLayout({
         </Script>
       </head>
 
-      {/* 3. تطبيق الخط على الجسم (Body) بالكامل مع تحسين جودة الخط */}
       <body className={`${tajawal.className} min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased`}>
-        {/* الهيدر */}
         <Header />
 
-        {/* مغلف التثبيت الذكي */}
         <AppInstallLoader>
           <main className="flex-1 container mx-auto px-4">
             {children}
           </main>
         </AppInstallLoader>
 
-        {/* الفوتر */}
         <Footer />
 
-        {/* تسجيل Service Worker */}
         <RegisterSW />
       </body>
     </html>
