@@ -1,63 +1,124 @@
 export const metadata = {
-  title: "سياسة الخصوصية - ExtraCode",
-  description: "سياسة الخصوصية وحماية البيانات لموقع ExtraCode للتسويق بالعمولة",
+  title: "سياسة الخصوصية | ExtraCode",
+  description:
+    "تعرف على كيفية حماية بياناتك واستخدامها في موقع ExtraCode للتسويق بالعمولة وروابط الشراء.",
+  keywords: ["سياسة الخصوصية", "ExtraCode", "التسويق بالعمولة", "affiliate", "cookies"],
+  alternates: {
+    canonical: "https://extracode.online/privacy-policy",
+  },
 };
 
 export default function PrivacyPolicy() {
   return (
-    <div className="container mx-auto px-4 py-12 text-right" dir="rtl">
-      <div className="max-w-4xl mx-auto bg-white shadow-sm border p-8 rounded-lg">
-        <h1 className="text-3xl font-bold mb-8 border-b pb-4 text-gray-800">
+    <main className="max-w-4xl mx-auto px-4 py-12 text-right" dir="rtl">
+      <div className="bg-white shadow-sm border p-8 rounded-2xl">
+
+        <h1 className="text-3xl font-black mb-8 border-b pb-4 text-gray-800">
           سياسة الخصوصية
         </h1>
 
+        {/* مقدمة */}
         <section className="mb-8">
           <p className="text-lg leading-relaxed text-gray-700">
-            نحن في <strong>ExtraCode</strong> نحترم خصوصيتك ونلتزم بحماية بياناتك الشخصية. توضح هذه السياسة كيفية تعاملنا مع المعلومات عند زيارتك لموقعنا.
+            نحن في <strong>ExtraCode</strong> نحترم خصوصيتك ونلتزم بحماية بياناتك الشخصية.
+            توضح هذه السياسة كيفية جمع واستخدام المعلومات عند زيارتك لموقعنا.
           </p>
         </section>
 
+        {/* البيانات */}
         <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4 text-blue-700">1. المعلومات التي نجمعها</h2>
+          <h2 className="text-xl font-bold mb-4 text-blue-700">
+            1. المعلومات التي نجمعها
+          </h2>
           <p className="leading-relaxed text-gray-600">
-            نحن لا نطلب منك تسجيل حساب أو تقديم بيانات شخصية حساسة. المعلومات التي قد نجمعها تلقائياً تشمل عنوان IP، نوع المتصفح، ونظام التشغيل، وذلك لأغراض تقنية بحتة تتعلق بتحسين أداء الموقع وتجربة المستخدم.
+            لا نطلب منك تسجيل حساب أو إدخال بيانات شخصية حساسة. قد يتم جمع بعض المعلومات
+            تلقائيًا مثل عنوان IP، نوع المتصفح، ونظام التشغيل، وذلك لأغراض تحليل الأداء
+            وتحسين تجربة المستخدم.
           </p>
         </section>
 
-        <section className="mb-8 border-r-4 border-blue-500 pr-4 bg-blue-50 py-4">
-          <h2 className="text-xl font-semibold mb-4 text-blue-700">2. روابط الأفلييت (Affiliate Links)</h2>
-          <p className="leading-relaxed text-gray-600">
-            يحتوي موقعنا على روابط لمتاجر خارجية مثل <strong>Amazon (أمازون)</strong> و <strong>Noon (نون)</strong>. عند نقرك على هذه الروابط وإتمام عملية شراء، قد نحصل على عمولة تسويقية بسيطة. هذا لا يؤثر إطلاقاً على السعر الذي تدفعه، بل يساعدنا في الاستمرار في تقديم العروض.
+        {/* Affiliate */}
+        <section className="mb-8 border-r-4 border-green-500 pr-4 bg-green-50 py-4 rounded">
+          <h2 className="text-xl font-bold mb-4 text-green-700">
+            2. روابط التسويق بالعمولة (Affiliate Links)
+          </h2>
+          <p className="leading-relaxed text-gray-700">
+            يحتوي موقع ExtraCode على روابط لمنتجات في متاجر خارجية مثل أمازون، نون، شي إن وغيرها.
+            عند النقر على هذه الروابط وإتمام عملية شراء، قد نحصل على عمولة بسيطة دون أي تكلفة إضافية عليك.
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            ⚠️ نحن لا نتحكم في المنتجات أو الأسعار داخل هذه المتاجر.
           </p>
         </section>
 
+        {/* Cookies */}
         <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4 text-blue-700">3. ملفات تعريف الارتباط (Cookies)</h2>
+          <h2 className="text-xl font-bold mb-4 text-blue-700">
+            3. ملفات تعريف الارتباط (Cookies)
+          </h2>
           <p className="leading-relaxed text-gray-600">
-            نستخدم ملفات Cookies لضمان عمل روابط الأفلييت بشكل صحيح ولتحليل حركة المرور عبر Google Analytics. يمكنك تعطيل هذه الملفات من إعدادات متصفحك في أي وقت.
+            نستخدم ملفات Cookies لتحسين الأداء، تحليل الاستخدام، وتتبع الروابط التابعة (Affiliate Tracking).
+            يمكنك تعطيل الكوكيز من إعدادات المتصفح، لكن قد يؤثر ذلك على بعض وظائف الموقع.
           </p>
         </section>
 
+        {/* Analytics */}
         <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4 text-blue-700">4. أمن البيانات</h2>
+          <h2 className="text-xl font-bold mb-4 text-blue-700">
+            4. أدوات التحليل
+          </h2>
           <p className="leading-relaxed text-gray-600">
-            نحن نطبق إجراءات أمنية تقنية لحماية موقعنا من الوصول غير المصرح به، ونستخدم بروتوكول HTTPS المشفر لضمان تصفح آمن.
+            قد نستخدم أدوات مثل Google Analytics لفهم سلوك المستخدمين وتحسين تجربة الموقع.
+            هذه الأدوات تجمع بيانات مجهولة الهوية ولا تُستخدم لتحديد هويتك الشخصية.
           </p>
         </section>
 
-        <section className="mt-12 pt-6 border-t border-gray-200">
-          <h2 className="text-xl font-semibold mb-4">التواصل معنا</h2>
+        {/* الأمان */}
+        <section className="mb-8">
+          <h2 className="text-xl font-bold mb-4 text-blue-700">
+            5. حماية البيانات
+          </h2>
+          <p className="leading-relaxed text-gray-600">
+            نستخدم بروتوكول HTTPS وتقنيات حماية حديثة لضمان أمان البيانات أثناء التصفح.
+          </p>
+        </section>
+
+        {/* التواصل */}
+        <section className="mt-10 pt-6 border-t">
+          <h2 className="text-xl font-bold mb-4">
+            التواصل معنا
+          </h2>
           <p className="text-gray-600">
-            إذا كان لديك أي استفسار بخصوص سياسة الخصوصية، يمكنك التواصل معنا عبر:
-            <br />
-            <span className="font-mono text-blue-600 block mt-2">support@extracode.online</span>
+            لأي استفسار بخصوص سياسة الخصوصية:
           </p>
+
+          <a
+            href="mailto:support@extracode.online"
+            className="block mt-2 text-green-600 font-bold"
+          >
+            support@extracode.online
+          </a>
         </section>
-        
-        <p className="text-sm text-gray-400 mt-8 italic text-center">
+
+        <p className="text-sm text-gray-400 mt-10 text-center">
           آخر تحديث: أبريل 2026
         </p>
       </div>
-    </div>
+
+      {/* ✅ Structured Data (مهم جدا لجوجل) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: "سياسة الخصوصية",
+            url: "https://extracode.online/privacy-policy",
+            description:
+              "سياسة الخصوصية لموقع ExtraCode للتسويق بالعمولة",
+          }),
+        }}
+      />
+    </main>
   );
 }
