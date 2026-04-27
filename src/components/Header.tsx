@@ -72,7 +72,7 @@ export default function Header() {
             className="text-xs md:text-sm font-semibold text-gray-800 truncate flex-1 hover:text-red-600 transition"
           >
             <span className="text-red-600 font-bold ml-1 text-[11px]">
-              فيديو جديد:
+              عرض جديد:
             </span>
             {videoData.title}
           </Link>
@@ -87,7 +87,7 @@ export default function Header() {
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
               <path d="M8 5v14l11-7z" />
             </svg>
-            <span>شاهد الآن</span>
+            <span>شاهدالعرض</span>
           </Link>
         </div>
 
