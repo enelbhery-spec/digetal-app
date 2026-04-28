@@ -86,24 +86,40 @@ export default function RootLayout({
     <html lang="ar" dir="rtl" className={`scroll-smooth ${tajawal.variable}`}>
       <head>
         {/* --- OneSignal SDK --- */}
-        <Script
-          src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
-          strategy="afterInteractive"
-        />
         <Script id="onesignal-init" strategy="afterInteractive">
-          {`
-            window.OneSignalDeferred = window.OneSignalDeferred || [];
-            OneSignalDeferred.push(function(OneSignal) {
-              OneSignal.init({
-                appId: "6fc68aca-1ca2-47f6-96fd-9690fe507285",
-                notifyButton: {
-                  enable: true,
+  {`
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(function(OneSignal) {
+      OneSignal.init({
+        appId: "6fc68aca-1ca2-47f6-96fd-9690fe507285",
+        allowLocalhostAsSecureOrigin: true,
+        // إضافة التفعيل التلقائي هنا
+        promptOptions: {
+          slidedown: {
+            prompts: [
+              {
+                type: "push",
+                autoPrompt: true, // يظهر الرسالة تلقائياً
+                text: {
+                  actionMessage: "هل تود استقبال أحدث كوبونات الخصم والعروض فور صدورها؟",
+                  acceptButton: "نعم، أريد التوفير",
+                  cancelButton: "ليس الآن"
                 },
-                allowLocalhostAsSecureOrigin: true,
-              });
-            });
-          `}
-        </Script>
+                delay: {
+                  pageViews: 1, // تظهر من أول صفحة
+                  timeDelay: 3  // تظهر بعد 3 ثوانٍ
+                }
+              }
+            ]
+          }
+        },
+        notifyButton: {
+          enable: false, // يمكنك إخفاء الجرس إذا فعلت الطلب التلقائي أعلاه
+        },
+      });
+    });
+  `}
+</Script>
 
         {/* Schema Markup */}
         <Script id="schema-web" type="application/ld+json" strategy="afterInteractive">
