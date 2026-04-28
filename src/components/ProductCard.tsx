@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, ShoppingBag, ArrowLeft, Ticket, CheckCheck } from "lucide-react";
+import { Eye, ShoppingBag, ArrowLeft, Ticket, CheckCheck, Star } from "lucide-react";
 
 type Props = {
   product: any;
@@ -13,27 +13,14 @@ export default function ProductCard({ product, country }: Props) {
   const [copied, setCopied] = useState(false);
 
   const productUrl = product?.affiliate_link || product?.product_url || "#";
-
-  const brandSlug = (product?.brand_slug || product?.brands?.slug || "")
-    .toLowerCase()
-    .trim();
-
+  const brandSlug = (product?.brand_slug || product?.brands?.slug || "").toLowerCase().trim();
   const brandLogo = product?.brands?.logo || "";
-
   const price = product.price || 0;
   const oldPrice = product.old_price || 0;
 
-  const discount =
-    oldPrice > price
-      ? Math.round(((oldPrice - price) / oldPrice) * 100)
-      : 0;
-
+  const discount = oldPrice > price ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
   const currency = country === "sa" ? "ر.س" : "ج.م";
-
-  const safeSlug = product?.slug
-    ? encodeURIComponent(product.slug.trim().replace(/\s+/g, "-"))
-    : "";
-
+  const safeSlug = product?.slug ? encodeURIComponent(product.slug.trim().replace(/\s+/g, "-")) : "";
   const activeCoupon = product.coupon_code || "AHSB";
 
   const handleCopy = (e: React.MouseEvent) => {
@@ -46,7 +33,7 @@ export default function ProductCard({ product, country }: Props) {
 
   return (
     <div className="group relative flex flex-col h-full bg-white rounded-[2rem] border border-slate-200 hover:border-emerald-500 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden">
-
+      
       {/* اللوجو + الخصم */}
       <div className="absolute top-4 inset-x-4 z-30 flex justify-between items-start">
         {brandLogo ? (
@@ -76,17 +63,36 @@ export default function ProductCard({ product, country }: Props) {
       </div>
 
       <div className="p-5 flex flex-col flex-grow text-right" dir="rtl">
-
-        {/* المشاهدات (تم تحسين اللون) */}
+        {/* المشاهدات */}
         <div className="flex items-center justify-end mb-2 text-gray-500 text-xs font-semibold gap-1">
           <Eye size={14} />
           <span>{(product.reviewsCount || 1200).toLocaleString()} مشاهدة</span>
         </div>
 
         {/* العنوان */}
-        <h3 className="text-[15px] font-bold text-gray-800 line-clamp-2 h-12 mb-3 leading-snug group-hover:text-emerald-600">
+        <h3 className="text-[15px] font-bold text-gray-800 line-clamp-2 h-12 mb-1 leading-snug group-hover:text-emerald-600">
           {product?.title}
         </h3>
+
+        {/* التقييم المضاف حديثاً */}
+        <div className="flex items-center justify-end mb-3 gap-1" dir="ltr">
+          <span className="text-[11px] font-bold text-gray-500">
+            ({product.rating || "0"})
+          </span>
+          <div className="flex items-center">
+            {[...Array(5)].map((_, index) => (
+              <Star
+                key={index}
+                size={12}
+                className={
+                  index < Math.floor(product.rating || 0)
+                    ? "fill-yellow-400 text-yellow-400"
+                    : "fill-gray-200 text-gray-200"
+                }
+              />
+            ))}
+          </div>
+        </div>
 
         {/* السعر */}
         <div className="flex items-center gap-2 mb-2">
@@ -96,7 +102,6 @@ export default function ProductCard({ product, country }: Props) {
           <span className="text-sm font-bold text-gray-600">
             {currency}
           </span>
-
           {oldPrice > price && (
             <span className="text-gray-400 line-through text-sm">
               {oldPrice.toLocaleString()}
@@ -104,17 +109,14 @@ export default function ProductCard({ product, country }: Props) {
           )}
         </div>
 
-        {/* 🔥 تنويه احترافي (مهم جدًا) */}
+        {/* تنويه احترافي */}
         <div className="bg-gray-50 border rounded-lg p-2 mb-4">
           <p className="text-[11px] text-gray-600 leading-relaxed">
-            ⚠️ يتم الشراء عبر متاجر خارجية (مثل أمازون أو نون) ولسنا البائع المباشر. قد تختلف الأسعار والتوفر.
-          </p>
-          <p className="text-[10px] text-gray-400 mt-1">
-            روابط تسوق خارجية — قد نحصل على عمولة بدون أي تكلفة إضافية عليك
+            ⚠️ يتم الشراء عبر متاجر خارجية (مثل أمازون أو نون).
           </p>
         </div>
 
-        {/* الكوبون */}
+        {/* الكوبون والأزرار كما هي دون تغيير ... */}
         {product.coupon_code && (
           <div onClick={handleCopy} className="mb-4 cursor-pointer">
             <div className={`flex items-center justify-between p-3 rounded-xl transition ${
@@ -122,11 +124,8 @@ export default function ProductCard({ product, country }: Props) {
             }`}>
               <div className="flex items-center gap-2">
                 <Ticket className="text-white" size={18} />
-                <span className="text-white font-bold tracking-wider">
-                  {product.coupon_code}
-                </span>
+                <span className="text-white font-bold tracking-wider">{product.coupon_code}</span>
               </div>
-
               <div className="bg-white text-emerald-700 px-3 py-1 rounded text-xs font-bold">
                 {copied ? <CheckCheck size={14} /> : "نسخ"}
               </div>
@@ -134,9 +133,7 @@ export default function ProductCard({ product, country }: Props) {
           </div>
         )}
 
-        {/* الأزرار */}
         <div className="flex gap-2 mt-auto">
-
           {productUrl !== "#" ? (
             <a
               href={productUrl}
@@ -152,14 +149,12 @@ export default function ProductCard({ product, country }: Props) {
               غير متاح
             </div>
           )}
-
           <Link
             href={`/${country}/product/${safeSlug}`}
             className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl text-center hover:bg-gray-200 flex items-center justify-center"
           >
             <ArrowLeft size={18} />
           </Link>
-
         </div>
       </div>
     </div>
