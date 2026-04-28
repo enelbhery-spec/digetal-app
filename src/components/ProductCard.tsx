@@ -66,7 +66,7 @@ export default function ProductCard({ product, country }: Props) {
         {/* المشاهدات */}
         <div className="flex items-center justify-end mb-2 text-gray-500 text-xs font-semibold gap-1">
           <Eye size={14} />
-          <span>{(product.reviewsCount || 1200).toLocaleString()} مشاهدة</span>
+          <span>{(product.reviewsCount || 0).toLocaleString()} مشاهدة</span>
         </div>
 
         {/* العنوان */}
