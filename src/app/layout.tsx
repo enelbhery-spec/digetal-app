@@ -86,7 +86,7 @@ export default function RootLayout({
     <html lang="ar" dir="rtl" className={`scroll-smooth ${tajawal.variable}`}>
       <head>
         {/* --- OneSignal SDK --- */}
-        <Script id="onesignal-init" strategy="afterInteractive">
+       <Script id="onesignal-init" strategy="afterInteractive">
   {`
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(function(OneSignal) {
