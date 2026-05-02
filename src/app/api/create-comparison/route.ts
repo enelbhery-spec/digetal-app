@@ -1,33 +1,89 @@
-import { NextResponse } from "next/server"
-import { supabase } from "@/lib/supabase"
-import { generateSlug } from "@/lib/slug"
+import { NextResponse } from "next/server";
+import { supabase } from "@/lib/supabase";
 
 export async function POST(req: Request) {
   try {
-    const { country, product1_slug, product2_slug } = await req.json()
+    const body = await req.json();
+    console.log("📥 incoming:", body);
 
-    const slug = generateSlug(`${product1_slug}-vs-${product2_slug}`)
+    let { country, p1_id, p2_id } = body;
 
-    // تحقق هل موجودة
+    if (!country || !p1_id || !p2_id) {
+      return NextResponse.json(
+        { error: "Missing required data" },
+        { status: 400 }
+      );
+    }
+
+    country = country.toLowerCase().trim();
+
+    // ✅ ترتيب IDs (أهم خطوة)
+    const [first, second] =
+      p1_id < p2_id ? [p1_id, p2_id] : [p2_id, p1_id];
+
+    // ✅ 1. هل المقارنة موجودة بالفعل؟
     const { data: existing } = await supabase
-      .from("comparisons")
-      .select("id")
-      .eq("slug", slug)
-      .single()
+      .from("smart_comparisons")
+      .select("id, category_slug")
+      .eq("p1_id", first)
+      .eq("p2_id", second)
+      .eq("code", country)
+      .maybeSingle();
 
-    if (!existing) {
-      await supabase.from("comparisons").insert({
-        country,
-        slug,
-        product1_slug,
-        product2_slug,
+    if (existing) {
+      return NextResponse.json({
+        id: existing.id,
+        url: `/${country}/product-comparisons/${existing.id}`
+      });
+    }
+
+    // ✅ 2. جلب category من المنتج
+    const { data: product } = await supabase
+      .from("products")
+      .select("category_slug")
+      .eq("id", first)
+      .single();
+
+    const category_slug = product?.category_slug;
+
+    if (!category_slug) {
+      return NextResponse.json(
+        { error: "Category not found" },
+        { status: 400 }
+      );
+    }
+
+    // ✅ 3. إنشاء المقارنة
+    const { data, error } = await supabase
+      .from("smart_comparisons")
+      .insert({
+        code: country,
+        category_slug,
+        p1_id: first,
+        p2_id: second,
+        is_active: true
       })
+      .select("id")
+      .single();
+
+    if (error) {
+      console.error("❌ DB Error:", error.message);
+      return NextResponse.json(
+        { error: error.message },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({
-      url: `/${country}/compare/${slug}`,
-    })
+      id: data.id,
+      url: `/${country}/product-comparisons/${data.id}`
+    });
+
   } catch (error) {
-    return NextResponse.json({ error: "Server error" }, { status: 500 })
+    console.error("❌ Server Error:", error);
+    return NextResponse.json(
+      { error: "Server error" },
+      { status: 500 }
+    );
   }
 }

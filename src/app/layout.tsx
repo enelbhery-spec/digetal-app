@@ -1,16 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import "@/app/globals.css"; 
+import "@/app/globals.css";
 
-// 1. استيراد الخط بشكل محسن من Next.js
 import { Tajawal } from "next/font/google";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import RegisterSW from "@/components/RegisterSW";
-import AppInstallLoader from "@/components/AppInstallLoader"; 
+import AppInstallLoader from "@/components/AppInstallLoader";
 import Script from "next/script";
 
-// 2. إعداد الخط
+// ✅ إضافة نظام المقارنة
+import { CompareProvider } from "@/context/CompareContext";
+import CompareBar from "@/components/CompareBar";
+
 const tajawal = Tajawal({
   subsets: ["arabic"],
   weight: ["400", "500", "700", "800", "900"],
@@ -27,9 +29,18 @@ export const metadata: Metadata = {
   description:
     "دليلك الشامل للتوفير؛ احصل على أحدث كوبونات خصم نون السعودية، أقوى عروض أمازون مصر، وخصومات تيمو (Temu) وشي إن (Shein) المحدثة يومياً لتسوق أذكى بأقل الأسعار.",
   keywords: [
-    "إكسترا كود", "كوبونات نون", "عروض أمازون مصر", "خصومات أمازون",
-    "كوبونات خصم نون السعودية", "كود خصم تيمو", "عروض Temu مصر", "توفير المال",
-    "أفضل منتجات أمازون", "أكواد خصم نون", "عروض تيمو السعودية", "خصومات شي إن"
+    "إكسترا كود",
+    "كوبونات نون",
+    "عروض أمازون مصر",
+    "خصومات أمازون",
+    "كوبونات خصم نون السعودية",
+    "كود خصم تيمو",
+    "عروض Temu مصر",
+    "توفير المال",
+    "أفضل منتجات أمازون",
+    "أكواد خصم نون",
+    "عروض تيمو السعودية",
+    "خصومات شي إن",
   ],
   authors: [{ name: "إكسترا كود" }],
   creator: "إكسترا كود",
@@ -40,8 +51,10 @@ export const metadata: Metadata = {
     apple: "/favicon.ico",
   },
   openGraph: {
-    title: "إكسترا كود | كل عروض Amazon, Noon, Temu & Shein في مكان واحد",
-    description: "منصة رقمية مجانية توفر لك أفضل منتجات أمازون مصر وكوبونات نون وتيمو المحدثة لحظة بلحظة.",
+    title:
+      "إكسترا كود | كل عروض Amazon, Noon, Temu & Shein في مكان واحد",
+    description:
+      "منصة رقمية مجانية توفر لك أفضل منتجات أمازون مصر وكوبونات نون وتيمو المحدثة لحظة بلحظة.",
     url: "https://www.extracode.online",
     siteName: "إكسترا كود",
     locale: "ar_EG",
@@ -57,8 +70,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "إكسترا كود | كل عروض Amazon, Noon, Temu & Shein في تطبيق واحد",
-    description: "وفر أموالك مع أحدث خصومات أمازون مصر وكوبونات نون السعودية وعروض تيمو وشي إن.",
+    title:
+      "إكسترا كود | كل عروض Amazon, Noon, Temu & Shein في تطبيق واحد",
+    description:
+      "وفر أموالك مع أحدث خصومات أمازون مصر وكوبونات نون السعودية وعروض تيمو وشي إن.",
     images: ["/og-image.png"],
   },
   robots: {
@@ -66,13 +81,14 @@ export const metadata: Metadata = {
     follow: true,
   },
   other: {
-    "google-site-verification": "7XY4QFlcbO13HsbJ3M-4Pl1l9A4Pbbe-GltnYncvINA",
+    "google-site-verification":
+      "7XY4QFlcbO13HsbJ3M-4Pl1l9A4Pbbe-GltnYncvINA",
     "google-adsense-account": "ca-pub-4973672854580770",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#16a34a", 
+  themeColor: "#16a34a",
   width: "device-width",
   initialScale: 1,
 };
@@ -83,45 +99,44 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ar" dir="rtl" className={`scroll-smooth ${tajawal.variable}`}>
+    <html
+      lang="ar"
+      dir="rtl"
+      className={`scroll-smooth ${tajawal.variable}`}
+    >
       <head>
-        {/* --- OneSignal SDK --- */}
-       <Script id="onesignal-init" strategy="afterInteractive">
-  {`
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(function(OneSignal) {
-      OneSignal.init({
-        appId: "6fc68aca-1ca2-47f6-96fd-9690fe507285",
-        allowLocalhostAsSecureOrigin: true,
-        // إضافة التفعيل التلقائي هنا
-        promptOptions: {
-          slidedown: {
-            prompts: [
-              {
-                type: "push",
-                autoPrompt: true, // يظهر الرسالة تلقائياً
-                text: {
-                  actionMessage: "هل تود استقبال أحدث كوبونات الخصم والعروض فور صدورها؟",
-                  acceptButton: "نعم، أريد التوفير",
-                  cancelButton: "ليس الآن"
+        {/* OneSignal */}
+        <Script id="onesignal-init" strategy="afterInteractive">
+          {`
+            window.OneSignalDeferred = window.OneSignalDeferred || [];
+            OneSignalDeferred.push(function(OneSignal) {
+              OneSignal.init({
+                appId: "6fc68aca-1ca2-47f6-96fd-9690fe507285",
+                allowLocalhostAsSecureOrigin: true,
+                promptOptions: {
+                  slidedown: {
+                    prompts: [{
+                      type: "push",
+                      autoPrompt: true,
+                      text: {
+                        actionMessage: "هل تود استقبال أحدث كوبونات الخصم والعروض فور صدورها؟",
+                        acceptButton: "نعم، أريد التوفير",
+                        cancelButton: "ليس الآن"
+                      },
+                      delay: {
+                        pageViews: 1,
+                        timeDelay: 3
+                      }
+                    }]
+                  }
                 },
-                delay: {
-                  pageViews: 1, // تظهر من أول صفحة
-                  timeDelay: 3  // تظهر بعد 3 ثوانٍ
-                }
-              }
-            ]
-          }
-        },
-        notifyButton: {
-          enable: false, // يمكنك إخفاء الجرس إذا فعلت الطلب التلقائي أعلاه
-        },
-      });
-    });
-  `}
-</Script>
+                notifyButton: { enable: false }
+              });
+            });
+          `}
+        </Script>
 
-        {/* Schema Markup */}
+        {/* Schema */}
         <Script id="schema-web" type="application/ld+json" strategy="afterInteractive">
           {`
           {
@@ -138,7 +153,7 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* Google AdSense */}
+        {/* Adsense */}
         <Script
           async
           strategy="afterInteractive"
@@ -146,36 +161,43 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
 
-        {/* Google Analytics */}
+        {/* Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-FGK2Z5C8W8"
           strategy="afterInteractive"
         />
-
         <Script id="ga4" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-FGK2Z5C8W8', {
-                anonymize_ip: true
-            });
+            gtag('config', 'G-FGK2Z5C8W8', { anonymize_ip: true });
           `}
         </Script>
       </head>
 
-      <body className={`${tajawal.className} min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased`}>
-        <Header />
+      <body
+        className={`${tajawal.className} min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased`}
+      >
+        {/* ✅ لف الموقع كله بالـ CompareProvider */}
+        <CompareProvider>
 
-        <AppInstallLoader>
-          <main className="flex-1 container mx-auto px-4">
-            {children}
-          </main>
-        </AppInstallLoader>
+          <Header />
 
-        <Footer />
+          <AppInstallLoader>
+            <main className="flex-1 container mx-auto px-4">
+              {children}
+            </main>
+          </AppInstallLoader>
 
-        <RegisterSW />
+          <Footer />
+
+          {/* ✅ بار المقارنة (لن يظهر إلا لو اختار 2 منتجات) */}
+          <CompareBar country="eg" />
+
+          <RegisterSW />
+
+        </CompareProvider>
       </body>
     </html>
   );
