@@ -13,11 +13,16 @@ export interface Product {
   old_price?: number;
   currency?: string;
   reviewsCount?: number;
-  brand_logo?: string;
   coupon_code?: string;
   product_url?: string;
   affiliate_link?: string;
   sold_estimate?: number;
+
+  // ✅ البراند (المهم)
+  brands?: {
+    logo?: string;
+    slug?: string;
+  };
 
   categories?: {
     title?: string;
@@ -31,7 +36,7 @@ export const fetchAllTopRatedProducts = async (
   pageSize: number = 9
 ) => {
   try {
-    // ✅ تنظيف الكود
+    // ✅ تنظيف الدولة
     const cleanCountry =
       countryCode?.toLowerCase() === "egypt"
         ? "eg"
@@ -40,27 +45,27 @@ export const fetchAllTopRatedProducts = async (
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    // 🔥 الاستعلام الأساسي (منتجات مميزة حقيقية)
+    // 🔥 الاستعلام الأساسي مع JOIN على brands
     const { data, error, count } = await supabase
       .from("products")
-      .select("*", { count: "exact" })
+      .select(
+        `
+        *,
+        brands:brand_id (
+          logo,
+          slug
+        )
+      `,
+        { count: "exact" }
+      )
       .eq("code", cleanCountry)
       .eq("status", "done")
-
-      // ✅ فلترة احترافية
-      .gte("rating", 4.0)
-      .gte("reviewsCount", 1000)
-
-      // 🔥 جاهز للمستقبل
-      // .gte("sold_estimate", 500)
-
+      .gte("rating", 4.2)
+      .gte("reviewsCount", 1300)
       .not("image_url", "is", null)
-
-      // ✅ ترتيب ذكي
       .order("rating", { ascending: false })
       .order("reviewsCount", { ascending: false })
       .order("created_at", { ascending: false })
-
       .range(from, to);
 
     // ❌ خطأ
@@ -69,20 +74,26 @@ export const fetchAllTopRatedProducts = async (
       throw error;
     }
 
-    // ⚠️ لو مفيش نتائج (Fallback ذكي)
+    // ⚠️ fallback لو مفيش بيانات قوية
     if (!data || data.length === 0) {
       console.warn("⚠️ No strong products, using fallback...");
 
       const { data: fallbackData, count: fallbackCount } = await supabase
         .from("products")
-        .select("*", { count: "exact" })
+        .select(
+          `
+          *,
+          brands:brand_id (
+            logo,
+            slug
+          )
+        `,
+          { count: "exact" }
+        )
         .eq("code", cleanCountry)
         .eq("status", "done")
         .not("image_url", "is", null)
-
-        // fallback أخف شوية
         .gte("rating", 4)
-
         .order("rating", { ascending: false })
         .order("reviewsCount", { ascending: false })
         .range(from, to);
@@ -93,7 +104,6 @@ export const fetchAllTopRatedProducts = async (
       };
     }
 
-    // ✅ النتيجة الأساسية
     return {
       products: data,
       totalCount: count || 0,

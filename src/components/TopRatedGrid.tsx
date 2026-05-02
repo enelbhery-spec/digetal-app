@@ -51,7 +51,7 @@ const TopRatedGrid = ({ country }: { country: string }) => {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-black text-gray-900 border-r-4 border-[#00A67E] pr-4 italic">
-            أقوى العروض المميزة <span className="text-[#00A67E] text-sm not-italic font-medium mr-2">(+100 تقييم)</span>
+            قارن العروض المميزة واختار الافضل لك <span className="text-[#00A67E] text-sm not-italic font-medium mr-2">(+1000 تقييم)</span>
           </h2>
         </div>
         

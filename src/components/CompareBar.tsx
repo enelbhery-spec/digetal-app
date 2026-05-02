@@ -17,7 +17,7 @@ export default function CompareBar({ country }: { country: string }) {
         country,
         p1_id: items[0].id,
         p2_id: items[1].id,
-        category_slug: "general"
+        category_slug: items[0]?.category_slug
       })
     });
 
