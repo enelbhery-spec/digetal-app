@@ -48,7 +48,7 @@ export const fetchAllTopRatedProducts = async (
       .eq("status", "done")
 
       // ✅ فلترة احترافية
-      .gte("rating", 4.2)
+      .gte("rating", 4.0)
       .gte("reviewsCount", 1000)
 
       // 🔥 جاهز للمستقبل
