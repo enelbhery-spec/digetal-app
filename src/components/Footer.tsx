@@ -108,7 +108,7 @@ export default function Footer() {
       <div className="border-t border-gray-800 text-center py-6 text-xs text-gray-500 px-4 leading-relaxed">
         
         <div className="mb-2">
-          جميع الأسعار والعروض يتم عرضها لأغراض إرشادية فقط وقد تختلف حسب المتجر الخارجي.
+  ⚠️ الأسعار المعروضة على الموقع قد تختلف عن الأسعار الفعلية داخل المتاجر نتيجة العروض أو التحديثات المستمرة. يرجى مراجعة السعر النهائي في صفحة المتجر قبل إتمام الشراء.
         </div>
 
         <div className="mb-2">
