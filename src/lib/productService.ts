@@ -18,7 +18,6 @@ export interface Product {
   affiliate_link?: string;
   sold_estimate?: number;
 
-  // ✅ البراند (المهم)
   brands?: {
     logo?: string;
     slug?: string;
@@ -36,16 +35,37 @@ export const fetchAllTopRatedProducts = async (
   pageSize: number = 9
 ) => {
   try {
-    // ✅ تنظيف الدولة
-    const cleanCountry =
-      countryCode?.toLowerCase() === "egypt"
-        ? "eg"
-        : countryCode?.toLowerCase().trim();
+    // ✅ دعم مصر + السعودية
+    const cleanCountry = (() => {
+      const c = countryCode?.toLowerCase().trim();
+
+      if (!c) return "eg";
+
+      // مصر
+      if (c === "eg" || c === "egypt") return "eg";
+
+      // السعودية
+      if (
+        c === "sa" ||
+        c === "ksa" ||
+        c === "saudi" ||
+        c === "saudi-arabia" ||
+        c === "saudi_arabia"
+      ) {
+        return "sa";
+      }
+
+      return c;
+    })();
 
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    // 🔥 الاستعلام الأساسي مع JOIN على brands
+    // ✅ شروط مختلفة عشان السعودية تظهر
+    const minRating = cleanCountry === "sa" ? 4 : 4.2;
+    const minReviews = cleanCountry === "sa" ? 200 : 1000;
+
+    // 🔥 الاستعلام الأساسي
     const { data, error, count } = await supabase
       .from("products")
       .select(
@@ -60,24 +80,21 @@ export const fetchAllTopRatedProducts = async (
       )
       .eq("code", cleanCountry)
       .eq("status", "done")
-      .gte("rating", 4.2)
-      .gte("reviewsCount", 1300)
       .not("image_url", "is", null)
+      .gte("rating", minRating)
+      .gte("reviewsCount", minReviews)
       .order("rating", { ascending: false })
       .order("reviewsCount", { ascending: false })
       .order("created_at", { ascending: false })
       .range(from, to);
 
-    // ❌ خطأ
     if (error) {
       console.error("❌ Supabase Error:", error.message);
       throw error;
     }
 
-    // ⚠️ fallback لو مفيش بيانات قوية
+    // ⚠️ fallback لو مفيش بيانات
     if (!data || data.length === 0) {
-      console.warn("⚠️ No strong products, using fallback...");
-
       const { data: fallbackData, count: fallbackCount } = await supabase
         .from("products")
         .select(
@@ -93,7 +110,7 @@ export const fetchAllTopRatedProducts = async (
         .eq("code", cleanCountry)
         .eq("status", "done")
         .not("image_url", "is", null)
-        .gte("rating", 4)
+        .gte("rating", 3.8)
         .order("rating", { ascending: false })
         .order("reviewsCount", { ascending: false })
         .range(from, to);
