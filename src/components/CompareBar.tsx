@@ -5,7 +5,7 @@ import { useCompare } from "@/context/CompareContext";
 export default function CompareBar({ country }: { country: string }) {
   const { items, clear } = useCompare();
 
-  if (items.length < 2) return null;
+  if (items.length === 0) return null;
 
   const handleCompare = async () => {
     const res = await fetch("/api/create-comparison", {

@@ -60,18 +60,18 @@ const PremiumProductCard = ({
 
       {/* 🔥 زر الانتقال لصفحة المنتج */}
       <Link
-        href={`/${currentCountry}/products/${safeSlug}`}
+        href={`/${currentCountry}/product/${product.slug || product.id}`}
         aria-label="عرض تفاصيل المنتج"
         title="عرض تفاصيل المنتج"
         className="absolute bottom-4 left-4 bg-white shadow-md border rounded-full p-2 hover:bg-gray-100 transition z-10"
       >
-        <ArrowUpRight size={16} />
+        <ArrowUpRight size={20} />
       </Link>
 
       {/* 🔥 الهيدر */}
       <div className="flex justify-between items-center mb-2">
         <span className="bg-red-500 text-white text-[10px] px-2 py-1 rounded-lg font-bold">
-          {product.discount_label || "-15%"}
+          {product.discount_label || "متغير"}
         </span>
 
         <img
@@ -99,7 +99,7 @@ const PremiumProductCard = ({
       {/* 🔥 التصنيف + المقارنة */}
       <div className="flex justify-between items-center mb-2">
         <span className="text-[10px] text-green-600 font-bold flex items-center gap-1">
-          <Tag size={10} /> {product.categories?.title || "منتج"}
+          <Tag size={14} /> {product.categories?.title || "منتج مميز"}
         </span>
 
         <button
@@ -113,10 +113,10 @@ const PremiumProductCard = ({
               ? "bg-green-500 text-white"
               : isDifferentCategory
               ? "bg-gray-200 text-gray-400"
-              : "bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white"
+              : "bg-blue-70 text-blue-600 hover:bg-blue-600 hover:text-white"
           }`}
         >
-          <GitCompare size={12} />
+          <GitCompare size={20} />
           {isSelected ? "مضاف" : "قارن"}
         </button>
       </div>
@@ -145,12 +145,12 @@ const PremiumProductCard = ({
             className={
               i < Math.floor(product.rating || 0)
                 ? "text-yellow-400"
-                : "text-gray-300"
+                : "text-gray-500"
             }
             fill="currentColor"
           />
         ))}
-        <span className="text-xs text-gray-400">
+        <span className="text-xs text-gray-500">
           ({product.rating || 0})
         </span>
       </div>
@@ -172,7 +172,7 @@ const PremiumProductCard = ({
         className="w-full bg-black text-white py-3 rounded-xl text-center font-bold flex items-center justify-center gap-2 hover:bg-blue-600 transition"
       >
         <ShoppingCart size={14} />
-        تسوق الآن
+      العرض إلى المتجر
       </a>
     </div>
   );

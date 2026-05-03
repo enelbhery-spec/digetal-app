@@ -32,19 +32,16 @@ export interface Product {
 export const fetchAllTopRatedProducts = async (
   countryCode: string,
   page: number = 1,
-  pageSize: number = 9
+  pageSize: number = 12
 ) => {
   try {
-    // ✅ دعم مصر + السعودية
+    // ✅ تنظيف الدولة
     const cleanCountry = (() => {
       const c = countryCode?.toLowerCase().trim();
 
       if (!c) return "eg";
-
-      // مصر
       if (c === "eg" || c === "egypt") return "eg";
 
-      // السعودية
       if (
         c === "sa" ||
         c === "ksa" ||
@@ -61,9 +58,8 @@ export const fetchAllTopRatedProducts = async (
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    // ✅ شروط مختلفة عشان السعودية تظهر
-    const minRating = cleanCountry === "sa" ? 4 : 4.2;
-    const minReviews = cleanCountry === "sa" ? 200 : 1000;
+    const minRating = 4;
+    const minReviews = 1000;
 
     // 🔥 الاستعلام الأساسي
     const { data, error, count } = await supabase
@@ -81,11 +77,17 @@ export const fetchAllTopRatedProducts = async (
       .eq("code", cleanCountry)
       .eq("status", "done")
       .not("image_url", "is", null)
+      .not("category_slug", "is", null) // ✅ مهم جدًا
       .gte("rating", minRating)
       .gte("reviewsCount", minReviews)
-      .order("rating", { ascending: false })
-      .order("reviewsCount", { ascending: false })
-      .order("created_at", { ascending: false })
+
+      // ✅ الترتيب الذكي الحقيقي
+      .order("category_slug", { ascending: true }) // تجميع
+      .order("rating", { ascending: false })       // الأفضل جودة
+      .order("reviewsCount", { ascending: false }) // الأكثر انتشار
+      .order("price", { ascending: true })         // الأرخص أولاً (ميزة إضافية)
+      .order("created_at", { ascending: false })   // الأحدث
+
       .range(from, to);
 
     if (error) {
@@ -93,7 +95,7 @@ export const fetchAllTopRatedProducts = async (
       throw error;
     }
 
-    // ⚠️ fallback لو مفيش بيانات
+    // ⚠️ fallback
     if (!data || data.length === 0) {
       const { data: fallbackData, count: fallbackCount } = await supabase
         .from("products")
@@ -110,9 +112,16 @@ export const fetchAllTopRatedProducts = async (
         .eq("code", cleanCountry)
         .eq("status", "done")
         .not("image_url", "is", null)
+        .not("category_slug", "is", null)
         .gte("rating", 3.8)
+
+        // نفس المنطق
+        .order("category_slug", { ascending: true })
         .order("rating", { ascending: false })
         .order("reviewsCount", { ascending: false })
+        .order("price", { ascending: true })
+        .order("created_at", { ascending: false })
+
         .range(from, to);
 
       return {
