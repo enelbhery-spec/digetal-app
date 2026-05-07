@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 # الإعدادات - سيتم سحبها من Environment Variables في Vercel للأمان
 FB_VERIFY_TOKEN = "ahmed_shawki_2026" # الكلمة التي كتبتها في لوحة التحكم
-WA_TOKEN = os.environ.get("949266284535962") # رمز الوصول الدائم أو المؤقت
+WA_TOKEN = os.environ.get("EAF5Q30cZAzwUBRbdU4xpgs3TpjLA7zoN1JGetwhEBhoTkHexlEsEoxAgCHPXHJ7zsjsv6LTMtSRNlh7FZAiPvqo8f5dd9aWpy49J1ZCgvZBdFqEf63KrzVLzIPEW9fEFulV4eQZCQ9Ln0OO2vvTU7UZC4wZBGnYCWZA6GeRZA3DZBKwxaoDRsBsPEvveVy2SO5BPdhLRCXLGb33Py7LcUPJGwp6I736nS3gutJGQ3dYFXeX1VRjTzJOF3rVJSgPQ7oE5moYvMlWssXl2u32t3lWgZDZD") # رمز الوصول الدائم أو المؤقت
 PHONE_NUMBER_ID = os.environ.get("1065458009989076")
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
