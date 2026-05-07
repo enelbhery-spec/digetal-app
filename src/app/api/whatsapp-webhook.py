@@ -6,10 +6,13 @@ from supabase import create_client, Client
 
 app = Flask(__name__)
 
-# الإعدادات - سيتم سحبها من Environment Variables في Vercel للأمان
-FB_VERIFY_TOKEN = "ahmed_shawki_2026" # الكلمة التي كتبتها في لوحة التحكم
-WA_TOKEN = os.environ.get("EAF5Q30cZAzwUBRbdU4xpgs3TpjLA7zoN1JGetwhEBhoTkHexlEsEoxAgCHPXHJ7zsjsv6LTMtSRNlh7FZAiPvqo8f5dd9aWpy49J1ZCgvZBdFqEf63KrzVLzIPEW9fEFulV4eQZCQ9Ln0OO2vvTU7UZC4wZBGnYCWZA6GeRZA3DZBKwxaoDRsBsPEvveVy2SO5BPdhLRCXLGb33Py7LcUPJGwp6I736nS3gutJGQ3dYFXeX1VRjTzJOF3rVJSgPQ7oE5moYvMlWssXl2u32t3lWgZDZD") # رمز الوصول الدائم أو المؤقت
-PHONE_NUMBER_ID = os.environ.get("1065458009989076")
+# --- الإعدادات ---
+# الكلمة السرية للتحقق (يجب أن تطابق ما كتبته في فيسبوك)
+FB_VERIFY_TOKEN = "ahmed_shawki_2026" 
+
+# استبدل هذه القيم بأسماء المتغيرات في Vercel أو ضع القيم مباشرة كنص
+WA_TOKEN = os.environ.get("WHATSAPP_TOKEN") 
+PHONE_NUMBER_ID = os.environ.get("PHONE_NUMBER_ID")
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
 
@@ -18,7 +21,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 @app.route('/api/whatsapp-webhook', methods=['GET', 'POST'])
 def webhook():
-    # 1. مرحلة التحقق من فيسبوك (GET)
+    # 1. مرحلة التحقق (GET) - هذا ما يحتاجه فيسبوك الآن
     if request.method == 'GET':
         mode = request.args.get('hub.mode')
         token = request.args.get('hub.verify_token')
@@ -28,33 +31,32 @@ def webhook():
             return challenge, 200
         return 'Forbidden', 403
 
-    # 2. مرحلة استقبال ومعالجة الرسائل (POST)
+    # 2. مرحلة استقبال الرسائل (POST)
     if request.method == 'POST':
         data = request.get_json()
-        
         try:
-            # استخراج نص الرسالة ورقم المرسل
-            message_obj = data['entry'][0]['changes'][0]['value']['messages'][0]
-            user_phone = message_obj['from']
-            user_text = message_obj['text']['body'].strip() # كود المنتج المرسل
+            # استخراج البيانات
+            entry = data.get('entry', [{}])[0]
+            changes = entry.get('changes', [{}])[0]
+            value = changes.get('value', {})
+            messages = value.get('messages', [{}])[0]
+            
+            if messages:
+                user_phone = messages.get('from')
+                user_text = messages.get('text', {}).get('body', '').strip()
 
-            # البحث في Supabase عن المنتج باستخدام الكود
-            # نفترض أن الجدول اسمه 'products' والعمود اسمه 'code'
-            query = supabase.table("products").select("*").eq("code", user_text).maybe_single().execute()
-            product = query.data
+                # البحث في Supabase
+                query = supabase.table("products").select("*").eq("code", user_text).maybe_single().execute()
+                product = query.data
 
-            if product:
-                # إذا وجدنا المنتج، نجهز رسالة الرد
-                response_text = f"✅ تم العثور على المنتج:\n\n🔗 الرابط: {product['link']}\n💰 السعر: {product['price']} ج.م"
-            else:
-                # إذا لم نجد الكود
-                response_text = "عذراً، هذا الكود غير صحيح أو انتهى العرض الخاص به. تأكد من الكود مرة أخرى."
+                if product:
+                    response_text = f"✅ تم العثور على المنتج:\n\n🔗 الرابط: {product['link']}\n💰 السعر: {product['price']} ج.م"
+                else:
+                    response_text = "عذراً، هذا الكود غير صحيح. تأكد من الكود المكتوب على الصورة."
 
-            # إرسال الرد عبر WhatsApp Cloud API
-            send_whatsapp_message(user_phone, response_text)
-
+                send_whatsapp_message(user_phone, response_text)
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"Error processing message: {e}")
             
         return jsonify({"status": "success"}), 200
 
