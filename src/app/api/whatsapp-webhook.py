@@ -1,11 +1,12 @@
 import os
+import json
 import requests
 from flask import Flask, request, jsonify
 from supabase import create_client, Client
 
 app = Flask(__name__)
 
-# الإعدادات - يتم سحبها من Environment Variables في Vercel
+# --- الإعدادات ---
 FB_VERIFY_TOKEN = "ahmed_shawki_2026"
 WA_TOKEN = os.environ.get("WHATSAPP_TOKEN")
 PHONE_NUMBER_ID = os.environ.get("PHONE_NUMBER_ID")
@@ -17,7 +18,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 @app.route('/api/whatsapp-webhook', methods=['GET', 'POST'])
 def webhook():
-    # 1. مرحلة التحقق (التي يطلبها فيسبوك الآن)
+    # 1. مرحلة التحقق (GET)
     if request.method == 'GET':
         mode = request.args.get('hub.mode')
         token = request.args.get('hub.verify_token')
@@ -27,26 +28,36 @@ def webhook():
             return challenge, 200
         return 'Verification failed', 403
 
-    # 2. مرحلة استقبال الرسائل
+    # 2. مرحلة استقبال الرسائل (POST)
     if request.method == 'POST':
         data = request.get_json()
+        
+        # تأكد من أن البيانات تحتوي على رسالة (لحماية الكود من الانهيار)
         try:
-            if 'messages' in data['entry'][0]['changes'][0]['value']:
-                message = data['entry'][0]['changes'][0]['value']['messages'][0]
-                user_phone = message['from']
-                user_text = message['text']['body'].strip()
+            entries = data.get('entry', [])
+            if not entries:
+                return jsonify({"status": "no entry"}), 200
+                
+            changes = entries[0].get('changes', [])
+            value = changes[0].get('value', {})
+            messages = value.get('messages', [])
 
-                # البحث في Supabase (تأكد من اسم الجدول 'products' والعمود 'code')
+            if messages:
+                message = messages[0]
+                user_phone = message.get('from')
+                user_text = message.get('text', {}).get('body', '').strip()
+
+                # البحث في Supabase
                 query = supabase.table("products").select("*").eq("code", user_text).maybe_single().execute()
                 product = query.data
 
                 if product:
                     response_text = f"✅ تم العثور على المنتج:\n\n🔗 الرابط: {product['link']}\n💰 السعر: {product['price']} ج.م"
                 else:
-                    response_text = "عذراً، هذا الكود غير موجود. يرجى التأكد من كتابته بشكل صحيح."
+                    response_text = "عذراً، هذا الكود غير صحيح. تأكد من الكود المكتوب على الصورة."
 
-                # إرسال الرد
                 send_whatsapp_message(user_phone, response_text)
+                
         except Exception as e:
             print(f"Error: {e}")
             
@@ -54,7 +65,10 @@ def webhook():
 
 def send_whatsapp_message(to, text):
     url = f"https://graph.facebook.com/v18.0/{PHONE_NUMBER_ID}/messages"
-    headers = {"Authorization": f"Bearer {WA_TOKEN}", "Content-Type": "application/json"}
+    headers = {
+        "Authorization": f"Bearer {WA_TOKEN}",
+        "Content-Type": "application/json"
+    }
     payload = {
         "messaging_product": "whatsapp",
         "to": to,
@@ -63,5 +77,5 @@ def send_whatsapp_message(to, text):
     }
     requests.post(url, json=payload, headers=headers)
 
-if __name__ == '__main__':
-    app.run(port=5000)
+# هام جداً لـ Vercel: لا تضع app.run() هنا عند النشر الفعلي
+# اترك الملف ينتهي بدون استدعاء مباشر لـ run

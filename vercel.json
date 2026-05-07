@@ -1,13 +1,9 @@
 {
-  "headers": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Robots-Tag",
-          "value": "index, follow"
-        }
-      ]
+      "src": "api/whatsapp-webhook.py",
+      "use": "@vercel/python"
     }
   ],
   "rewrites": [
