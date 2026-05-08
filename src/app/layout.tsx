@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "@/app/globals.css";
-
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Tajawal } from "next/font/google";
-
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import RegisterSW from "@/components/RegisterSW";

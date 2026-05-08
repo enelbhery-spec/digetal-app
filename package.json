@@ -29,6 +29,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@shadcn/ui": "latest",
     "@supabase/supabase-js": "^2.104.0",
+    "@vercel/speed-insights": "^2.0.0",
     "axios": "^1.15.2",
     "browser-image-compression": "^2.0.2",
     "cheerio": "^1.2.0",
