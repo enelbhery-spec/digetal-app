@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, ShoppingBag, ArrowLeft, Ticket, CheckCheck, Star } from "lucide-react";
+import { Eye, ShoppingBag, ArrowLeft, Ticket, CheckCheck, Star, Hash } from "lucide-react";
 
 type Props = {
   product: any;
@@ -23,9 +23,10 @@ export default function ProductCard({ product, country }: Props) {
   const currency = country === "sa" ? "ر.س" : "ج.م";
   const safeSlug = product?.slug ? encodeURIComponent(product.slug.trim().replace(/\s+/g, "-")) : "";
   const activeCoupon = product.coupon_code || "AHSB";
-
-  // 🎥 Video ID (لازم تضيفه في الداتا)
   const videoId = product?.video_id?.trim();
+
+  // 🏷️ رقم العرض (كود المنتج للواتساب)
+  const offerNo = product?.offer_no;
 
   const handleCopy = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -39,17 +40,27 @@ export default function ProductCard({ product, country }: Props) {
     <>
       <div className="group relative flex flex-col h-full bg-white rounded-[2rem] border border-slate-200 hover:border-emerald-500 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden">
         
-        {/* اللوجو + الخصم */}
+        {/* اللوجو + الخصم + كود المنتج */}
         <div className="absolute top-4 inset-x-4 z-30 flex justify-between items-start">
-          {brandLogo ? (
-            <div className="bg-white p-1.5 rounded-xl shadow border">
-              <img src={brandLogo} alt={brandSlug || "brand"} className="w-8 h-8 object-contain" />
-            </div>
-          ) : (
-            <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-lg">
-              {brandSlug || "brand"}
-            </span>
-          )}
+          <div className="flex flex-col gap-2">
+            {brandLogo ? (
+              <div className="bg-white p-1.5 rounded-xl shadow border w-fit">
+                <img src={brandLogo} alt={brandSlug || "brand"} className="w-8 h-8 object-contain" />
+              </div>
+            ) : (
+              <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-lg w-fit">
+                {brandSlug || "brand"}
+              </span>
+            )}
+
+            {/* 🔥 إضافة كود المنتج هنا (Offer No) */}
+            {offerNo && (
+              <div className="bg-orange-500 text-white text-[10px] font-extrabold px-2 py-1 rounded-lg shadow-sm flex items-center gap-1">
+                <Hash size={10} />
+                كود المنتج: {offerNo}
+              </div>
+            )}
+          </div>
 
           {discount > 0 && (
             <div className="bg-red-500 text-white font-bold px-2 py-1 rounded-lg text-[11px]">
@@ -118,7 +129,7 @@ export default function ProductCard({ product, country }: Props) {
           {/* تنويه */}
           <div className="bg-gray-50 border rounded-lg p-2 mb-4">
             <p className="text-[11px] text-gray-600 leading-relaxed">
-              ⚠️ يتم الشراء عبر متاجر خارجية (مثل أمازون أو نون).
+              ⚠️ أرسل كود المنتج {offerNo} للواتساب للحصول على العرض.
             </p>
           </div>
 
@@ -176,6 +187,7 @@ export default function ProductCard({ product, country }: Props) {
           </div>
         </div>
       </div>
+      
 
       {/* 🎥 Popup الفيديو */}
       {showVideo && videoId && (
