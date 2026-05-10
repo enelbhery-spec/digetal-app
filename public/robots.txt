@@ -1,17 +1,15 @@
 User-agent: *
 Allow: /
+Allow: /sitemap.xml
 
 # منع ملفات النظام والإدارة
 Disallow: /_next/
 Disallow: /api/
 Disallow: /admin/
 
-# منع ملفات مؤقتة
-Disallow:/*.json$
-Disallow:/*.xml$
-
-# السماح بخريطة الموقع فقط
-Allow: /sitemap.xml
+# منع ملفات معينة
+Disallow: /*.json$
+Disallow: /*.xml$
 
 # رابط خريطة الموقع
-Sitemap:https://www.extracode.online/sitemap.xml
+Sitemap: https://www.extracode.online/sitemap.xml
