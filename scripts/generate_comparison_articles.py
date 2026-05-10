@@ -166,9 +166,10 @@ def generate_markdown(p1, p2):
         else p2["title"]
     )
 
+    # ✅ تحديد العملة حسب الدولة
     currency = (
         "ر.س"
-        if p1.get("code") == "sa"
+        if p1.get("code", "").lower() == "sa"
         else "ج.م"
     )
 
@@ -276,28 +277,6 @@ for comp in comparisons:
     print(f"\n🔄 مقارنة: {comparison_id}")
 
     # =====================================================
-    # منع التكرار
-    # =====================================================
-
-    exists = (
-        supabase
-        .table("comparison_articles")
-        .select("id")
-        .eq(
-            "comparison_id",
-            comparison_id
-        )
-        .limit(1)
-        .execute()
-    )
-
-    if exists.data:
-
-        print("⏭ موجود بالفعل")
-
-        continue
-
-    # =====================================================
     # جلب المنتجات
     # =====================================================
 
@@ -349,19 +328,53 @@ for comp in comparisons:
     # تحديد الدولة
     # =====================================================
 
-    code = (
-        p1.get("code")
-        or p2.get("code")
-        or "eg"
-    ).lower().strip()
+    p1_code = (
+        p1.get("code", "eg")
+        .lower()
+        .strip()
+    )
+
+    p2_code = (
+        p2.get("code", "eg")
+        .lower()
+        .strip()
+    )
 
     # =====================================================
     # منع مقارنة منتجات من دول مختلفة
     # =====================================================
 
-    if p1.get("code") != p2.get("code"):
+    if p1_code != p2_code:
 
         print("❌ المنتجات من دول مختلفة")
+
+        continue
+
+    code = p1_code
+
+    # =====================================================
+    # منع التكرار
+    # =====================================================
+
+    exists = (
+        supabase
+        .table("comparison_articles")
+        .select("id")
+        .eq(
+            "comparison_id",
+            comparison_id
+        )
+        .eq(
+            "code",
+            code
+        )
+        .limit(1)
+        .execute()
+    )
+
+    if exists.data:
+
+        print(f"⏭ موجود بالفعل للدولة: {code}")
 
         continue
 
@@ -447,10 +460,14 @@ for comp in comparisons:
 
     if result.data:
 
-        print(f"✅ تم إنشاء: {title}")
+        print(
+            f"✅ تم إنشاء: {title} | الدولة: {code}"
+        )
 
     else:
 
-        print(f"❌ فشل إنشاء: {title}")
+        print(
+            f"❌ فشل إنشاء: {title}"
+        )
 
 print("\n🎉 تم الانتهاء بنجاح")
