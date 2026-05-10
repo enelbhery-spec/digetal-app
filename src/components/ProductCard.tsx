@@ -54,7 +54,7 @@ export default function ProductCard({ product, country }: Props) {
 
             {offerNo && (
               <div className="bg-orange-500 text-white text-[10px] font-extrabold px-2 py-1 rounded-lg shadow-sm flex items-center gap-1">
-                <Hash size={10} />
+                <Hash size={12} />
                 كود المنتج: {offerNo}
               </div>
             )}
@@ -121,7 +121,7 @@ export default function ProductCard({ product, country }: Props) {
 
           {/* تنويه الواتساب بشكل أنيق */}
           <div className="bg-slate-50 border border-slate-100 rounded-xl p-2 mb-4">
-            <p className="text-[10px] text-slate-500 text-center font-medium">
+            <p className="text-[14px] text-slate-500 text-center font-medium">
                أرسل كود المنتج <span className="text-orange-600 font-bold">{offerNo}</span> للواتساب للحصول على العرض
             </p>
           </div>

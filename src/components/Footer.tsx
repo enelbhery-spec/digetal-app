@@ -89,7 +89,7 @@ export default function Footer() {
           </h4>
 
           <a
-            href="https://wa.me/201021732703"
+            href="https://wa.me/201000735516"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block w-full text-center bg-green-600 text-white px-5 py-3 rounded-xl font-bold hover:bg-green-700 transition mb-3 shadow-lg"

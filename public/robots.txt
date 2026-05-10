@@ -1,9 +1,17 @@
 User-agent: *
 Allow: /
 
+# منع ملفات النظام والإدارة
 Disallow: /_next/
 Disallow: /api/
 Disallow: /admin/
 
-# Sitemap الصحيح
-Sitemap: https://www.trand-aqar.online/sitemap.xml
+# منع ملفات مؤقتة
+Disallow:/*.json$
+Disallow:/*.xml$
+
+# السماح بخريطة الموقع فقط
+Allow: /sitemap.xml
+
+# رابط خريطة الموقع
+Sitemap:https://www.extracode.online/sitemap.xml

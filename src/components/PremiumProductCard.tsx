@@ -2,170 +2,429 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, ShoppingBag, ArrowLeft, Ticket, CheckCheck, Star, Hash } from "lucide-react";
+
+import {
+  Eye,
+  ShoppingBag,
+  ArrowLeft,
+  Star,
+  Hash,
+  GitCompare,
+} from "lucide-react";
+
+import { useCompare } from "@/context/CompareContext";
 
 type Props = {
-  product: any;
+  product?: any;
   country: string;
 };
 
-export default function ProductCard({ product, country }: Props) {
-  const [copied, setCopied] = useState(false);
-  const [showVideo, setShowVideo] = useState(false);
+export default function PremiumProductCard({
+  product,
+  country,
+}: Props) {
 
-  const productUrl = product?.affiliate_link || product?.product_url || "#";
-  const brandSlug = (product?.brand_slug || product?.brands?.slug || "").toLowerCase().trim();
-  const brandLogo = product?.brands?.logo || "";
-  const price = product.price || 0;
-  const oldPrice = product.old_price || 0;
+  if (!product) return null;
 
-  const discount = oldPrice > price ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
-  const currency = country === "sa" ? "ر.س" : "ج.م";
-  const safeSlug = product?.slug ? encodeURIComponent(product.slug.trim().replace(/\s+/g, "-")) : "";
-  const activeCoupon = product.coupon_code || "AHSB";
-  const videoId = product?.video_id?.trim();
-  const offerNo = product?.offer_no;
+  const [showVideo, setShowVideo] =
+    useState(false);
 
-  const handleCopy = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    navigator.clipboard.writeText(activeCoupon);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const { add, items } =
+    useCompare();
+
+  // =====================================================
+  // رابط المنتج
+  // =====================================================
+
+  const productUrl =
+    product?.affiliate_link ||
+    product?.product_url ||
+    "#";
+
+  // =====================================================
+  // بيانات البراند
+  // =====================================================
+
+  const brandSlug = (
+    product?.brand_slug ||
+    product?.brands?.slug ||
+    ""
+  )
+    .toLowerCase()
+    .trim();
+
+  const brandLogo =
+    product?.brands?.logo || "";
+
+  // =====================================================
+  // الأسعار
+  // =====================================================
+
+  const price =
+    Number(product?.price) || 0;
+
+  const oldPrice =
+    Number(product?.old_price) || 0;
+
+  const discount =
+    oldPrice > price
+      ? Math.round(
+          ((oldPrice - price) /
+            oldPrice) *
+            100
+        )
+      : 0;
+
+  // =====================================================
+  // العملة
+  // =====================================================
+
+  const currency =
+    product?.currency ||
+    product?.country_currency ||
+    (country === "sa"
+      ? "ر.س"
+      : country === "ae"
+      ? "د.إ"
+      : "ج.م");
+
+  // =====================================================
+  // slug
+  // =====================================================
+
+  const safeSlug = product?.slug
+    ? encodeURIComponent(
+        product.slug
+          .trim()
+          .replace(/\s+/g, "-")
+      )
+    : "";
+
+  // =====================================================
+  // فيديو
+  // =====================================================
+
+  const videoId =
+    product?.video_id?.trim();
+
+  // =====================================================
+  // كود المنتج
+  // =====================================================
+
+  const offerNo =
+    product?.offer_no;
+
+  // =====================================================
+  // المقارنة
+  // =====================================================
+
+  const isAdded = items.some(
+    (i) => i.id === product.id
+  );
+
+  const handleCompare = () => {
+
+    add({
+      id: product.id,
+      title: product.title,
+      slug: product.slug,
+      image_url: product.image_url,
+      price: product.price,
+      category_slug:
+        product.category_slug,
+    });
   };
 
   return (
     <>
-      {/* الخلفية بيضاء تماماً bg-white مع ظل خفيف shadow-sm */}
-      <div className="group relative flex flex-col h-full bg-white rounded-[2rem] border border-slate-100 hover:border-emerald-500 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden">
-        
-        {/* اللوجو + الخصم + كود المنتج */}
-        <div className="absolute top-4 inset-x-4 z-30 flex justify-between items-start">
+      {/* الكارت */}
+      <div className="group relative flex flex-col h-full overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:border-emerald-500 hover:shadow-2xl">
+
+        {/* الهيدر */}
+        <div className="absolute inset-x-4 top-4 z-30 flex items-start justify-between">
+
           <div className="flex flex-col gap-2">
+
             {brandLogo ? (
-              <div className="bg-white p-1.5 rounded-xl shadow-sm border border-slate-50 w-fit">
-                <img src={brandLogo} alt={brandSlug || "brand"} className="w-8 h-8 object-contain" />
+              <div className="w-fit rounded-xl border border-slate-100 bg-white p-1.5 shadow-sm">
+
+                <img
+                  src={brandLogo}
+                  alt={
+                    brandSlug ||
+                    "brand"
+                  }
+                  className="h-8 w-8 object-contain"
+                />
+
               </div>
             ) : (
-              <span className="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-1 rounded-lg w-fit">
-                {brandSlug || "brand"}
+              <span className="w-fit rounded-lg bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-600">
+
+                {brandSlug ||
+                  "brand"}
+
               </span>
             )}
 
             {offerNo && (
-              <div className="bg-orange-500 text-white text-[10px] font-extrabold px-2 py-1 rounded-lg shadow-sm flex items-center gap-1">
-                <Hash size={10} />
-                كود المنتج: {offerNo}
+              <div className="flex w-fit items-center gap-1 rounded-xl bg-orange-500 px-3 py-1 text-[13px] font-extrabold text-white shadow-sm">
+
+                <Hash size={12} />
+
+                كود المنتج:
+                {offerNo}
+
               </div>
             )}
+
           </div>
 
           {discount > 0 && (
-            <div className="bg-red-500 text-white font-bold px-2 py-1 rounded-lg text-[11px]">
-              -{discount}%
+            <div className="rounded-xl bg-red-500 px-3 py-1 text-[12px] font-bold text-white shadow">
+
+              خصم {discount}%
+
             </div>
           )}
+
         </div>
 
-        {/* مساحة الصورة بخلفية فاتحة جداً لإبراز المنتج */}
-        <div className="relative w-full h-60 bg-white flex items-center justify-center p-6">
+        {/* الصورة */}
+        <div className="relative flex h-60 w-full items-center justify-center overflow-hidden bg-white p-6">
+
           <img
-            src={product?.image_url || "/no-image.png"}
-            alt={product?.title || "منتج"}
-            className="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-500"
+            src={
+              product?.image_url ||
+              "/no-image.png"
+            }
+            alt={
+              product?.title ||
+              "منتج"
+            }
+            className="max-h-full max-w-full object-contain transition duration-500 group-hover:scale-105"
           />
+
         </div>
 
-        <div className="p-5 flex flex-col flex-grow text-right" dir="rtl">
-          
+        {/* المحتوى */}
+        <div
+          className="flex flex-grow flex-col p-5 text-right"
+          dir="rtl"
+        >
+
           {/* العنوان */}
-          <h3 className="text-[15px] font-bold text-gray-800 line-clamp-2 h-12 mb-1 leading-snug group-hover:text-emerald-600 transition-colors">
+          <h3 className="min-h-[52px] text-[15px] font-bold leading-snug text-slate-800 transition-colors group-hover:text-emerald-600 line-clamp-2">
+
             {product?.title}
+
           </h3>
 
-          {/* سطر المراجعات والمشاهدات معاً */}
-          <div className="flex items-center justify-between mb-4 text-gray-400 text-[11px] font-medium border-b border-slate-50 pb-2">
+          {/* التقييم */}
+          <div className="mt-3 mb-4 flex items-center justify-between border-b border-slate-100 pb-3 text-[11px] font-medium text-gray-400">
+
             <div className="flex items-center gap-1">
-              <Eye size={12} className="text-slate-300" />
-              <span>{product.reviewsCount || 0} مشاهدة</span>
+
+              <Eye
+                size={13}
+                className="text-slate-300"
+              />
+
+              <span>
+                {Number(
+                  product?.reviewsCount || 0
+                ).toLocaleString()} مشاهدة
+              </span>
+
             </div>
-            
-            <div className="flex items-center gap-1" dir="ltr">
+
+            <div
+              className="flex items-center gap-1"
+              dir="ltr"
+            >
+
               <div className="flex items-center">
-                {[...Array(5)].map((_, index) => (
-                  <Star
-                    key={index}
-                    size={10}
-                    className={index < Math.floor(product.rating || 0) ? "fill-yellow-400 text-yellow-400" : "fill-slate-100 text-slate-100"}
-                  />
-                ))}
+
+                {[...Array(5)].map(
+                  (_, index) => (
+                    <Star
+                      key={index}
+                      size={11}
+                      className={
+                        index <
+                        Math.floor(
+                          product?.rating || 0
+                        )
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "fill-slate-200 text-slate-200"
+                      }
+                    />
+                  )
+                )}
+
               </div>
-              <span className="font-bold text-slate-500">({product.rating || "0"})</span>
+
+              <span className="font-bold text-slate-500">
+
+                (
+                {product?.rating || "0"}
+                )
+
+              </span>
+
             </div>
+
           </div>
 
           {/* السعر */}
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-2xl font-black text-slate-900">
+          <div className="mb-4 flex items-end gap-2">
+
+            <span className="text-3xl font-black text-slate-900">
+
               {price.toLocaleString()}
+
             </span>
-            <span className="text-sm font-bold text-slate-500">
+
+            <span className="mb-1 text-sm font-bold text-slate-500">
+
               {currency}
+
             </span>
+
             {oldPrice > price && (
-              <span className="text-slate-300 line-through text-xs font-medium">
+              <span className="mb-1 text-sm text-slate-300 line-through">
+
                 {oldPrice.toLocaleString()}
+
               </span>
             )}
+
           </div>
 
-          {/* تنويه الواتساب بشكل أنيق */}
-          <div className="bg-slate-50 border border-slate-100 rounded-xl p-2 mb-4">
-            <p className="text-[10px] text-slate-500 text-center font-medium">
-               أرسل كود المنتج <span className="text-orange-600 font-bold">{offerNo}</span> للواتساب للحصول على العرض
-            </p>
-          </div>
+          {/* كود المنتج */}
+          {offerNo && (
+            <div className="mb-5 rounded-2xl border border-slate-100 bg-slate-50 p-3">
+
+              <p className="text-center text-[13px] font-medium leading-loose text-slate-600">
+
+                أرسل كود المنتج{" "}
+
+                <span className="font-extrabold text-orange-600">
+
+                  {offerNo}
+
+                </span>{" "}
+
+                للواتساب للحصول على العرض
+
+              </p>
+
+            </div>
+          )}
 
           {/* الأزرار */}
-          <div className="flex gap-2 mt-auto">
+          <div className="mt-auto flex gap-2">
+
+            {/* شراء */}
             {productUrl !== "#" ? (
               <a
                 href={productUrl}
                 target="_blank"
                 rel="nofollow sponsored"
-                className="flex-[3] bg-slate-900 hover:bg-emerald-600 text-white py-3 rounded-2xl text-center text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-95"
+                title="شراء المنتج"
+                aria-label="شراء المنتج"
+                className="flex-[2.5] active:scale-95 rounded-2xl bg-slate-900 py-3 text-center text-sm font-bold text-white transition-all hover:bg-emerald-600 flex items-center justify-center gap-2"
               >
+
                 <ShoppingBag size={16} />
-                تسوق الآن
+
+                تسوق
+
               </a>
             ) : (
-              <div className="flex-[3] bg-slate-100 text-slate-400 py-3 rounded-2xl text-center text-sm font-bold">
+              <div className="flex-[2.5] rounded-2xl bg-slate-100 py-3 text-center text-sm font-bold text-slate-400">
+
                 غير متاح
+
               </div>
             )}
 
+            {/* مقارنة */}
+            <button
+              onClick={handleCompare}
+              title="إضافة للمقارنة"
+              aria-label="إضافة المنتج للمقارنة"
+              className={`flex-1 rounded-2xl py-3 flex items-center justify-center transition-all ${
+                isAdded
+                  ? "bg-emerald-100 text-emerald-700"
+                  : "bg-orange-50 text-orange-600 hover:bg-orange-100"
+              }`}
+            >
+
+              <GitCompare size={18} />
+
+            </button>
+
+            {/* التفاصيل */}
             <Link
               href={`/${country}/product/${safeSlug}`}
-              className="flex-1 bg-slate-50 text-slate-600 py-3 rounded-2xl text-center hover:bg-slate-100 flex items-center justify-center transition-colors"
+              title="عرض تفاصيل المنتج"
+              aria-label="عرض تفاصيل المنتج"
+              className="flex-1 rounded-2xl bg-slate-50 py-3 text-slate-600 transition-all hover:bg-slate-100 flex items-center justify-center"
             >
+
               <ArrowLeft size={18} />
+
             </Link>
+
           </div>
+
         </div>
       </div>
-      
-      {/* Popup الفيديو يظل كما هو لفعاليته */}
-      {showVideo && videoId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-[2.5rem] w-full max-w-2xl overflow-hidden shadow-2xl relative border border-slate-100">
-            <button onClick={() => setShowVideo(false)} className="absolute top-4 left-4 z-10 bg-white/90 hover:bg-white text-slate-900 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110">✕</button>
-            <div className="p-5 text-center font-bold text-slate-800 border-b border-slate-50">مميزات المنتج</div>
-            <div className="aspect-video">
-              <iframe className="w-full h-full" src={`https://www.youtube.com/embed/${videoId}`} allowFullScreen></iframe>
+
+      {/* الفيديو */}
+      {showVideo &&
+        videoId && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+
+            <div className="relative w-full max-w-2xl overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white shadow-2xl">
+
+              {/* إغلاق */}
+              <button
+                onClick={() =>
+                  setShowVideo(false)
+                }
+                title="إغلاق الفيديو"
+                aria-label="إغلاق الفيديو"
+                className="absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow-lg transition-transform hover:scale-110 hover:bg-white"
+              >
+                ✕
+
+              </button>
+
+              {/* العنوان */}
+              <div className="border-b border-slate-100 p-5 text-center font-bold text-slate-800">
+
+                مميزات المنتج
+
+              </div>
+
+              {/* الفيديو */}
+              <div className="aspect-video">
+
+                <iframe
+                  className="h-full w-full"
+                  src={`https://www.youtube.com/embed/${videoId}`}
+                  allowFullScreen
+                  title="فيديو شرح المنتج"
+                />
+
+              </div>
+
             </div>
+
           </div>
-        </div>
-      )}
+        )}
     </>
   );
 }

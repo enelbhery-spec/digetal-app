@@ -1,64 +1,129 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+} from "react";
 
-type Product = {
+export type Product = {
   id: string;
   title: string;
+
+  slug?: string;
+
+  image_url?: string;
+
+  price?: number;
+
   category_slug?: string;
 };
 
 type CompareContextType = {
   items: Product[];
-  add: (p: Product) => void;
+
+  add: (product: Product) => void;
+
   remove: (id: string) => void;
+
   clear: () => void;
 };
 
-const CompareContext = createContext<CompareContextType | null>(null);
+const CompareContext =
+  createContext<CompareContextType | null>(
+    null
+  );
 
-export const CompareProvider = ({ children }: any) => {
-  const [items, setItems] = useState<Product[]>([]);
+export function CompareProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const [items, setItems] = useState<
+    Product[]
+  >([]);
 
-  const add = (p: Product) => {
+  const add = (product: Product) => {
     setItems((prev) => {
-      // ✅ منع التكرار
-      if (prev.find(i => i.id === p.id)) return prev;
+      // منع التكرار
+      const exists = prev.find(
+        (p) => p.id === product.id
+      );
 
-      // ✅ منع أكثر من 2
-      if (prev.length >= 2) {
-        alert("يمكنك مقارنة منتجين فقط");
+      if (exists) {
         return prev;
       }
 
-      // ✅ أهم شرط: نفس التصنيف
+      // السماح بمنتجين فقط
+      if (prev.length >= 2) {
+        alert(
+          "يمكنك مقارنة منتجين فقط"
+        );
+
+        return prev;
+      }
+
+      // التأكد من نفس التصنيف
       if (prev.length === 1) {
-        const existingCategory = prev[0].category_slug;
-        if (existingCategory && p.category_slug && existingCategory !== p.category_slug) {
-          alert("❌ لا يمكن مقارنة منتجات من تصنيفات مختلفة");
+        const oldCategory =
+          prev[0]?.category_slug;
+
+        const newCategory =
+          product?.category_slug;
+
+        if (
+          oldCategory &&
+          newCategory &&
+          oldCategory !== newCategory
+        ) {
+          alert(
+            "لا يمكن مقارنة منتجات من تصنيفات مختلفة"
+          );
+
           return prev;
         }
       }
 
-      return [...prev, p];
+      return [...prev, product];
     });
   };
 
   const remove = (id: string) => {
-    setItems(prev => prev.filter(i => i.id !== id));
+    setItems((prev) =>
+      prev.filter(
+        (item) => item.id !== id
+      )
+    );
   };
 
-  const clear = () => setItems([]);
+  const clear = () => {
+    setItems([]);
+  };
 
   return (
-    <CompareContext.Provider value={{ items, add, remove, clear }}>
+    <CompareContext.Provider
+      value={{
+        items,
+        add,
+        remove,
+        clear,
+      }}
+    >
       {children}
     </CompareContext.Provider>
   );
-};
+}
 
-export const useCompare = () => {
-  const ctx = useContext(CompareContext);
-  if (!ctx) throw new Error("useCompare must be used inside CompareProvider");
-  return ctx;
-};
+export function useCompare() {
+  const context =
+    useContext(CompareContext);
+
+  if (!context) {
+    throw new Error(
+      "useCompare must be used inside CompareProvider"
+    );
+  }
+
+  return context;
+}

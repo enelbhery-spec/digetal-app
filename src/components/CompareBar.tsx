@@ -1,51 +1,130 @@
 "use client";
 
-import { useCompare } from "@/context/CompareContext";
+import Link from "next/link";
 
-export default function CompareBar({ country }: { country: string }) {
-  const { items, clear } = useCompare();
+import { useParams } from "next/navigation";
 
-  if (items.length === 0) return null;
+import {
+  X,
+  GitCompare,
+} from "lucide-react";
 
-  const handleCompare = async () => {
-    const res = await fetch("/api/create-comparison", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        country,
-        p1_id: items[0].id,
-        p2_id: items[1].id,
-        category_slug: items[0]?.category_slug
-      })
-    });
+import {
+  useCompare,
+} from "@/context/CompareContext";
 
-    const data = await res.json();
+export default function CompareBar() {
 
-    if (data.url) {
-      window.location.href = data.url;
-    }
-  };
+  const {
+    items,
+    clear,
+    remove,
+  } = useCompare();
+
+  const params = useParams();
+
+  const country =
+    (params?.country as string) ||
+    "eg";
+
+  // ✅ لا تعرض البار إذا لا توجد منتجات
+  if (items.length === 0)
+    return null;
+
+  // ✅ تجهيز الرابط الصحيح
+  let compareUrl = "#";
+
+  if (items.length === 2) {
+
+    const categorySlug =
+      items[0]?.category_slug ||
+      "products";
+
+    const comparisonSlug =
+      `${items[0].id}-vs-${items[1].id}`;
+
+    compareUrl =
+      `/${country}/product-comparisons/${categorySlug}/${comparisonSlug}`;
+  }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-black text-white p-4 flex justify-between items-center z-50">
-      <span>
-        تم اختيار {items.length} منتجات
-      </span>
+    <div className="fixed bottom-0 left-0 right-0 z-[9999] bg-white border-t border-slate-200 shadow-2xl p-4">
 
-      <div className="flex gap-3">
-        <button onClick={clear} className="bg-gray-600 px-4 py-2 rounded">
-          مسح
-        </button>
+      <div className="max-w-6xl mx-auto flex items-center justify-between gap-4 flex-wrap">
 
-        <button
-          onClick={handleCompare}
-          className="bg-green-500 px-4 py-2 rounded font-bold"
-        >
-          🔥 قارن الآن
-        </button>
+        {/* المنتجات */}
+        <div className="flex items-center gap-3 flex-wrap">
+
+          {items.map(
+            (item, index) => (
+
+              <div
+                key={item.id}
+                className="bg-orange-50 border border-orange-200 text-orange-700 px-4 py-2 rounded-2xl flex items-center gap-2 text-sm font-bold"
+              >
+
+                <span className="max-w-[140px] truncate">
+
+                  {item.title ||
+                    `منتج ${index + 1}`}
+
+                </span>
+
+                <button
+                  onClick={() =>
+                    remove(item.id)
+                  }
+                  title="حذف المنتج"
+                  aria-label="حذف المنتج"
+                  className="text-red-500 hover:text-red-700 transition-colors"
+                >
+
+                  <X size={16} />
+
+                </button>
+
+              </div>
+            )
+          )}
+
+        </div>
+
+        {/* الأزرار */}
+        <div className="flex items-center gap-2">
+
+          {/* مسح */}
+          <button
+            onClick={clear}
+            title="مسح المقارنة"
+            aria-label="مسح المقارنة"
+            className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-3 rounded-2xl font-bold transition-colors"
+          >
+
+            مسح
+
+          </button>
+
+          {/* مقارنة */}
+          {items.length === 2 && (
+
+            <Link
+              href={compareUrl}
+              title="ابدأ المقارنة"
+              aria-label="ابدأ المقارنة"
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 transition-all"
+            >
+
+              <GitCompare size={18} />
+
+              ابدأ المقارنة
+
+            </Link>
+          )}
+
+        </div>
+
       </div>
+
     </div>
   );
 }
