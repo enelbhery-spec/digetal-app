@@ -56,7 +56,7 @@ export default function ComparisonCategoriesPage() {
   const [currentPage, setCurrentPage] =
     useState(initialPage);
 
-  const ITEMS_PER_PAGE = 12;
+  const ITEMS_PER_PAGE = 50;
 
   const [comparisons, setComparisons] =
     useState<Comparison[]>([]);
