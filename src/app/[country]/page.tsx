@@ -4,7 +4,7 @@ import ProductCard from "@/components/ProductCard"
 import Pagination from "@/components/Pagination"
 import Categories from "@/app/[country]/Categories"
 import { supabase } from "@/lib/supabase"
-import ArticlesSection from '@/components/ArticlesSection'
+import ArticlesSection from "@/components/ArticlesSection"
 import Link from "next/link"
 
 // ✅ استيراد السلايدر
@@ -14,14 +14,19 @@ export const dynamic = "force-dynamic"
 
 type Props = {
   params: Promise<{ country: string }>
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<{
+    [key: string]: string | string[] | undefined
+  }>
 }
 
 const allowedCountries = ["eg", "sa"]
 
-const allowedBrandsByCountry: Record<string, string[]> = {
+const allowedBrandsByCountry: Record<
+  string,
+  string[]
+> = {
   eg: ["amazon", "temu", "shin-eg"],
-  sa: ["noon", "shin-sa", "temu"]
+  sa: ["noon", "shin-sa", "temu"],
 }
 
 export default async function CountryPage({
@@ -178,9 +183,16 @@ export default async function CountryPage({
       image,
       excerpt,
       category_slug,
-      created_at
+      created_at,
+      code
     `)
+
+    // ✅ المنشور فقط
     .eq("published", true)
+
+    // ✅ فلترة حسب الدولة
+    .eq("code", countrySlug)
+
     .order("created_at", {
       ascending: false,
     })
