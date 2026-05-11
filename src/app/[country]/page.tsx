@@ -7,10 +7,10 @@ import { supabase } from "@/lib/supabase"
 import ArticlesSection from "@/components/ArticlesSection"
 import Link from "next/link"
 
-// ✅ استيراد السلايدر
+// ✅ السلايدر
 import TopRatedSlider from "@/components/TopRatedGrid"
 
-// ✅ قسم كوبونات نون
+// ✅ كوبونات نون
 import NoonCouponsSection from "@/components/NoonCouponsSection"
 
 export const dynamic = "force-dynamic"
@@ -30,6 +30,72 @@ const allowedBrandsByCountry: Record<
 > = {
   eg: ["amazon", "temu", "shin-eg"],
   sa: ["noon", "shin-sa", "temu"],
+}
+
+/* ===================================================== */
+/* SEO */
+/* ===================================================== */
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{
+    country: string
+  }>
+}): Promise<Metadata> {
+
+  const { country } = await params
+
+  const countryName =
+    country === "sa"
+      ? "السعودية"
+      : "مصر"
+
+  return {
+
+    title:
+      `أفضل عروض التسوق في ${countryName}`,
+
+    description:
+      `أحدث عروض وكوبونات الخصم في ${countryName} من نون وأمازون وتيمو وشي إن.`,
+
+    alternates: {
+      canonical:
+        `https://www.extracode.online/${country}`,
+    },
+
+    openGraph: {
+
+      title:
+        `أفضل عروض التسوق في ${countryName}`,
+
+      description:
+        `تسوق بذكاء ووفر أكثر مع أحدث العروض والكوبونات.`,
+
+      url:
+        `https://www.extracode.online/${country}`,
+
+      siteName: "إكسترا كود",
+
+      locale: "ar_EG",
+
+      type: "website",
+
+      images: [
+        {
+          url: "/og-image.png",
+          width: 1200,
+          height: 630,
+          alt: "إكسترا كود",
+        },
+      ],
+    },
+
+    robots: {
+      index: true,
+      follow: true,
+    },
+  }
 }
 
 export default async function CountryPage({
@@ -56,7 +122,9 @@ export default async function CountryPage({
       ? sParams.brand
       : null
 
-  /* ================= 1. التحقق ================= */
+  /* ===================================================== */
+  /* التحقق */
+  /* ===================================================== */
 
   if (
     !allowedCountries.includes(
@@ -80,7 +148,9 @@ export default async function CountryPage({
     notFound()
   }
 
-  /* ================= 2. جلب البراندات ================= */
+  /* ===================================================== */
+  /* البراندات */
+  /* ===================================================== */
 
   const {
     data: brandsData,
@@ -92,7 +162,9 @@ export default async function CountryPage({
       allowedBrandsSlugs
     )
 
-  /* ================= 3. جلب الدولة ================= */
+  /* ===================================================== */
+  /* الدولة */
+  /* ===================================================== */
 
   const {
     data: countryData,
@@ -109,7 +181,9 @@ export default async function CountryPage({
   const countryId =
     countryData.id
 
-  /* ================= 4. المنتجات ================= */
+  /* ===================================================== */
+  /* المنتجات */
+  /* ===================================================== */
 
   const productsLimit = 9
 
@@ -173,7 +247,9 @@ export default async function CountryPage({
         productsLimit
     )
 
-  /* ================= 5. مقالات المقارنة ================= */
+  /* ===================================================== */
+  /* مقالات المقارنات */
+  /* ===================================================== */
 
   const {
     data: comparisonArticles,
@@ -190,24 +266,27 @@ export default async function CountryPage({
       code
     `)
 
-    // ✅ المنشور فقط
     .eq("published", true)
 
-    // ✅ فلترة حسب الدولة
     .eq("code", countrySlug)
 
     .order("created_at", {
       ascending: false,
     })
+
     .limit(4)
 
   return (
+
     <main
       className="bg-gray-50 min-h-screen pb-20"
       dir="rtl"
     >
 
+      {/* ===================================================== */}
       {/* العنوان */}
+      {/* ===================================================== */}
+
       <div className="max-w-7xl mx-auto px-6 pt-10 text-center">
 
         <h1 className="text-3xl md:text-4xl font-black text-gray-900 leading-tight">
@@ -216,8 +295,7 @@ export default async function CountryPage({
             brandFilter
               ? `عروض ماركة ${brandFilter.toUpperCase()}`
               : `أفضل عروض التسوق في ${
-                  countrySlug ===
-                  "eg"
+                  countrySlug === "eg"
                     ? "مصر"
                     : "السعودية"
                 }`
@@ -233,109 +311,124 @@ export default async function CountryPage({
 
       </div>
 
-      {/* ✅ كوبونات نون للسعودية فقط */}
-      {countrySlug === "sa" && !brandFilter && (
+      {/* ===================================================== */}
+      {/* كوبونات نون */}
+      {/* ===================================================== */}
+
+      {countrySlug === "sa" &&
+        !brandFilter && (
+
         <div className="max-w-7xl mx-auto px-4 mt-8">
+
           <NoonCouponsSection />
+
         </div>
       )}
 
+      {/* ===================================================== */}
       {/* السلايدر */}
+      {/* ===================================================== */}
+
       {!brandFilter &&
         pageProducts === 1 && (
-          <>
 
-            <div className="mt-8">
+        <>
 
-              <TopRatedSlider
-                country={
-                  countrySlug ===
-                  "eg"
-                    ? "egypt"
-                    : "saudi"
-                }
-              />
+          <div className="mt-8">
 
-            </div>
+            <TopRatedSlider
+              country={
+                countrySlug === "eg"
+                  ? "egypt"
+                  : "saudi"
+              }
+            />
 
-            {/* بانر المقارنات */}
-            <div className="max-w-7xl mx-auto px-4 mt-8 mb-4">
+          </div>
 
-              <Link
-                href={`/${countrySlug}/comparison_categories`}
-                className="flex items-center justify-between gap-4 w-full p-4 md:p-5 bg-gradient-to-r from-[#00A67E] to-[#008564] text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group overflow-hidden relative border border-white/20"
-              >
+          {/* بانر المقارنات */}
 
-                <div className="flex items-center gap-4 relative z-10">
+          <div className="max-w-7xl mx-auto px-4 mt-8 mb-4">
 
-                  <div className="bg-white p-1.5 rounded-xl hidden sm:block shadow-sm">
+            <Link
+              href={`/${countrySlug}/comparison_categories`}
+              className="flex items-center justify-between gap-4 w-full p-4 md:p-5 bg-gradient-to-r from-[#00A67E] to-[#008564] text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group overflow-hidden relative border border-white/20"
+            >
 
-                    <img
-                      src="/logo.png"
-                      alt="إكسترا كود"
-                      className="h-8 w-auto object-contain"
-                    />
+              <div className="flex items-center gap-4 relative z-10">
 
-                  </div>
+                <div className="bg-white p-1.5 rounded-xl hidden sm:block shadow-sm">
 
-                  <div className="bg-white/20 p-2 rounded-xl group-hover:rotate-12 transition-transform">
-
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="22"
-                      height="22"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-
-                      <path d="m3 16 4 4 4-4" />
-                      <path d="M7 20V4" />
-                      <path d="m21 8-4-4-4 4" />
-                      <path d="M17 4v16" />
-
-                    </svg>
-
-                  </div>
-
-                  <div>
-
-                    <h2 className="text-lg md:text-xl font-black leading-tight">
-
-                      مركز مقارنة المواصفات
-
-                    </h2>
-
-                    <p className="text-[10px] md:text-xs text-green-50 opacity-90 font-medium">
-
-                      قارن بين أفضل المنتجات بسهولة
-
-                    </p>
-
-                  </div>
+                  <img
+                    src="/logo.png"
+                    alt="إكسترا كود"
+                    className="h-8 w-auto object-contain"
+                  />
 
                 </div>
 
-                <div className="bg-white text-[#00A67E] px-5 py-2.5 rounded-xl font-black text-xs md:text-sm shadow-md whitespace-nowrap group-hover:scale-105 transition-transform relative z-10">
+                <div className="bg-white/20 p-2 rounded-xl group-hover:rotate-12 transition-transform">
 
-                  فتح المقارنات
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+
+                    <path d="m3 16 4 4 4-4" />
+                    <path d="M7 20V4" />
+                    <path d="m21 8-4-4-4 4" />
+                    <path d="M17 4v16" />
+
+                  </svg>
 
                 </div>
 
-              </Link>
+                <div>
 
-            </div>
+                  <h2 className="text-lg md:text-xl font-black leading-tight">
 
-          </>
-        )}
+                    مركز مقارنة المواصفات
 
+                  </h2>
+
+                  <p className="text-[10px] md:text-xs text-green-50 opacity-90 font-medium">
+
+                    قارن بين أفضل المنتجات بسهولة
+
+                  </p>
+
+                </div>
+
+              </div>
+
+              <div className="bg-white text-[#00A67E] px-5 py-2.5 rounded-xl font-black text-xs md:text-sm shadow-md whitespace-nowrap group-hover:scale-105 transition-transform relative z-10">
+
+                فتح المقارنات
+
+              </div>
+
+            </Link>
+
+          </div>
+
+        </>
+      )}
+
+      {/* ===================================================== */}
       {/* المنتجات */}
+      {/* ===================================================== */}
+
       <section className="max-w-7xl mx-auto p-6 mt-4">
 
         {/* الفلاتر */}
+
         <div className="flex gap-3 mb-10 flex-wrap justify-center md:justify-start">
 
           <Link
@@ -388,8 +481,8 @@ export default async function CountryPage({
         </div>
 
         {/* المنتجات */}
-        {finalProducts.length >
-        0 ? (
+
+        {finalProducts.length > 0 ? (
 
           <div className="grid !grid-cols-1 sm:!grid-cols-1 lg:!grid-cols-3 gap-8">
 
@@ -421,8 +514,8 @@ export default async function CountryPage({
         )}
 
         {/* Pagination */}
-        {productsTotalPages >
-          1 && (
+
+        {productsTotalPages > 1 && (
 
           <div className="mt-16 flex justify-center">
 
@@ -443,7 +536,10 @@ export default async function CountryPage({
 
       </section>
 
+      {/* ===================================================== */}
       {/* الأقسام */}
+      {/* ===================================================== */}
+
       <div className="bg-white py-16 border-y border-gray-100 my-16 shadow-inner">
 
         <div className="max-w-7xl mx-auto">
@@ -454,10 +550,12 @@ export default async function CountryPage({
 
       </div>
 
-      {/* ✅ مقالات المقارنات */}
+      {/* ===================================================== */}
+      {/* مقالات المقارنات */}
+      {/* ===================================================== */}
+
       {comparisonArticles &&
-        comparisonArticles.length >
-          0 && (
+        comparisonArticles.length > 0 && (
 
         <section className="max-w-7xl mx-auto px-6 mb-20">
 
@@ -544,7 +642,10 @@ export default async function CountryPage({
         </section>
       )}
 
-      {/* المقالات العادية */}
+      {/* ===================================================== */}
+      {/* المقالات */}
+      {/* ===================================================== */}
+
       <div className="max-w-7xl mx-auto px-6 mb-20">
 
         <ArticlesSection
