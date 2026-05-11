@@ -67,7 +67,7 @@ export async function generateMetadata({
     openGraph: {
 
       title:
-        `أفضل عروض التسوق في ${countryName}`,
+        `أفضل عروض التسوق خضومات وكيونات في ${countryName}`,
 
       description:
         `تسوق بذكاء ووفر أكثر مع أحدث العروض والكوبونات.`,
@@ -294,7 +294,7 @@ export default async function CountryPage({
           {
             brandFilter
               ? `عروض ماركة ${brandFilter.toUpperCase()}`
-              : `أفضل عروض التسوق في ${
+              : `أفضل عروض و خصومات وكوبونات التسوق في ${
                   countrySlug === "eg"
                     ? "مصر"
                     : "السعودية"
