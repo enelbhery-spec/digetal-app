@@ -10,6 +10,9 @@ import Link from "next/link"
 // ✅ استيراد السلايدر
 import TopRatedSlider from "@/components/TopRatedGrid"
 
+// ✅ قسم كوبونات نون
+import NoonCouponsSection from "@/components/NoonCouponsSection"
+
 export const dynamic = "force-dynamic"
 
 type Props = {
@@ -229,6 +232,13 @@ export default async function CountryPage({
         </p>
 
       </div>
+
+      {/* ✅ كوبونات نون للسعودية فقط */}
+      {countrySlug === "sa" && !brandFilter && (
+        <div className="max-w-7xl mx-auto px-4 mt-8">
+          <NoonCouponsSection />
+        </div>
+      )}
 
       {/* السلايدر */}
       {!brandFilter &&

@@ -22,6 +22,11 @@ const tajawal = Tajawal({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.extracode.online"),
 
+  // ✅ Canonical
+  alternates: {
+    canonical: "https://www.extracode.online",
+  },
+
   title: {
     default:
       "إكسترا كود | كل عروض Amazon, Noon, Temu & Shein في مكان واحد",
@@ -29,7 +34,7 @@ export const metadata: Metadata = {
   },
 
   description:
-    "دليلك الشامل للتوفير؛ احصل على أحدث كوبونات خصم نون السعودية، أقوى عروض أمازون مصر، وخصومات تيمو وشي إن المحدثة يومياً.",
+    "دليلك الشامل للتوفير؛ احصل على أحدث كوبونات خصم نون السعودية، أقوى عروض أمازون مصر، وخصومات تيمو .",
 
   keywords: [
     "إكسترا كود",
@@ -43,6 +48,8 @@ export const metadata: Metadata = {
   authors: [{ name: "إكسترا كود" }],
 
   creator: "إكسترا كود",
+
+  publisher: "إكسترا كود",
 
   manifest: "/manifest.json",
 
@@ -92,6 +99,13 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
 
   other: {
@@ -100,6 +114,9 @@ export const metadata: Metadata = {
 
     "google-adsense-account":
       "ca-pub-4973672854580770",
+
+    // ✅ X-Robots-Tag
+    "X-Robots-Tag": "index, follow",
   },
 };
 
@@ -121,6 +138,35 @@ export default function RootLayout({
       className={`scroll-smooth ${tajawal.variable}`}
     >
       <head>
+        {/* ✅ Organization Schema */}
+        <Script
+          id="organization-schema"
+          type="application/ld+json"
+          strategy="afterInteractive"
+        >
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "إكسترا كود",
+            url: "https://www.extracode.online",
+            logo: "https://www.extracode.online/logo.png",
+          })}
+        </Script>
+
+        {/* ✅ Website Schema */}
+        <Script
+          id="website-schema"
+          type="application/ld+json"
+          strategy="afterInteractive"
+        >
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "إكسترا كود",
+            url: "https://www.extracode.online",
+          })}
+        </Script>
+
         {/* OneSignal */}
         <Script
           id="onesignal-init"

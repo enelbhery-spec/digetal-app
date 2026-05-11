@@ -154,6 +154,9 @@ export default function PremiumProductCard({
                     brandSlug ||
                     "brand"
                   }
+                  title={`${brandSlug || "brand"} | إكسترا كود`}
+                  loading="lazy"
+                  decoding="async"
                   className="h-8 w-8 object-contain"
                 />
 
@@ -202,6 +205,9 @@ export default function PremiumProductCard({
               product?.title ||
               "منتج"
             }
+            title={`${product?.title || "منتج"} | إكسترا كود`}
+            loading="lazy"
+            decoding="async"
             className="max-h-full max-w-full object-contain transition duration-500 group-hover:scale-105"
           />
 
@@ -331,8 +337,8 @@ export default function PremiumProductCard({
                 href={productUrl}
                 target="_blank"
                 rel="nofollow sponsored"
-                title="شراء المنتج"
-                aria-label="شراء المنتج"
+                title={`شراء ${product?.title || "المنتج"}`}
+                aria-label={`شراء ${product?.title || "المنتج"}`}
                 className="flex-[2.5] active:scale-95 rounded-2xl bg-slate-900 py-3 text-center text-sm font-bold text-white transition-all hover:bg-emerald-600 flex items-center justify-center gap-2"
               >
 
@@ -368,8 +374,8 @@ export default function PremiumProductCard({
             {/* التفاصيل */}
             <Link
               href={`/${country}/product/${safeSlug}`}
-              title="عرض تفاصيل المنتج"
-              aria-label="عرض تفاصيل المنتج"
+              title={`عرض تفاصيل ${product?.title || "المنتج"}`}
+              aria-label={`عرض تفاصيل ${product?.title || "المنتج"}`}
               className="flex-1 rounded-2xl bg-slate-50 py-3 text-slate-600 transition-all hover:bg-slate-100 flex items-center justify-center"
             >
 
@@ -416,7 +422,8 @@ export default function PremiumProductCard({
                   className="h-full w-full"
                   src={`https://www.youtube.com/embed/${videoId}`}
                   allowFullScreen
-                  title="فيديو شرح المنتج"
+                  loading="lazy"
+                  title={`${product?.title || "المنتج"} - فيديو شرح`}
                 />
 
               </div>
