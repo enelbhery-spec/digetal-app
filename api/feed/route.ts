@@ -38,43 +38,33 @@ export async function GET() {
 ${safeProducts
   .filter((p) => p.slug && p.image_url && p.price)
   .map((p) => {
-    // ✅ الرابط الصحيح (موقعك مش أفلييت)
+    // ✅ الرابط الصحيح المتوافق مع هيكل موقعك في مصر
     const productLink = `https://www.extracode.online/eg/product/${p.slug}`;
 
     return `
 <item>
   <g:id>${escapeXml(String(p.id))}</g:id>
-
   <g:title>${escapeXml(p.title)}</g:title>
-
-  <g:description>
-    ${escapeXml((p.description || p.title).slice(0, 500))}
-  </g:description>
-
+  <g:description>${escapeXml((p.description || p.title).slice(0, 500))}</g:description>
   <g:link>${escapeXml(productLink)}</g:link>
-
   <g:image_link>${escapeXml(p.image_url)}</g:image_link>
-
   <g:price>${escapeXml(`${p.price} ${p.currency || "EGP"}`)}</g:price>
-
-  <g:availability>in stock</g:availability>
-
+  <g:availability>in_stock</g:availability>
   <g:condition>new</g:condition>
-
-  <!-- تحسين القبول -->
+  
   <g:brand>Generic</g:brand>
   <g:identifier_exists>false</g:identifier_exists>
-
-</item>`;
+</item>`.trim();
   })
-  .join("")}
+  .join("\n")}
 
 </channel>
 </rss>`;
 
     return new NextResponse(xml, {
       headers: {
-        "Content-Type": "application/xml",
+        "Content-Type": "application/xml; charset=utf-8", // تم إضافة ترميز utf-8 لدعم اللغة العربية
+        "Cache-Control": "no-store, max-age=0", // لمنع المتصفح وجوجل من تخزين كاش قديم للملف
       },
     });
   } catch (err: any) {
