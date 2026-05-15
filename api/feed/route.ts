@@ -1,14 +1,29 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-// 🛡️ تنظيف XML
-function escapeXml(unsafe: string) {
+// تحديد أن هذا المسار ديناميكي ولا يتم تخزينه كصفحة ثابتة أثناء الـ Build
+export const dynamic = "force-dynamic";
+
+// دالة تنظيف الـ XML مع تحديد نوع البيانات كـ string
+function escapeXml(unsafe: string): string {
+  if (!unsafe) return "";
   return unsafe
-    ?.replace(/&/g, "&amp;")
+    .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&apos;");
+}
+
+// تعريف واجهة بيانات المنتج القادم من Supabase لتجنب خطأ الـ TypeScript
+interface Product {
+  id: string | number;
+  title: string;
+  slug: string;
+  description?: string;
+  image_url: string;
+  price: number | string;
+  currency?: string;
 }
 
 export async function GET() {
@@ -18,7 +33,8 @@ export async function GET() {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
-    const { data: products, error } = await supabase
+    // جلب البيانات مع تحديد واجهة البيانات <Product[]>
+    const { data, error } = await supabase
       .from("products")
       .select("*");
 
@@ -26,7 +42,7 @@ export async function GET() {
       return new NextResponse(error.message, { status: 500 });
     }
 
-    const safeProducts = products || [];
+    const safeProducts: Product[] = (data as Product[]) || [];
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
@@ -38,7 +54,6 @@ export async function GET() {
 ${safeProducts
   .filter((p) => p.slug && p.image_url && p.price)
   .map((p) => {
-    // ✅ الرابط الصحيح المتوافق مع هيكل موقعك في مصر
     const productLink = `https://www.extracode.online/eg/product/${p.slug}`;
 
     return `
@@ -51,7 +66,6 @@ ${safeProducts
   <g:price>${escapeXml(`${p.price} ${p.currency || "EGP"}`)}</g:price>
   <g:availability>in_stock</g:availability>
   <g:condition>new</g:condition>
-  
   <g:brand>Generic</g:brand>
   <g:identifier_exists>false</g:identifier_exists>
 </item>`.trim();
@@ -63,12 +77,13 @@ ${safeProducts
 
     return new NextResponse(xml, {
       headers: {
-        "Content-Type": "application/xml; charset=utf-8", // تم إضافة ترميز utf-8 لدعم اللغة العربية
-        "Cache-Control": "no-store, max-age=0", // لمنع المتصفح وجوجل من تخزين كاش قديم للملف
+        "Content-Type": "application/xml; charset=utf-8",
+        "Cache-Control": "no-store, max-age=0, must-revalidate",
       },
     });
-  } catch (err: any) {
-    return new NextResponse(err.message || "Server Error", {
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : "Server Error";
+    return new NextResponse(errorMessage, {
       status: 500,
     });
   }
