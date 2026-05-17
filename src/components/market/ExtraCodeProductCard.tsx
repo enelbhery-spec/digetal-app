@@ -1,13 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import {
   Eye,
   ArrowLeft,
   Star,
-  Hash,
-  MessageCircle, // أيقونة المحادثة المناسبة للطلب المباشر
+  ShoppingBag,
 } from "lucide-react";
 
 type Props = {
@@ -19,11 +17,10 @@ export default function ExtraCodeProductCard({
   product,
   country,
 }: Props) {
-  const [showVideo, setShowVideo] = useState(false);
-
+  
   // السعر والخصم متطابق تماماً مع المنتجات العادية
-  const price = product?.price || 0;
-  const oldPrice = product?.old_price || 0;
+  const price = Number(product?.price) || 0;
+  const oldPrice = Number(product?.old_price) || 0;
 
   const discount =
     oldPrice > price
@@ -41,56 +38,41 @@ export default function ExtraCodeProductCard({
       )
     : "";
 
-  // رقم الواتساب الحصري الخاص بـ إكسترا كود ماركت
-  const whatsappNumber = "201000000000"; 
+  // جلب التقييم الفعلي وعدد المراجعات/المشاهدات بناءً على مسميات الجداول الجديدة
+  const rating = product?.rating || 5.0;
+  const reviewsCount = product?.reviewsCount || 0;
 
-  // رقم أو كود المنتج المعروض
-  const offerNo = product?.offer_no;
-
-  // صياغة رسالة طلب ذكية ومباشرة للواتساب لتسهيل الشراء
-  const whatsappMessage = encodeURIComponent(
-    `مرحباً إكسترا كود، أريد طلب المنتج الحصري التالي:\n` +
-    `🎁 المنتج: ${product?.title}\n` +
-    `🔢 كود العرض (Offer No): ${offerNo || "N/A"}\n` +
-    `💰 السعر: ${price.toLocaleString()} ${currency}\n\n` +
-    `تفضل بيانات الشحن الخاصة بي:\n` +
-    `- الاسم ثنائي:\n` +
-    `- رقم الهاتف فعال:\n` +
-    `- المحافظة والعنوان بالتفصيل:`
-  );
-
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
+  // رابط المنتج المحدث من قاعدة البيانات
+  const productUrl = product?.product_url || "#";
 
   return (
     <>
       <div className="group relative flex flex-col h-full bg-white rounded-[2rem] border border-slate-100 hover:border-emerald-500 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden">
         
-        {/* شارة المتجر الحصرية + نسبة الخصم + كود المنتج */}
+        {/* شارة المتجر الحصرية + نسبة الخصم + كود المنتج الموحد */}
         <div className="absolute top-4 inset-x-4 z-30 flex justify-between items-start">
           <div className="flex flex-col gap-2">
-            
-            {/* شارة خضراء مميزة لمنتجات متجرك الشخصي */}
-            <span className="bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg w-fit shadow-sm">
+            {/* شارة خضراء مميزة لمنتجات متجرك الحصري */}
+            <span className="bg-emerald-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg w-fit shadow-sm">
               إكسترا كود ماركت
             </span>
 
-            {offerNo && (
-              <div className="bg-slate-900 text-white text-[10px] font-extrabold px-2 py-1 rounded-lg shadow-sm flex items-center gap-1">
-                <Hash size={12} />
-                كود المنتج: {offerNo}
+            {product?.product_code && (
+              <div className="bg-[#FF7A00] text-white text-[11px] font-extrabold px-3 py-1.5 rounded-lg shadow-sm">
+                # كود المنتج: {product.product_code}
               </div>
             )}
           </div>
 
           {discount > 0 && (
-            <div className="bg-red-500 text-white font-bold px-2 py-1 rounded-lg text-[11px]">
+            <div className="bg-red-500 text-white font-bold px-3 py-1.5 rounded-lg text-[12px]">
               -{discount}%
             </div>
           )}
         </div>
 
-        {/* صورة المنتج - تستدعي image_url مباشرة مثل المنتجات العادية */}
-        <div className="relative w-full h-60 bg-white flex items-center justify-center p-6 mt-6">
+        {/* ✅ تصحيح حجم الصورة: زيادة الارتفاع لـ h-80 بدلاً من h-60 وإلغاء المسافات الداخلية mt-6 و p-6 */}
+        <div className="relative w-full h-80 bg-white flex items-center justify-center pt-16 px-4">
           <img
             src={product?.image_url || "/no-image.png"}
             alt={product?.title || "منتج حصرى"}
@@ -101,73 +83,68 @@ export default function ExtraCodeProductCard({
           />
         </div>
 
-        <div className="p-5 flex flex-col flex-grow text-right" dir="rtl">
+        {/* تفاصيل المنتج: تعديل المسافات لتكون متناسقة مع الكروت العادية */}
+        <div className="p-6 flex flex-col flex-grow text-right" dir="rtl">
           
-          {/* عنوان المنتج المقترن بلون الزمرد عند المرور عليه */}
-          <h3 className="text-[15px] font-bold text-gray-800 line-clamp-2 h-12 mb-1 leading-snug group-hover:text-emerald-600 transition-colors">
+          {/* ✅ تصحيح حجم النصوص: تكبير عنوان المنتج لـ text-lg (مثل الكروت العادية) */}
+          <h3 className="text-lg font-bold text-gray-900 line-clamp-2 h-14 mb-2 leading-relaxed group-hover:text-emerald-600 transition-colors">
             {product?.title}
           </h3>
 
-          {/* حالة المخزون الافتراضية والتقييم الثابت كعنصر ثقة للمتجر */}
-          <div className="flex items-center justify-between mb-4 text-gray-400 text-[11px] font-medium border-b border-slate-50 pb-2">
-            <div className="flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span className="text-emerald-600 font-bold">متوفر بالمخزن وجاهز للشحن</span>
+          {/* ✅ تصحيح التقييم والمشاهدات: تكبير النصوص لـ text-sm (مثل الكروت العادية) */}
+          <div className="flex items-center justify-between mb-5 text-gray-500 text-sm font-medium border-b border-slate-50 pb-3">
+            
+            {/* عدد المراجعات/المشاهدات */}
+            <div className="flex items-center gap-1.5 text-slate-500">
+              <Eye size={14} className="text-slate-400" />
+              <span>{reviewsCount.toLocaleString()} مشاهدة</span>
             </div>
 
-            <div className="flex items-center gap-1" dir="ltr">
+            {/* التقييم */}
+            <div className="flex items-center gap-1.5" dir="ltr">
               <div className="flex items-center">
-                {[...Array(5)].map((_, index) => (
-                  <Star
-                    key={index}
-                    size={10}
-                    className="fill-yellow-400 text-yellow-400"
-                  />
-                ))}
+                <Star
+                  size={12}
+                  className="fill-yellow-400 text-yellow-400"
+                />
               </div>
-              <span className="font-bold text-slate-500">(5.0)</span>
+              <span className="font-bold text-slate-600">({rating})</span>
             </div>
+
           </div>
 
-          {/* أسعار المنتج */}
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-2xl font-black text-slate-900">
+          {/* ✅ تصحيح الأسعار: استخدام text-3xl و text-lg (مثل الكروت العادية) */}
+          <div className="flex items-center gap-3 mb-8">
+            <span className="text-3xl font-black text-slate-950">
               {price.toLocaleString()}
             </span>
-            <span className="text-sm font-bold text-slate-500">
+            <span className="text-lg font-bold text-slate-600">
               {currency}
             </span>
             {oldPrice > price && (
-              <span className="text-slate-300 line-through text-xs font-medium">
-                {oldPrice.toLocaleString()}
+              <span className="text-slate-400 line-through text-sm font-medium">
+                {oldPrice.toLocaleString()} {currency}
               </span>
             )}
           </div>
 
-          {/* تنويه الشحن السريع والدفع عند الاستلام مخصص لقطاعك */}
-          <div className="bg-emerald-50/60 border border-emerald-100 rounded-xl p-2.5 mb-4 text-center">
-            <p className="text-[12px] text-emerald-800 font-bold">
-              ⚡ شحن سريع للمحافظات • الدفع يد بيد عند الاستلام
-            </p>
-          </div>
-
-          {/* الأزرار التفاعلية - تفتح الواتساب مباشرة */}
-          <div className="flex gap-2 mt-auto">
+          {/* الأزرار التفاعلية - تم تكبير المسافات قليلاً للتعامل مع النصوص الأكبر */}
+          <div className="flex gap-3 mt-auto">
             <a
-              href={whatsappUrl}
+              href={productUrl}
               target="_blank"
               rel="nofollow noopener noreferrer"
-              className="flex-[3] bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-2xl text-center text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm shadow-emerald-200"
+              className="flex-[3] bg-slate-950 hover:bg-slate-900 text-white py-4 rounded-3xl text-center text-base font-bold flex items-center justify-center gap-2.5 transition-all active:scale-95 shadow-sm"
             >
-              <MessageCircle size={16} className="fill-white" />
-              اطلب عبر الواتساب
+              <ShoppingBag size={18} />
+              تسوق الآن
             </a>
 
             <Link
               href={`/${country}/product/${safeSlug}`}
-              className="flex-1 bg-slate-50 text-slate-600 py-3 rounded-2xl text-center hover:bg-slate-100 flex items-center justify-center transition-colors"
+              className="flex-1 bg-slate-50 text-slate-600 py-4 rounded-3xl text-center hover:bg-slate-100 flex items-center justify-center transition-colors border border-slate-100"
             >
-              <ArrowLeft size={18} />
+              <ArrowLeft size={20} />
             </Link>
           </div>
 
