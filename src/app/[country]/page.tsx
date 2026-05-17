@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import ProductCard from "@/components/ProductCard"
+import ExtraCodeProductCard from "@/components/market/ExtraCodeProductCard" // ✅ كارت المتجر
 import Pagination from "@/components/Pagination"
 import Categories from "@/app/[country]/Categories"
 import { supabase } from "@/lib/supabase"
@@ -182,7 +183,34 @@ export default async function CountryPage({
     countryData.id
 
   /* ===================================================== */
-  /* المنتجات */
+  /* 🛍️ جلب منتجات متجر إكسترا كود الحصري من جدول المنتجات العام */
+  /* ===================================================== */
+  
+  let extracodeProducts: any[] = [];
+  
+  if (!brandFilter && pageProducts === 1) {
+    try {
+      // جلب المنتجات المخصصة لمتجرك فقط من الجدول الموحد بناءً على الـ brand_slug
+      const { data: ecProducts, error: ecError } = await supabase
+        .from("products") 
+        .select("*") 
+        .eq("code", countrySlug) 
+        .eq("brand_slug", "extracode") // 👈 السحر هنا: عند إضافة منتج لمتجرك بالجدول العادي، اجعل حقل brand_slug قيمته "extracode"
+        .order("created_at", { ascending: false })
+        .limit(3); 
+
+      if (ecError) {
+        console.error("Supabase Error fetching ExtraCode Market products:", ecError.message);
+      } else {
+        extracodeProducts = ecProducts || [];
+      }
+    } catch (err) {
+      console.error("Failed to load ExtraCode market section:", err);
+    }
+  }
+
+  /* ===================================================== */
+  /* المنتجات العادية */
   /* ===================================================== */
 
   const productsLimit = 9
@@ -210,13 +238,11 @@ export default async function CountryPage({
         count: "exact",
       }
     )
-    .eq(
-      "country_id",
-      countryId
-    )
+    .eq("code", countrySlug) 
+    // لكي لا تتكرر منتجات متجرك الحصري في الأسفل مع المنتجات العامة، نقوم باستثنائها من القائمة السفلى
+    .neq("brand_slug", "extracode") 
 
   if (brandFilter) {
-
     query = query.eq(
       "brand_slug",
       brandFilter
@@ -346,6 +372,41 @@ export default async function CountryPage({
 
           </div>
 
+          {/* ===================================================== */}
+          {/* قطاع متجر إكسترا كود الحصري والجديد (ExtraCode Market Section) */}
+          {/* ===================================================== */}
+          {extracodeProducts.length > 0 && (
+            <div className="bg-emerald-50/40 py-12 border-y border-emerald-100/60 my-10 shadow-sm">
+              <div className="max-w-7xl mx-auto px-6">
+                
+                <div className="flex flex-col sm:flex-row items-center justify-between mb-8 text-center sm:text-right gap-3">
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-black text-emerald-900 flex items-center gap-2 justify-center sm:justify-start">
+                      🛍️ متجر إكسترا كود الحصري
+                    </h2>
+                    <p className="text-emerald-700 font-medium text-xs md:text-sm mt-1">
+                      منتجات منتقاة بعناية • شحن سريع لجميع المحافظات • الدفع يد بيد عند الاستلام
+                    </p>
+                  </div>
+                  <span className="bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-md whitespace-nowrap">
+                    أحدث المنتجات المتوفرة
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {extracodeProducts.map((product) => (
+                    <ExtraCodeProductCard
+                      key={product.id}
+                      product={product}
+                      country={countrySlug}
+                    />
+                  ))}
+                </div>
+
+              </div>
+            </div>
+          )}
+
           {/* بانر المقارنات */}
 
           <div className="max-w-7xl mx-auto px-4 mt-8 mb-4">
@@ -422,7 +483,7 @@ export default async function CountryPage({
       )}
 
       {/* ===================================================== */}
-      {/* المنتجات */}
+      {/* المنتجات العادية والكوبونات */}
       {/* ===================================================== */}
 
       <section className="max-w-7xl mx-auto p-6 mt-4">
@@ -484,7 +545,7 @@ export default async function CountryPage({
 
         {finalProducts.length > 0 ? (
 
-          <div className="grid !grid-cols-1 sm:!grid-cols-1 lg:!grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
             {finalProducts.map(
               (product) => (
