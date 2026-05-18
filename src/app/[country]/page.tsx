@@ -1,18 +1,9 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import ProductCard from "@/components/ProductCard"
 import ExtraCodeProductCard from "@/components/market/ExtraCodeProductCard" // ✅ كارت المتجر
 import Pagination from "@/components/Pagination"
-import Categories from "@/app/[country]/Categories"
 import { supabase } from "@/lib/supabase"
-import ArticlesSection from "@/components/ArticlesSection"
 import Link from "next/link"
-
-// ✅ السلايدر
-import TopRatedSlider from "@/components/TopRatedGrid"
-
-// ✅ كوبونات نون
-import NoonCouponsSection from "@/components/NoonCouponsSection"
 
 export const dynamic = "force-dynamic"
 
@@ -23,15 +14,16 @@ type Props = {
   }>
 }
 
-const allowedCountries = ["eg", "sa"]
-
-const allowedBrandsByCountry: Record<
-  string,
-  string[]
-> = {
-  eg: ["amazon", "temu", "shin-eg"],
-  sa: ["noon", "shin-sa", "temu"],
+interface DBProduct {
+  id: string | number;
+  description?: string;
+  excerpt?: string;
+  seo_description?: string;
+  category_slug?: string;
+  [key: string]: any;
 }
+
+const allowedCountries = ["eg", "sa"]
 
 /* ===================================================== */
 /* SEO */
@@ -46,21 +38,17 @@ export async function generateMetadata({
 }): Promise<Metadata> {
 
   const { country } = await params
-
-  const countryName =
-    country === "sa"
-      ? "السعودية"
-      : "مصر"
+  const countryName = country === "sa" ? "السعودية" : "مصر"
 
   return {
-    title: `أفضل عروض التسوق في ${countryName}`,
-    description: `أحدث عروض وكوبونات الخصم في ${countryName} من نون وأمازون وتيمو وشي إن.`,
+    title: `متجر إكسترا كود الحصري في ${countryName}`,
+    description: `أحدث المنتجات الحصرية والعروض المتميزة في ${countryName} من متجر إكسترا كود.`,
     alternates: {
       canonical: `https://www.extracode.online/${country}`,
     },
     openGraph: {
-      title: `أفضل عروض التسوق خضومات وكيونات في ${countryName}`,
-      description: `تسوق بذكاء ووفر أكثر مع أحدث العروض والكوبونات.`,
+      title: `متجر إكسترا كود الحصري - أفضل العروض في ${countryName}`,
+      description: `تسوق بذكاء ووفر أكثر مع أحدث منتجات متجر إكسترا كود الحصري.`,
       url: `https://www.extracode.online/${country}`,
       siteName: "إكسترا كود",
       locale: "ar_EG",
@@ -70,7 +58,7 @@ export async function generateMetadata({
           url: "/og-image.png",
           width: 1200,
           height: 630,
-          alt: "إكسترا كود",
+          alt: "إكسترا كود ماركت",
         },
       ],
     },
@@ -91,45 +79,22 @@ export default async function CountryPage({
 
   const countrySlug = country.toLowerCase().trim()
 
-  // 1. تحديد رقم الصفحة لمنتجات إكسترا كود المستقلة
+  // 1. إدارة متغيرات الصفحة والفلتر
   const pageExtra = Number(sParams?.pageExtra) || 1
-  const extraLimit = 3 // عدد منتجات متجر إكسترا كود في الصفحة الواحدة
+  const extraLimit = 9 
 
-  // 2. تحديد رقم الصفحة للمنتجات العادية السفلى
-  const pageProducts = Number(sParams?.pageProducts) || 1
-  const productsLimit = 9
-
-  const brandFilter =
-    typeof sParams?.brand === "string"
-      ? sParams.brand
+  const categoryFilter =
+    typeof sParams?.category === "string"
+      ? sParams.category
       : null
 
   /* ===================================================== */
-  /* التحقق */
+  /* التحقق من الدولة */
   /* ===================================================== */
 
   if (!allowedCountries.includes(countrySlug)) {
     notFound()
   }
-
-  const allowedBrandsSlugs = allowedBrandsByCountry[countrySlug]
-
-  if (brandFilter && !allowedBrandsSlugs.includes(brandFilter)) {
-    notFound()
-  }
-
-  /* ===================================================== */
-  /* البراندات */
-  /* ===================================================== */
-
-  const { data: brandsData } = await supabase
-    .from("brands")
-    .select("slug, logo")
-    .in("slug", allowedBrandsSlugs)
-
-  /* ===================================================== */
-  /* الدولة */
-  /* ===================================================== */
 
   const { data: countryData } = await supabase
     .from("countries")
@@ -142,382 +107,170 @@ export default async function CountryPage({
   }
 
   /* ===================================================== */
-  /* 🛍️ جلب منتجات متجر إكسترا كود الحصري حسب الدولة مع العداد ديناميكياً */
+  /* 🏷️ جلب التصنيفات النشطة ديناميكياً (التي تحتوي على منتجات فقط) */
+  /* ===================================================== */
+  
+  // نطلب فقط حقل الـ category_slug لمنتجات المتجر في هذه الدولة
+  const { data: activeProductsCats } = await supabase
+    .from("products")
+    .select("category_slug")
+    .eq("code", countrySlug)
+    .eq("brand_slug", "extracode")
+
+  // استخراج القيم الفريدة (Unique Slugs) لمنع التكرار
+  const activeCategorySlugs = Array.from(
+    new Set((activeProductsCats || []).map((p) => p.category_slug).filter(Boolean))
+  )
+
+  // جلب بيانات التصنيفات الفعلية (العنوان والـ slug) مع الالتزام بـ title لعرض الاسم القديم
+  let activeCategories: any[] = []
+  if (activeCategorySlugs.length > 0) {
+    const { data: catsData } = await supabase
+      .from("categories")
+      .select("id, title, slug") 
+      .in("slug", activeCategorySlugs)
+    
+    activeCategories = catsData || []
+  }
+
+  /* ===================================================== */
+  /* 🛍️ جلب منتجات متجر إكسترا كود الحصري */
   /* ===================================================== */
   
   let extracodeProducts: any[] = [];
   let extraTotalPages = 0;
   
-  if (!brandFilter) {
-    try {
-      // حساب نطاق المنتجات بناءً على رقم الصفحة الحالية للمتجر (Pagination Range)
-      const extraFrom = (pageExtra - 1) * extraLimit;
-      const extraTo = extraFrom + extraLimit - 1;
+  try {
+    const extraFrom = (pageExtra - 1) * extraLimit;
+    const extraTo = extraFrom + extraLimit - 1;
 
-      // الاستعلام المحدث: يربط حقل الدولة بالـ countrySlug الحالي ليفصل بين مصر والسعودية تلقائياً
-      const { data: ecProducts, error: ecError, count: ecCount } = await supabase
-        .from("products") 
-        .select("*", { count: "exact" }) 
-        .eq("code", countrySlug) // 👈 الفصل حسب الدولة الحالية (eg أو sa)
-        .eq("brand_slug", "extracode") 
-        .order("created_at", { ascending: false })
-        .range(extraFrom, extraTo); // جلب النطاق بدلاً من .limit الثابت
+    let query = supabase
+      .from("products") 
+      .select("*", { count: "exact" }) 
+      .eq("code", countrySlug) 
+      .eq("brand_slug", "extracode")
 
-      if (ecError) {
-        console.error("Supabase Error fetching ExtraCode Market products:", ecError.message);
-      } else {
-        extracodeProducts = ecProducts || [];
-        extraTotalPages = Math.ceil((ecCount || 0) / extraLimit);
-      }
-    } catch (err) {
-      console.error("Failed to load ExtraCode market section:", err);
+    // إذا اختار المستخدم تصنيفاً معيناً، يتم الفلترة بناءً عليه
+    if (categoryFilter) {
+      query = query.eq("category_slug", categoryFilter)
     }
+
+    const { data: ecProducts, error: ecError, count: ecCount } = await query
+      .order("created_at", { ascending: false })
+      .range(extraFrom, extraTo);
+
+    if (ecError) {
+      console.error("Supabase Error fetching ExtraCode Market products:", ecError.message);
+    } else {
+      extracodeProducts = (ecProducts as DBProduct[] || []).map((prod) => {
+        const fallbackDescription = prod.description || prod.excerpt || prod.seo_description || "";
+        return {
+          ...prod,
+          description: fallbackDescription,
+          seo_description: fallbackDescription 
+        };
+      });
+      extraTotalPages = Math.ceil((ecCount || 0) / extraLimit);
+    }
+  } catch (err) {
+    console.error("Failed to load ExtraCode market section:", err);
   }
-
-  /* ===================================================== */
-  /* المنتجات العادية */
-  /* ===================================================== */
-
-  const productsFrom = (pageProducts - 1) * productsLimit
-  const productsTo = productsFrom + productsLimit - 1
-
-  let query = supabase
-    .from("products")
-    .select(
-      `
-      *,
-      brands!fk_products_brand (
-        logo,
-        slug
-      )
-    `,
-      {
-        count: "exact",
-      }
-    )
-    .eq("code", countrySlug) 
-    .neq("brand_slug", "extracode") 
-
-  if (brandFilter) {
-    query = query.eq("brand_slug", brandFilter)
-  }
-
-  query = query.order("created_at", { ascending: false })
-
-  const { data: products, count: productsCount } = await query.range(
-    productsFrom,
-    productsTo
-  )
-
-  const finalProducts = products || []
-
-  const productsTotalPages = Math.ceil((productsCount || 0) / productsLimit)
-
-  /* ===================================================== */
-  /* مقالات المقارنات */
-  /* ===================================================== */
-
-  const { data: comparisonArticles } = await supabase
-    .from("comparison_articles")
-    .select(`
-      id,
-      title,
-      slug,
-      image,
-      excerpt,
-      category_slug,
-      created_at,
-      code
-    `)
-    .eq("published", true)
-    .eq("code", countrySlug)
-    .order("created_at", { ascending: false })
-    .limit(4)
 
   return (
     <main className="bg-gray-50 min-h-screen pb-20" dir="rtl">
 
-      {/* ===================================================== */}
-      {/* العنوان */}
-      {/* ===================================================== */}
-
-      <div className="max-w-7xl mx-auto px-6 pt-10 text-center">
-        <h1 className="text-3xl md:text-4xl font-black text-gray-900 leading-tight">
-          {brandFilter
-            ? `عروض ماركة ${brandFilter.toUpperCase()}`
-            : `أفضل عروض و خصومات وكوبونات التسوق في ${
-                countrySlug === "eg" ? "مصر" : "السعودية"
-              }`}
+      {/* العنوان الرئيسي للمتجر */}
+      <div className="max-w-7xl mx-auto px-6 pt-12 text-center">
+        <h1 className="text-3xl md:text-5xl font-black text-gray-900 leading-tight">
+          🛍️ متجر إكسترا كود الحصري
         </h1>
-        <p className="text-gray-500 mt-2 font-bold">
-          تسوق بذكاء ووفر أكثر مع أحدث العروض المضافة
+        <p className="text-emerald-700 font-bold text-sm md:text-base mt-3 bg-emerald-50 inline-block px-6 py-2 rounded-2xl border border-emerald-100/60 shadow-sm">
+          منتجات منتقاة بعناية في {countrySlug === "eg" ? "جمهورية مصر العربية" : "المملكة العربية السعودية"} • شحن سريع • الدفع عند الاستلام
         </p>
       </div>
 
-      {/* ===================================================== */}
-      {/* كوبونات نون */}
-      {/* ===================================================== */}
-
-      {countrySlug === "sa" && !brandFilter && (
-        <div className="max-w-7xl mx-auto px-4 mt-8">
-          <NoonCouponsSection />
-        </div>
-      )}
-
-      {/* ===================================================== */}
-      {/* السلايدر */}
-      {/* ===================================================== */}
-
-      {!brandFilter && pageProducts === 1 && (
-        <>
-          <div className="mt-8">
-            <TopRatedSlider
-              country={countrySlug === "eg" ? "egypt" : "saudi"}
-            />
-          </div>
-
-          {/* ===================================================== */}
-          {/* قطاع متجر إكسترا كود الحصري (مفصول ديناميكياً حسب بلد التصفح) */}
-          {/* ===================================================== */}
-          {extracodeProducts.length > 0 && (
-            <div className="bg-emerald-50/40 py-12 border-y border-emerald-100/60 my-10 shadow-sm">
-              <div className="max-w-7xl mx-auto px-6">
-                
-                <div className="flex flex-col sm:flex-row items-center justify-between mb-8 text-center sm:text-right gap-3">
-                  <div>
-                    <h2 className="text-2xl md:text-3xl font-black text-emerald-900 flex items-center gap-2 justify-center sm:justify-start">
-                      🛍️ متجر إكسترا كود الحصري - {countrySlug === "eg" ? "مصر" : "السعودية"}
-                    </h2>
-                    <p className="text-emerald-700 font-medium text-xs md:text-sm mt-1">
-                      منتجات منتقاة بعناية • شحن سريع • الدفع يد بيد عند الاستلام
-                    </p>
-                  </div>
-                  <span className="bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-md whitespace-nowrap">
-                    الصفحة {pageExtra} من {extraTotalPages}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {extracodeProducts.map((product) => (
-                    <ExtraCodeProductCard
-                      key={product.id}
-                      product={product}
-                      country={countrySlug}
-                    />
-                  ))}
-                </div>
-
-                {/* ✅ إضافة العداد الخاص بقطاع متجر إكسترا كود دون كسر الهيكل الإنشائي */}
-                {extraTotalPages > 1 && (
-                  <div className="mt-10 flex justify-center">
-                    <Pagination
-                      currentPage={pageExtra}
-                      totalPages={extraTotalPages}
-                      baseUrl={`/${countrySlug}?brand=${brandFilter || ""}&pageProducts=${pageProducts}&pageExtra=`}
-                    />
-                  </div>
-                )}
-
-              </div>
-            </div>
-          )}
-
-          {/* بانر المقارنات */}
-
-          <div className="max-w-7xl mx-auto px-4 mt-8 mb-4">
+      {/* 🗂️ قطاع التصنيفات النشطة ديناميكياً */}
+      {activeCategories.length > 0 && (
+        <div className="max-w-7xl mx-auto px-6 mt-10">
+          <div className="flex gap-3 flex-wrap justify-center md:justify-start items-center">
+            
+            {/* زر "الكل" */}
             <Link
-              href={`/${countrySlug}/comparison_categories`}
-              className="flex items-center justify-between gap-4 w-full p-4 md:p-5 bg-gradient-to-r from-[#00A67E] to-[#008564] text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group overflow-hidden relative border border-white/20"
-            >
-              <div className="flex items-center gap-4 relative z-10">
-                <div className="bg-white p-1.5 rounded-xl hidden sm:block shadow-sm">
-                  <img
-                    src="/logo.png"
-                    alt="إكسترا كود"
-                    className="h-8 w-auto object-contain"
-                  />
-                </div>
-
-                <div className="bg-white/20 p-2 rounded-xl group-hover:rotate-12 transition-transform">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="m3 16 4 4 4-4" />
-                    <path d="M7 20V4" />
-                    <path d="m21 8-4-4-4 4" />
-                    <path d="M17 4v16" />
-                  </svg>
-                </div>
-
-                <div>
-                  <h2 className="text-lg md:text-xl font-black leading-tight">
-                    مركز مقارنة المواصفات
-                  </h2>
-                  <p className="text-[10px] md:text-xs text-green-50 opacity-90 font-medium">
-                    Analyse and compare products smoothly
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-white text-[#00A67E] px-5 py-2.5 rounded-xl font-black text-xs md:text-sm shadow-md whitespace-nowrap group-hover:scale-105 transition-transform relative z-10">
-                فتح المقارنات
-              </div>
-            </Link>
-          </div>
-        </>
-      )}
-
-      {/* ===================================================== */}
-      {/* المنتجات العادية والكوبونات */}
-      {/* ===================================================== */}
-
-      <section className="max-w-7xl mx-auto p-6 mt-4">
-
-        {/* الفلاتر */}
-
-        <div className="flex gap-3 mb-10 flex-wrap justify-center md:justify-start">
-          <Link
-            href={`/${countrySlug}?pageExtra=${pageExtra}`}
-            className={`px-8 py-2.5 rounded-xl font-bold transition-all shadow-sm border ${
-              !brandFilter
-                ? "bg-green-600 text-white border-green-600 shadow-green-200"
-                : "bg-white text-gray-600 border-gray-100 hover:bg-green-50"
-            }`}
-          >
-            الكل
-          </Link>
-
-          {brandsData?.map((brand) => (
-            <Link
-              key={brand.slug}
-              href={`/${countrySlug}?brand=${brand.slug}&pageExtra=${pageExtra}`}
-              className={`px-4 py-2 rounded-xl font-bold transition-all capitalize shadow-sm flex items-center gap-3 border ${
-                brandFilter === brand.slug
-                  ? "bg-green-600 text-white border-green-600 shadow-green-200"
-                  : "bg-white text-gray-600 border-gray-100 hover:border-green-300"
+              href={`/${countrySlug}`}
+              className={`px-6 py-2.5 rounded-xl font-bold transition-all text-sm shadow-sm border ${
+                !categoryFilter
+                  ? "bg-emerald-600 text-white border-emerald-600 shadow-emerald-100"
+                  : "bg-white text-gray-600 border-gray-200/80 hover:bg-emerald-50/50"
               }`}
             >
-              <div className="w-8 h-8 bg-white rounded-full p-1 flex items-center justify-center overflow-hidden border border-gray-100 shadow-sm">
-                <img
-                  src={brand.logo}
-                  alt={brand.slug}
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <span className="hidden sm:inline">{brand.slug}</span>
+              كل المنتجات
             </Link>
-          ))}
-        </div>
 
-        {/* المنتجات */}
-
-        {finalProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {finalProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                country={countrySlug}
-              />
+            {/* عرض التصنيفات التي تحتوي على منتجات فقط باستخدام cat.title */}
+            {activeCategories.map((cat) => (
+              <Link
+                key={cat.id}
+                href={`/${countrySlug}?category=${cat.slug}`}
+                className={`px-5 py-2.5 rounded-xl font-bold transition-all text-sm shadow-sm border ${
+                  categoryFilter === cat.slug
+                    ? "bg-emerald-600 text-white border-emerald-600 shadow-emerald-100"
+                    : "bg-white text-gray-600 border-gray-200/80 hover:border-emerald-500/40 hover:text-emerald-700"
+                }`}
+              >
+                {cat.title} 
+              </Link>
             ))}
+
           </div>
+        </div>
+      )}
+
+      {/* شبكة عرض منتجات إكسترا كود */}
+      <section className="max-w-7xl mx-auto px-6 mt-8">
+        
+        {extracodeProducts.length > 0 ? (
+          <>
+            <div className="flex justify-between items-center mb-6 text-gray-500 font-bold text-xs md:text-sm">
+              <span>
+                {categoryFilter 
+                  ? `عرض منتجات قسم (${activeCategories.find(c => c.slug === categoryFilter)?.title || categoryFilter})` 
+                  : "يعرض حالياً أحدث المنتجات المتاحة"}
+              </span>
+              <span className="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs shadow-sm">
+                الصفحة {pageExtra} من {extraTotalPages}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {extracodeProducts.map((product) => (
+                <ExtraCodeProductCard
+                  key={product.id}
+                  product={product}
+                  country={countrySlug}
+                />
+              ))}
+            </div>
+          </>
         ) : (
           <div className="text-center py-24 bg-white rounded-[2rem] border border-gray-100 shadow-inner">
             <p className="text-gray-400 font-bold text-xl italic">
-              لا توجد منتجات متوفرة حالياً
+              لا توجد منتجات متوفرة حالياً في هذا القسم
             </p>
           </div>
         )}
 
-        {/* العداد السفلي للمنتجات العادية */}
-
-        {productsTotalPages > 1 && (
+        {/* العداد الحصري للمتجر */}
+        {extraTotalPages > 1 && (
           <div className="mt-16 flex justify-center">
             <Pagination
-              currentPage={pageProducts}
-              totalPages={productsTotalPages}
-              baseUrl={`/${countrySlug}?brand=${brandFilter || ""}&pageExtra=${pageExtra}&pageProducts=`}
+              currentPage={pageExtra}
+              totalPages={extraTotalPages}
+              baseUrl={`/${countrySlug}?category=${categoryFilter || ""}&pageExtra=`}
             />
           </div>
         )}
 
       </section>
-
-      {/* ===================================================== */}
-      {/* الأقسام */}
-      {/* ===================================================== */}
-
-      <div className="bg-white py-16 border-y border-gray-100 my-16 shadow-inner">
-        <div className="max-w-7xl mx-auto">
-          <Categories />
-        </div>
-      </div>
-
-      {/* ===================================================== */}
-      {/* مقالات المقارنات */}
-      {/* ===================================================== */}
-
-      {comparisonArticles && comparisonArticles.length > 0 && (
-        <section className="max-w-7xl mx-auto px-6 mb-20">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-black text-slate-900">
-              مقالات المقارنات
-            </h2>
-            <Link
-              href={`/${countrySlug}/comparison-articles`}
-              className="text-green-600 font-black hover:underline"
-            >
-              عرض الكل ←
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {comparisonArticles.map((article) => (
-              <Link
-                key={article.id}
-                href={`/${countrySlug}/comparison-articles/${article.slug}`}
-                className="bg-white rounded-[2rem] overflow-hidden border border-slate-200 shadow hover:shadow-2xl transition-all"
-              >
-                <img
-                  src={article.image || "/no-image.png"}
-                  alt={article.title}
-                  className="w-full h-56 object-contain bg-white p-4"
-                />
-                <div className="p-5">
-                  <div className="inline-block bg-orange-100 text-orange-600 text-xs font-black px-3 py-1 rounded-full mb-3">
-                    {article.category_slug}
-                  </div>
-                  <h3 className="font-black text-lg leading-relaxed line-clamp-2 text-slate-900">
-                    {article.title}
-                  </h3>
-                  <p className="text-slate-500 text-sm mt-3 line-clamp-3 leading-7">
-                    {article.excerpt}
-                  </p>
-                  <div className="mt-5 text-green-600 font-black text-sm">
-                    اقرأ المقارنة ←
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* ===================================================== */}
-      {/* المقالات العامة */}
-      {/* ===================================================== */}
-
-      <div className="max-w-7xl mx-auto px-6 mb-20">
-        <ArticlesSection countryCode={countrySlug} />
-      </div>
 
     </main>
   )
