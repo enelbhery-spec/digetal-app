@@ -2,15 +2,18 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const apiKey = searchParams.get("api_safka_key");
+  // نغير الاسم ليكون key_id كما أرسلته صفقة
+  const apiKey = searchParams.get("key_id"); 
 
   if (apiKey) {
-    // هنا يجب أن تظهر رسالة للمطور (أنت) لتأكيد استلام المفتاح
     return NextResponse.json({ 
-      message: "تم استلام المفتاح بنجاح! يرجى نسخه ووضعه في ملف .env",
+      message: "تم استلام المفتاح بنجاح!", 
       apiKey: apiKey 
     });
   }
 
-  return NextResponse.json({ message: "لم يتم العثور على المفتاح" }, { status: 400 });
+  return NextResponse.json({ 
+    message: "لم يتم العثور على المفتاح، تأكد من أن الرابط يحتوي على key_id",
+    receivedParams: Object.fromEntries(searchParams) // هذا سيعرض لنا كل ما وصل للموقع لنعرف الاسم الصحيح
+  }, { status: 400 });
 }
