@@ -4,34 +4,35 @@ export async function POST(request: Request) {
 
   try {
 
+    // استقبال البيانات القادمة من الفورم
     const body = await request.json();
 
-    const {
-      client_name,
-      client_phone1,
-      client_phone2,
-      client_address,
-      shipping_governorate,
-      city,
-      note,
-      total,
-      items
-    } = body;
-
-    const SAFKA_KEY =
+    // قراءة مفتاح صفقة
+    const SAFKA_API_KEY =
       process.env.SAFKA_API_KEY;
 
-    if (!SAFKA_KEY) {
+    // فحص وجود المفتاح
+    if (!SAFKA_API_KEY) {
+
+      console.log(
+        "❌ SAFKA_API_KEY غير موجود"
+      );
 
       return NextResponse.json(
         {
           success: false,
-          error: "SAFKA_API_KEY غير موجود"
+          error: "SAFKA_API_KEY غير موجود",
         },
         { status: 500 }
       );
 
     }
+
+    // طباعة جزء من المفتاح للتأكد
+    console.log(
+      "✅ KEY EXISTS:",
+      SAFKA_API_KEY.substring(0, 15)
+    );
 
     // إرسال الطلب إلى صفقة
     const response = await fetch(
@@ -41,60 +42,66 @@ export async function POST(request: Request) {
 
         headers: {
           "Content-Type": "application/json",
-          "api-safka-key": SAFKA_KEY,
+          "api-safka-key":
+            SAFKA_API_KEY.trim(),
         },
 
-        body: JSON.stringify({
-
-          client_name,
-          client_phone1,
-          client_phone2,
-          client_address,
-
-          shipping_governorate,
-
-          city,
-          note,
-          total,
-
-          items
-
-        }),
+        body: JSON.stringify(body),
       }
     );
 
+    // قراءة الرد
     const data =
       await response.json();
 
-    // لو صفقة رجعت خطأ
-    if (!response.ok) {
+    // طباعة الرد الكامل
+    console.log(
+      "📦 SAFKA RESPONSE:"
+    );
 
-      return NextResponse.json(
-        {
-          success: false,
-          safka_error: data
-        },
-        { status: response.status }
-      );
+    console.log(
+      JSON.stringify(data, null, 2)
+    );
 
-    }
-
-    // نجاح
-    return NextResponse.json({
-      success: true,
-      order: data
-    });
+    // إعادة الرد للواجهة
+    return NextResponse.json(
+      data,
+      {
+        status: response.status,
+      }
+    );
 
   } catch (error: any) {
+
+    console.error(
+      "❌ CREATE ORDER ERROR:"
+    );
+
+    console.error(error);
 
     return NextResponse.json(
       {
         success: false,
-        error: error.message
+        error:
+          error?.message ||
+          "حدث خطأ غير معروف",
       },
       { status: 500 }
     );
 
   }
+
+}
+
+// منع GET
+export async function GET() {
+
+  return NextResponse.json(
+    {
+      success: false,
+      message: "Method Not Allowed",
+    },
+    { status: 405 }
+  );
 
 }
