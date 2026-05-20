@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+
 import {
   Eye,
   ArrowLeft,
@@ -10,9 +11,10 @@ import {
 export interface SafkaProduct {
   safka_id: string;
   name: string;
+
   price: number | null;
 
-  // سعر قبل الخصم
+  // السعر قبل الخصم
   sale_price?: number | null;
 
   main_image: string | null;
@@ -34,7 +36,7 @@ export default function SafkaProductCard({
 
   const {
     safka_id,
-    name,
+    name = "منتج بدون اسم",
     main_image,
     views = 0,
     rating = 4,
@@ -58,17 +60,41 @@ export default function SafkaProductCard({
       : 0;
 
   /**
-   * IMPORTANT
-   * صفقة لا تعمل بالـ barcode
-   * الرابط الصحيح يعتمد على safka_id
+   * رابط صفقة الرسمي
    */
   const safkaProductUrl =
     safka_id
       ? `https://aff.safka-eg.com/product/${safka_id}`
       : "#";
 
+  /**
+   * رابط صفحة التفاصيل الداخلية
+   */
+  const detailsUrl =
+    safka_id
+      ? `/eg/safka-products/${safka_id}`
+      : "#";
+
   return (
-    <div className="group relative flex flex-col h-full bg-white rounded-[2rem] border border-slate-100 hover:border-emerald-500 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden">
+    <article
+      className="
+        group
+        relative
+        flex
+        flex-col
+        h-full
+        bg-white
+        rounded-[2rem]
+        border
+        border-slate-100
+        hover:border-emerald-500
+        shadow-sm
+        hover:shadow-xl
+        transition-all
+        duration-300
+        overflow-hidden
+      "
+    >
 
       {/* الشارات */}
       <div className="absolute top-4 inset-x-4 z-30 flex justify-between items-start">
@@ -99,15 +125,22 @@ export default function SafkaProductCard({
       </div>
 
       {/* الصورة */}
-      <div className="relative w-full h-80 bg-white flex items-center justify-center pt-16 px-4">
+      <div className="relative w-full h-80 bg-white flex items-center justify-center pt-16 px-4 overflow-hidden">
 
         <img
           src={main_image || "/no-image.png"}
-          alt={name || "منتج"}
-          title={name || "منتج"}
+          alt={name}
+          title={name}
           loading="lazy"
           decoding="async"
-          className="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-500"
+          className="
+            max-h-full
+            max-w-full
+            object-contain
+            group-hover:scale-105
+            transition
+            duration-500
+          "
         />
 
       </div>
@@ -119,7 +152,19 @@ export default function SafkaProductCard({
       >
 
         {/* العنوان */}
-        <h3 className="text-lg font-bold text-gray-900 line-clamp-2 h-14 mb-2 leading-relaxed group-hover:text-emerald-600 transition-colors">
+        <h3
+          className="
+            text-lg
+            font-bold
+            text-gray-900
+            line-clamp-2
+            min-h-[56px]
+            mb-2
+            leading-relaxed
+            group-hover:text-emerald-600
+            transition-colors
+          "
+        >
           {name}
         </h3>
 
@@ -146,14 +191,10 @@ export default function SafkaProductCard({
             dir="ltr"
           >
 
-            <div className="flex items-center">
-
-              <Star
-                size={12}
-                className="fill-yellow-400 text-yellow-400"
-              />
-
-            </div>
+            <Star
+              size={12}
+              className="fill-yellow-400 text-yellow-400"
+            />
 
             <span className="font-bold text-slate-600">
               ({rating})
@@ -191,12 +232,27 @@ export default function SafkaProductCard({
           <a
             href={safkaProductUrl}
             target="_blank"
-            rel="noopener noreferrer"
-            className={`flex-[3] py-4 rounded-3xl text-center text-base font-bold flex items-center justify-center gap-2.5 transition-all active:scale-95 shadow-sm ${
-              safka_id
-                ? "bg-slate-950 hover:bg-emerald-600 text-white"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed pointer-events-none"
-            }`}
+            rel="noopener noreferrer nofollow"
+            className={`
+              flex-[3]
+              py-4
+              rounded-3xl
+              text-center
+              text-base
+              font-bold
+              flex
+              items-center
+              justify-center
+              gap-2.5
+              transition-all
+              active:scale-95
+              shadow-sm
+              ${
+                safka_id
+                  ? "bg-slate-950 hover:bg-emerald-600 text-white"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed pointer-events-none"
+              }
+            `}
           >
 
             <ShoppingBag size={18} />
@@ -208,19 +264,59 @@ export default function SafkaProductCard({
           </a>
 
           {/* زر التفاصيل */}
-          <Link
-            href={`/eg/safka-products/${safka_id}`}
-            className="flex-1 bg-slate-50 text-slate-600 py-4 rounded-3xl text-center hover:bg-slate-100 flex items-center justify-center transition-colors border border-slate-100"
-          >
+          {safka_id ? (
 
-            <ArrowLeft size={20} />
+            <Link
+              href={detailsUrl}
+              className="
+                flex-1
+                bg-slate-50
+                text-slate-600
+                py-4
+                rounded-3xl
+                text-center
+                hover:bg-slate-100
+                flex
+                items-center
+                justify-center
+                transition-colors
+                border
+                border-slate-100
+              "
+            >
 
-          </Link>
+              <ArrowLeft size={20} />
+
+            </Link>
+
+          ) : (
+
+            <div
+              className="
+                flex-1
+                bg-slate-100
+                text-slate-400
+                py-4
+                rounded-3xl
+                flex
+                items-center
+                justify-center
+                border
+                border-slate-100
+                cursor-not-allowed
+              "
+            >
+
+              <ArrowLeft size={20} />
+
+            </div>
+
+          )}
 
         </div>
 
       </div>
 
-    </div>
+    </article>
   );
 }
