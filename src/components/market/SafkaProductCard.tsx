@@ -20,7 +20,7 @@ export interface SafkaProduct {
   views?: number;
   rating?: number;
 
-  // الباركود الحقيقي القادم من API
+  // باركود المنتج
   barcode?: string;
 }
 
@@ -57,10 +57,14 @@ export default function SafkaProductCard({
         )
       : 0;
 
-  // رابط صفقة الحقيقي
+  /**
+   * IMPORTANT
+   * صفقة لا تعمل بالـ barcode
+   * الرابط الصحيح يعتمد على safka_id
+   */
   const safkaProductUrl =
-    barcode
-      ? `https://aff.safka-eg.com/product/${barcode}`
+    safka_id
+      ? `https://aff.safka-eg.com/product/${safka_id}`
       : "#";
 
   return (
@@ -189,7 +193,7 @@ export default function SafkaProductCard({
             target="_blank"
             rel="noopener noreferrer"
             className={`flex-[3] py-4 rounded-3xl text-center text-base font-bold flex items-center justify-center gap-2.5 transition-all active:scale-95 shadow-sm ${
-              barcode
+              safka_id
                 ? "bg-slate-950 hover:bg-emerald-600 text-white"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed pointer-events-none"
             }`}
@@ -197,7 +201,7 @@ export default function SafkaProductCard({
 
             <ShoppingBag size={18} />
 
-            {barcode
+            {safka_id
               ? "تسوق الآن"
               : "الرابط غير متوفر"}
 
