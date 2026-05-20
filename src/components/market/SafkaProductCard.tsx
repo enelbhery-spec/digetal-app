@@ -1,120 +1,179 @@
-import React from 'react';
-import Link from 'next/link';
+import React from "react";
+import Link from "next/link";
+import {
+  Eye,
+  ArrowLeft,
+  Star,
+  ShoppingBag,
+} from "lucide-react";
 
-// 1. تعريف نوع البيانات لمنتج صفقة طبقاً لهيكل الجدول الجديد
 export interface SafkaProduct {
-  id?: number;
   safka_id: string;
   name: string;
-  barcode?: string;
-  price: number | null;       // السعر الأصلي من صفقة
-  sale_price: number;         // سعر البيع الفعلي المقترح
+  price: number | null;
+  old_price?: number | null;
   main_image: string | null;
-  images_urls?: string[];
-  description?: string;
-  media_url?: string;
-  faqs?: any;
-  note?: string | null;
-  code?: string | null;
-  country_id?: string | null;
-  brand_id?: string | null;
-  category_id?: string | null;
-  store_id?: string | null;
+  views?: number;
+  rating?: number;
+  product_code?: string;
 }
 
 interface SafkaProductCardProps {
   product: SafkaProduct;
 }
 
-export default function SafkaProductCard({ product }: SafkaProductCardProps) {
-  // 2. تفكيك البيانات بأمان
+export default function SafkaProductCard({
+  product,
+}: SafkaProductCardProps) {
+
   const {
     safka_id,
     name,
     main_image,
-    price,
-    sale_price,
-    note
+    views = 0,
+    rating = 4,
+    product_code,
   } = product;
 
-  // 3. حساب نسبة الخصم برمجياً مع حماية النواقص الرقمية
-  const originalPrice = price ?? 0;
-  const hasDiscount = originalPrice > sale_price;
-  const discountPercentage = hasDiscount 
-    ? Math.round(((originalPrice - sale_price) / originalPrice) * 100) 
-    : 0;
+  // تحويل القيم لأرقام آمنة
+  const price = Number(product?.price ?? 0);
+  const oldPrice = Number(product?.old_price ?? 0);
+
+  // حساب نسبة الخصم
+  const discount =
+    oldPrice > price
+      ? Math.round(((oldPrice - price) / oldPrice) * 100)
+      : 0;
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-gray-800 dark:bg-zinc-900">
-      
-      {/* Badge نسبة الخصم التسويقية */}
-      {hasDiscount && (
-        <span className="absolute top-3 right-3 z-10 rounded-full bg-red-500 px-2.5 py-1 text-xs font-bold text-white shadow-sm">
-          خصم {discountPercentage}%
-        </span>
-      )}
+    <>
+      <div className="group relative flex flex-col h-full bg-white rounded-[2rem] border border-slate-100 hover:border-emerald-500 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden">
 
-      {/* شارة الشحن والتوصيل */}
-      <span className="absolute top-3 left-3 z-10 rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-600 backdrop-blur-sm dark:text-amber-400">
-        شحن سريع
-      </span>
+        {/* الشارات العلوية */}
+        <div className="absolute top-4 inset-x-4 z-30 flex justify-between items-start">
 
-      {/* حوض صورة المنتج */}
-      <div className="relative aspect-square w-full overflow-hidden bg-gray-50 dark:bg-zinc-850">
-        <img
-          src={main_image || '/placeholder.png'}
-          alt={name || 'منتج صفقة'}
-          className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-          loading="lazy"
-        />
-      </div>
+          <div className="flex flex-col gap-2">
 
-      {/* تفاصيل الكارت */}
-      <div className="flex flex-1 flex-col p-4">
-        {/* اسم المنتج المحمي ضد النصوص الطويلة */}
-        <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-semibold text-gray-800 transition-colors group-hover:text-blue-600 dark:text-gray-200 text-right" dir="rtl">
-          {name}
-        </h3>
-
-        {/* الملاحظة التجارية إن وجدت */}
-        {note && (
-          <p className="mt-1 line-clamp-1 text-right text-xs text-amber-600 dark:text-amber-400" dir="rtl">
-            ⚠️ {note}
-          </p>
-        )}
-
-        {/* منظومة الأسعار الحقيقية الدقيقة */}
-        <div className="mt-4 flex items-baseline justify-start gap-2.5" dir="rtl">
-          {/* سعر البيع الفعلي للمستهلك */}
-          <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">
-            {sale_price} <span className="text-xs font-normal">ج.م</span>
-          </span>
-          
-          {/* السعر الأصلي مشطوب */}
-          {hasDiscount && (
-            <span className="text-xs text-gray-400 line-through dark:text-gray-500">
-              {price} ج.م
+            {/* شارة سفقة */}
+            <span className="bg-emerald-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg w-fit shadow-sm">
+             إكسترا كود ماركت
             </span>
+
+            {/* كود المنتج */}
+            {product_code && (
+              <div className="bg-[#FF7A00] text-white text-[11px] font-extrabold px-3 py-1.5 rounded-lg shadow-sm">
+                # كود المنتج: {product_code}
+              </div>
+            )}
+
+          </div>
+
+          {/* نسبة الخصم */}
+          {discount > 0 && (
+            <div className="bg-red-500 text-white font-bold px-3 py-1.5 rounded-lg text-[12px]">
+              -{discount}%
+            </div>
           )}
+
         </div>
 
-        {/* تقييمات ومميزات افتراضية لرفع المبيعات */}
-        <div className="mt-2 flex items-center justify-between border-t border-gray-50 pt-3 dark:border-zinc-800" dir="rtl">
-          <span className="text-[11px] text-gray-500 dark:text-gray-400">
-            ⭐ 4.8 (معاينة قبل الاستلام)
-          </span>
+        {/* صورة المنتج */}
+        <div className="relative w-full h-80 bg-white flex items-center justify-center pt-16 px-4">
+          <img
+            src={main_image || "/no-image.png"}
+            alt={name || "منتج"}
+            title={name || "منتج"}
+            loading="lazy"
+            decoding="async"
+            className="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-500"
+          />
         </div>
 
-        {/* زر التوجيه لصفحة تفاصيل منتج صفقة الفرعية */}
-        <div className="mt-4">
-          <Link 
-            href={`/safka-products/${safka_id}`}
-            className="flex w-full items-center justify-center rounded-xl bg-gray-900 px-4 py-2.5 text-center text-xs font-medium text-white transition-colors hover:bg-blue-600 dark:bg-zinc-800 dark:hover:bg-blue-600"
-          >
-            تفاصيل المنتج وشراء
-          </Link>
+        {/* التفاصيل */}
+        <div
+          className="p-6 flex flex-col flex-grow text-right"
+          dir="rtl"
+        >
+
+          {/* العنوان */}
+          <h3 className="text-lg font-bold text-gray-900 line-clamp-2 h-14 mb-2 leading-relaxed group-hover:text-emerald-600 transition-colors">
+            {name}
+          </h3>
+
+          {/* المشاهدات والتقييم */}
+          <div className="flex items-center justify-between mb-5 text-gray-500 text-sm font-medium border-b border-slate-50 pb-3">
+
+            {/* المشاهدات */}
+            <div className="flex items-center gap-1.5 text-slate-500">
+              <Eye size={14} className="text-slate-400" />
+              <span>
+                {views.toLocaleString()} مشاهدة
+              </span>
+            </div>
+
+            {/* التقييم */}
+            <div
+              className="flex items-center gap-1.5"
+              dir="ltr"
+            >
+              <div className="flex items-center">
+                <Star
+                  size={12}
+                  className="fill-yellow-400 text-yellow-400"
+                />
+              </div>
+
+              <span className="font-bold text-slate-600">
+                ({rating})
+              </span>
+            </div>
+
+          </div>
+
+          {/* السعر */}
+          <div className="flex items-center gap-3 mb-8">
+
+            <span className="text-3xl font-black text-slate-950">
+              {price.toLocaleString()}
+            </span>
+
+            <span className="text-lg font-bold text-slate-600">
+              ج.م
+            </span>
+
+            {oldPrice > price && (
+              <span className="text-slate-400 line-through text-sm font-medium">
+                {oldPrice.toLocaleString()} ج.م
+              </span>
+            )}
+
+          </div>
+
+          {/* الأزرار */}
+          <div className="flex gap-3 mt-auto">
+
+            {/* زر التسوق */}
+            <Link
+              href={`/safka-products/${safka_id}`}
+              className="flex-[3] bg-slate-950 hover:bg-slate-900 text-white py-4 rounded-3xl text-center text-base font-bold flex items-center justify-center gap-2.5 transition-all active:scale-95 shadow-sm"
+            >
+              <ShoppingBag size={18} />
+              تسوق الآن
+            </Link>
+
+            {/* زر التفاصيل */}
+            <Link
+              href={`/safka-products/${safka_id}`}
+              className="flex-1 bg-slate-50 text-slate-600 py-4 rounded-3xl text-center hover:bg-slate-100 flex items-center justify-center transition-colors border border-slate-100"
+            >
+              <ArrowLeft size={20} />
+            </Link>
+
+          </div>
+
         </div>
+
       </div>
-    </div>
+    </>
   );
 }
