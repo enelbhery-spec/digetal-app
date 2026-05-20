@@ -1,19 +1,87 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  // نغير الاسم ليكون key_id كما أرسلته صفقة
-  const apiKey = searchParams.get("key_id"); 
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
-  if (apiKey) {
-    return NextResponse.json({ 
-      message: "تم استلام المفتاح بنجاح!", 
-      apiKey: apiKey 
-    });
+export async function POST(request: Request) {
+
+  try {
+
+    // البيانات القادمة من صفقة
+    const body = await request.json();
+
+    console.log("بيانات صفقة:", body);
+
+    /*
+      سيصلك:
+
+      {
+        api_safka_key,
+        name,
+        _id,
+        productHook,
+        orderHook,
+        callbackAPI
+      }
+    */
+
+    // حفظ المفتاح داخل Supabase
+    const { error } = await supabase
+      .from("safka_keys")
+      .insert([
+        {
+          safka_key_id: body._id,
+          api_key: body.api_safka_key,
+          name: body.name,
+          product_hook: body.productHook,
+          order_hook: body.orderHook,
+          callback_api: body.callbackAPI,
+        },
+      ]);
+
+    if (error) {
+
+      console.log(error);
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: error.message,
+        },
+        {
+          status: 500,
+        }
+      );
+
+    }
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "تم حفظ مفتاح صفقة بنجاح",
+      },
+      {
+        status: 200,
+      }
+    );
+
+  } catch (error: any) {
+
+    console.log(error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message,
+      },
+      {
+        status: 500,
+      }
+    );
+
   }
 
-  return NextResponse.json({ 
-    message: "لم يتم العثور على المفتاح، تأكد من أن الرابط يحتوي على key_id",
-    receivedParams: Object.fromEntries(searchParams) // هذا سيعرض لنا كل ما وصل للموقع لنعرف الاسم الصحيح
-  }, { status: 400 });
 }
