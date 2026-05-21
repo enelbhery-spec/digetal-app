@@ -1,77 +1,280 @@
-import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+const supabaseUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-export async function GET(request) {
-  const SAFKA_KEY = process.env.SAFKA_API_KEY;
+const supabaseServiceKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+const supabase = createClient(
+  supabaseUrl,
+  supabaseServiceKey
+);
+
+export async function GET() {
+
+  const SAFKA_KEY =
+    process.env.SAFKA_API_KEY;
+
+  // التحقق من وجود المفتاح
   if (!SAFKA_KEY) {
-    return NextResponse.json({ success: false, error: "مفتاح API صفقة غير موجود" }, { status: 500 });
+
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          "مفتاح API صفقة غير موجود",
+      },
+      { status: 500 }
+    );
+
   }
 
   try {
-    const response = await fetch('https://api.safka-eg.com/api/v1/public/products?page=1&size=20', {
-      method: 'GET',
-      headers: {
-        'api-safka-key': SAFKA_KEY,
-        'Content-Type': 'application/json'
+
+    /**
+     * جلب المنتجات من صفقة
+     */
+    const response = await fetch(
+      "https://api.safka-eg.com/api/v1/public/products?page=1&size=20",
+      {
+        method: "GET",
+
+        headers: {
+          "api-safka-key":
+            SAFKA_KEY,
+
+          "Content-Type":
+            "application/json",
+        },
       }
-    });
+    );
 
+    // فشل الاتصال
     if (!response.ok) {
-      throw new Error(`فشل الاتصال بسيرفر صفقة: ${response.status}`);
+
+      throw new Error(
+        `فشل الاتصال بسيرفر صفقة: ${response.status}`
+      );
+
     }
 
-    const safkaData = await response.json();
-    const products = safkaData.data || [];
+    /**
+     * البيانات القادمة من صفقة
+     */
+    const safkaData =
+      await response.json();
 
-    const mappedProducts = products.map((prod) => {
-      return {
-        // البيانات الصافية والأصلية لصفقة
-        safka_id: prod._id,
-        name: prod.name,
-        barcode: prod.barcode || prod._id,
-        price: prod.price || prod.original_price || null,
-        sale_price: prod.sale_price,
-        main_image: prod.image,
-        images_urls: prod.images || [],
-        description: prod.description,
-        media_url: prod.media_url,
-        faqs: prod.faqs || null,
-        note: prod.note,
+    console.log(
+      "SAFKA RAW DATA:",
+      JSON.stringify(
+        safkaData,
+        null,
+        2
+      )
+    );
 
-        // حقول التحكم اليدوي والقوائم المنسدلة (تترك فارغة لتختارها بيدك)
-        code: null,         
-        country_id: null,   
-        brand_id: null,     
-        category_id: null,  
-        store_id: 'safka_store',
+    const products =
+      safkaData?.data || [];
 
-        // حقول الفيسبوك والأتمتة
-        fb_posted: false,
-        fb_scheduled: false,
-        fb_post_id: null,
-        fb_scheduled_time: null
-      };
-    });
+    /**
+     * تجهيز المنتجات للحفظ
+     */
+    const mappedProducts =
+      products.map((prod) => {
 
-    const { error: supabaseError } = await supabase
-      .from('safka_products')
-      .upsert(mappedProducts, { onConflict: 'safka_id' });
+        return {
 
+          /**
+           * ID الحقيقي للمنتج
+           */
+          safka_id:
+            prod?._id || null,
+
+          /**
+           * الاسم
+           */
+          name:
+            prod?.name || null,
+
+          /**
+           * الباركود
+           */
+          barcode:
+            prod?.barcode ||
+            prod?._id ||
+            null,
+
+          /**
+           * السعر الحالي
+           */
+          price:
+            prod?.price ||
+            prod?.original_price ||
+            null,
+
+          /**
+           * السعر قبل الخصم
+           */
+          sale_price:
+            prod?.sale_price ||
+            null,
+
+          /**
+           * الصورة الرئيسية
+           */
+          main_image:
+            prod?.image || null,
+
+          /**
+           * جميع الصور
+           */
+          images_urls:
+            prod?.images || [],
+
+          /**
+           * الوصف
+           */
+          description:
+            prod?.description ||
+            null,
+
+          /**
+           * رابط الوسائط
+           */
+          media_url:
+            prod?.media_url ||
+            null,
+
+          /**
+           * FAQ
+           */
+          faqs:
+            prod?.faqs || null,
+
+          /**
+           * الملاحظات
+           */
+          note:
+            prod?.note || null,
+
+          /**
+           * جميع الـ properties
+           */
+          properties:
+            prod?.properties || [],
+
+          /**
+           * أول property id
+           * مهم جدا لإنشاء الطلب
+           */
+          property_id:
+            prod?.properties?.[0]?._id ||
+            null,
+
+          /**
+           * حقول التحكم
+           */
+          code: null,
+
+          country_id: null,
+
+          brand_id: null,
+
+          category_id: null,
+
+          /**
+           * مهم:
+           * كان يسبب خطأ UUID
+           */
+          store_id: null,
+
+          /**
+           * حقول الفيسبوك
+           */
+          fb_posted: false,
+
+          fb_scheduled: false,
+
+          fb_post_id: null,
+
+          fb_scheduled_time:
+            null,
+
+        };
+
+      });
+
+    console.log(
+      "MAPPED PRODUCTS:",
+      JSON.stringify(
+        mappedProducts,
+        null,
+        2
+      )
+    );
+
+    /**
+     * حفظ المنتجات
+     */
+    const {
+      error: supabaseError,
+    } = await supabase
+      .from("safka_products")
+      .upsert(
+        mappedProducts,
+        {
+          onConflict:
+            "safka_id",
+        }
+      );
+
+    // فشل الحفظ
     if (supabaseError) {
-      throw new Error(`فشل الحفظ في سوبابيز: ${supabaseError.message}`);
+
+      throw new Error(
+        `فشل الحفظ في سوبابيز: ${supabaseError.message}`
+      );
+
     }
 
+    /**
+     * نجاح
+     */
     return NextResponse.json({
+
       success: true,
-      message: "تم مسح الجدول، وإعادة إنشائه، وصب بيانات صفقة الأصلية بنجاح استثنائي!"
+
+      count:
+        mappedProducts.length,
+
+      message:
+        "تم تحديث منتجات صفقة بنجاح",
+
+      products:
+        mappedProducts,
+
     });
 
   } catch (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+
+    console.error(
+      "SAFKA FETCH ERROR:",
+      error
+    );
+
+    return NextResponse.json(
+      {
+        success: false,
+
+        error:
+          error?.message ||
+          "حدث خطأ غير متوقع",
+      },
+      { status: 500 }
+    );
+
   }
+
 }

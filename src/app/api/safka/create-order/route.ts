@@ -1,40 +1,28 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
 
   try {
 
-    // استقبال البيانات القادمة من الفورم
-    const body = await request.json();
+    const body = await req.json();
 
-    // قراءة مفتاح صفقة
     const SAFKA_API_KEY =
       process.env.SAFKA_API_KEY;
 
-    // فحص وجود المفتاح
     if (!SAFKA_API_KEY) {
-
-      console.log(
-        "❌ SAFKA_API_KEY غير موجود"
-      );
 
       return NextResponse.json(
         {
           success: false,
           error: "SAFKA_API_KEY غير موجود",
         },
-        { status: 500 }
+        {
+          status: 500,
+        }
       );
 
     }
 
-    // طباعة جزء من المفتاح للتأكد
-    console.log(
-      "✅ KEY EXISTS:",
-      SAFKA_API_KEY.substring(0, 15)
-    );
-
-    // إرسال الطلب إلى صفقة
     const response = await fetch(
       "https://api.safka-eg.com/api/v1/public/orders",
       {
@@ -42,28 +30,17 @@ export async function POST(request: Request) {
 
         headers: {
           "Content-Type": "application/json",
-          "api-safka-key":
-            SAFKA_API_KEY.trim(),
+          "api-safka-key": SAFKA_API_KEY,
         },
 
         body: JSON.stringify(body),
       }
     );
 
-    // قراءة الرد
-    const data =
-      await response.json();
+    const data = await response.json();
 
-    // طباعة الرد الكامل
-    console.log(
-      "📦 SAFKA RESPONSE:"
-    );
+    console.log("SAFKA ORDER:", data);
 
-    console.log(
-      JSON.stringify(data, null, 2)
-    );
-
-    // إعادة الرد للواجهة
     return NextResponse.json(
       data,
       {
@@ -73,35 +50,18 @@ export async function POST(request: Request) {
 
   } catch (error: any) {
 
-    console.error(
-      "❌ CREATE ORDER ERROR:"
-    );
-
     console.error(error);
 
     return NextResponse.json(
       {
         success: false,
-        error:
-          error?.message ||
-          "حدث خطأ غير معروف",
+        error: error.message,
       },
-      { status: 500 }
+      {
+        status: 500,
+      }
     );
 
   }
-
-}
-
-// منع GET
-export async function GET() {
-
-  return NextResponse.json(
-    {
-      success: false,
-      message: "Method Not Allowed",
-    },
-    { status: 405 }
-  );
 
 }

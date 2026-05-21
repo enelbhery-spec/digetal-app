@@ -4,13 +4,11 @@ import { useState } from "react";
 
 type Props = {
   productId: string;
-  propertyId?: string;
   price: number;
 };
 
 export default function BuyNowButton({
   productId,
-  propertyId,
   price,
 }: Props) {
 
@@ -58,9 +56,6 @@ export default function BuyNowButton({
               {
                 qty: "1",
 
-                property:
-                  propertyId || "",
-
                 product:
                   productId,
               },
@@ -80,16 +75,6 @@ export default function BuyNowButton({
       );
 
       if (data?.success) {
-
-        if (
-          data?.data?.payment_url
-        ) {
-
-          window.location.href =
-            data.data.payment_url;
-
-          return;
-        }
 
         alert(
           "✅ تم إرسال الطلب بنجاح"

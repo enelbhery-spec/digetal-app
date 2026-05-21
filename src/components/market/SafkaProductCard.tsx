@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 
@@ -9,21 +11,21 @@ import {
 } from "lucide-react";
 
 export interface SafkaProduct {
-  safka_id: string;
-  name: string;
+  safka_id?: string | null;
 
-  price: number | null;
+  name?: string | null;
 
-  // السعر قبل الخصم
+  price?: number | null;
+
   sale_price?: number | null;
 
-  main_image: string | null;
+  main_image?: string | null;
 
-  views?: number;
-  rating?: number;
+  views?: number | null;
 
-  // باركود المنتج
-  barcode?: string;
+  rating?: number | null;
+
+  barcode?: string | null;
 }
 
 interface SafkaProductCardProps {
@@ -34,24 +36,56 @@ export default function SafkaProductCard({
   product,
 }: SafkaProductCardProps) {
 
-  const {
-    safka_id,
-    name = "منتج بدون اسم",
-    main_image,
-    views = 0,
-    rating = 4,
-    barcode,
-  } = product;
+  /**
+   * ID المنتج
+   */
+  const safkaId =
+    String(product?.safka_id || "").trim();
 
-  // السعر الحالي
+  /**
+   * تحقق من ID
+   */
+  const hasValidId =
+    safkaId.length > 5;
+
+  /**
+   * رابط التفاصيل
+   */
+  const detailsUrl =
+    `/safka-products/${encodeURIComponent(
+      safkaId
+    )}`;
+
+  /**
+   * بيانات آمنة
+   */
+  const name =
+    product?.name || "منتج بدون اسم";
+
+  const mainImage =
+    product?.main_image || "/no-image.png";
+
+  const views =
+    Number(product?.views ?? 0);
+
+  const rating =
+    Number(product?.rating ?? 4);
+
+  const barcode =
+    product?.barcode || "";
+
+  /**
+   * الأسعار
+   */
   const price =
     Number(product?.price ?? 0);
 
-  // السعر القديم
   const oldPrice =
     Number(product?.sale_price ?? 0);
 
-  // نسبة الخصم
+  /**
+   * الخصم
+   */
   const discount =
     oldPrice > price
       ? Math.round(
@@ -59,23 +93,8 @@ export default function SafkaProductCard({
         )
       : 0;
 
-  /**
-   * رابط صفقة الرسمي
-   */
-  const safkaProductUrl =
-    safka_id
-      ? `https://aff.safka-eg.com/product/${safka_id}`
-      : "#";
-
-  /**
-   * رابط صفحة التفاصيل الداخلية
-   */
-  const detailsUrl =
-    safka_id
-      ? `/eg/safka-products/${safka_id}`
-      : "#";
-
   return (
+
     <article
       className="
         group
@@ -101,12 +120,12 @@ export default function SafkaProductCard({
 
         <div className="flex flex-col gap-2">
 
-          {/* شارة المتجر */}
+          {/* المتجر */}
           <span className="bg-emerald-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg w-fit shadow-sm">
             إكسترا كود ماركت
           </span>
 
-          {/* كود المنتج */}
+          {/* الباركود */}
           {barcode && (
             <div className="bg-[#FF7A00] text-white text-[11px] font-extrabold px-3 py-1.5 rounded-lg shadow-sm">
               كود المنتج: {barcode}
@@ -128,7 +147,7 @@ export default function SafkaProductCard({
       <div className="relative w-full h-80 bg-white flex items-center justify-center pt-16 px-4 overflow-hidden">
 
         <img
-          src={main_image || "/no-image.png"}
+          src={mainImage}
           alt={name}
           title={name}
           loading="lazy"
@@ -145,13 +164,13 @@ export default function SafkaProductCard({
 
       </div>
 
-      {/* التفاصيل */}
+      {/* المحتوى */}
       <div
         className="p-6 flex flex-col flex-grow text-right"
         dir="rtl"
       >
 
-        {/* العنوان */}
+        {/* الاسم */}
         <h3
           className="
             text-lg
@@ -171,7 +190,6 @@ export default function SafkaProductCard({
         {/* المشاهدات والتقييم */}
         <div className="flex items-center justify-between mb-5 text-gray-500 text-sm font-medium border-b border-slate-50 pb-3">
 
-          {/* المشاهدات */}
           <div className="flex items-center gap-1.5 text-slate-500">
 
             <Eye
@@ -185,7 +203,6 @@ export default function SafkaProductCard({
 
           </div>
 
-          {/* التقييم */}
           <div
             className="flex items-center gap-1.5"
             dir="ltr"
@@ -207,7 +224,6 @@ export default function SafkaProductCard({
         {/* السعر */}
         <div className="flex items-center gap-3 mb-8 flex-wrap">
 
-          {/* السعر الحالي */}
           <span className="text-3xl font-black text-slate-950">
             {price.toLocaleString()}
           </span>
@@ -216,7 +232,6 @@ export default function SafkaProductCard({
             ج.م
           </span>
 
-          {/* السعر القديم */}
           {oldPrice > price && (
             <span className="text-slate-400 line-through text-sm font-medium">
               {oldPrice.toLocaleString()} ج.م
@@ -228,46 +243,72 @@ export default function SafkaProductCard({
         {/* الأزرار */}
         <div className="flex gap-3 mt-auto">
 
-          {/* زر الشراء */}
-          <a
-            href={safkaProductUrl}
-            target="_blank"
-            rel="noopener noreferrer nofollow"
-            className={`
-              flex-[3]
-              py-4
-              rounded-3xl
-              text-center
-              text-base
-              font-bold
-              flex
-              items-center
-              justify-center
-              gap-2.5
-              transition-all
-              active:scale-95
-              shadow-sm
-              ${
-                safka_id
-                  ? "bg-slate-950 hover:bg-emerald-600 text-white"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed pointer-events-none"
-              }
-            `}
-          >
-
-            <ShoppingBag size={18} />
-
-            {safka_id
-              ? "تسوق الآن"
-              : "الرابط غير متوفر"}
-
-          </a>
-
-          {/* زر التفاصيل */}
-          {safka_id ? (
+          {/* زر التسوق */}
+          {hasValidId ? (
 
             <Link
               href={detailsUrl}
+              prefetch={false}
+              className="
+                flex-[3]
+                py-4
+                rounded-3xl
+                text-center
+                text-base
+                font-bold
+                flex
+                items-center
+                justify-center
+                gap-2.5
+                transition-all
+                active:scale-95
+                shadow-sm
+                bg-slate-950
+                hover:bg-emerald-600
+                text-white
+              "
+            >
+
+              <ShoppingBag size={18} />
+
+              تسوق الآن
+
+            </Link>
+
+          ) : (
+
+            <div
+              className="
+                flex-[3]
+                py-4
+                rounded-3xl
+                text-center
+                text-base
+                font-bold
+                flex
+                items-center
+                justify-center
+                gap-2.5
+                bg-gray-200
+                text-gray-500
+                cursor-not-allowed
+              "
+            >
+
+              <ShoppingBag size={18} />
+
+              الرابط غير متوفر
+
+            </div>
+
+          )}
+
+          {/* زر التفاصيل */}
+          {hasValidId && (
+
+            <Link
+              href={detailsUrl}
+              prefetch={false}
               className="
                 flex-1
                 bg-slate-50
@@ -289,28 +330,6 @@ export default function SafkaProductCard({
 
             </Link>
 
-          ) : (
-
-            <div
-              className="
-                flex-1
-                bg-slate-100
-                text-slate-400
-                py-4
-                rounded-3xl
-                flex
-                items-center
-                justify-center
-                border
-                border-slate-100
-                cursor-not-allowed
-              "
-            >
-
-              <ArrowLeft size={20} />
-
-            </div>
-
           )}
 
         </div>
@@ -318,5 +337,7 @@ export default function SafkaProductCard({
       </div>
 
     </article>
+
   );
+
 }
