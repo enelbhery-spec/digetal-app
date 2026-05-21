@@ -1,67 +1,36 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
-export async function POST(req: NextRequest) {
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
+export async function POST(request: Request) {
   try {
+    const orderData = await request.json();
 
-    const body = await req.json();
-
-    const SAFKA_API_KEY =
-      process.env.SAFKA_API_KEY;
-
-    if (!SAFKA_API_KEY) {
-
-      return NextResponse.json(
-        {
-          success: false,
-          error: "SAFKA_API_KEY غير موجود",
-        },
-        {
-          status: 500,
-        }
-      );
-
+    // 1. جلب مفتاح API من قاعدة البيانات
+    const { data: keys } = await supabase.from("safka_keys").select("api_key").single();
+    
+    if (!keys?.api_key) {
+      return NextResponse.json({ success: false, errors: [{ msg: "مفتاح الربط غير موجود" }] }, { status: 400 });
     }
 
-    const response = await fetch(
-      "https://api.safka-eg.com/api/v1/public/orders",
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-          "api-safka-key": SAFKA_API_KEY,
-        },
-
-        body: JSON.stringify(body),
-      }
-    );
-
-    const data = await response.json();
-
-    console.log("SAFKA ORDER:", data);
-
-    return NextResponse.json(
-      data,
-      {
-        status: response.status,
-      }
-    );
-
-  } catch (error: any) {
-
-    console.error(error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message,
+    // 2. إرسال الطلب إلى صفقة
+    const response = await fetch("https://public-api.safka-eg.com/v1/orders", {
+      method: "POST",
+      headers: {
+        "api-safka-key": keys.api_key,
+        "Content-Type": "application/json",
       },
-      {
-        status: 500,
-      }
-    );
+      body: JSON.stringify(orderData),
+    });
 
+    const result = await response.json();
+    return NextResponse.json(result);
+
+  } catch (error) {
+    return NextResponse.json({ success: false, errors: [{ msg: "خطأ في الاتصال بالسيرفر" }] }, { status: 500 });
   }
-
 }
