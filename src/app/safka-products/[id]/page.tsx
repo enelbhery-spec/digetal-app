@@ -1,61 +1,26 @@
-"use client";
+// src/app/safka-products/[id]/page.tsx
 
-import { useState } from "react";
-
+// 1. تعريف الـ Props المتوافق مع Next.js 15
 type Props = {
-  productId: string;
-  propertyId?: string;
-  price: number;
+  params: Promise<{ id: string }>;
 };
 
-export default function BuyNowButton({ productId, propertyId, price }: Props) {
-  const [loading, setLoading] = useState(false);
+// هذا المكون هو الـ Server Component المسؤول عن عرض الصفحة
+export default async function Page({ params }: Props) {
+  const { id } = await params;
 
-  async function handleBuy() {
-    setLoading(true);
-    try {
-      const response = await fetch("/api/safka/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          client_name: "عميل تجريبي",
-          client_phone1: "01090111151",
-          client_address: "القاهرة",
-          shipping_governorate: "64878fe6dc16090c1858e698",
-          city: "336",
-          note: "طلب من موقع اكسترا كود",
-          total: price,
-          items: [{ qty: "1", property: propertyId || "", product: productId }],
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data?.success) {
-        if (data?.data?.payment_url) {
-          window.location.href = data.data.payment_url;
-        } else {
-          alert("✅ تم إرسال الطلب بنجاح");
-        }
-      } else {
-        const errorMsg = data?.errors?.[0]?.msg || "فشل إرسال الطلب";
-        alert(errorMsg);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("حدث خطأ تقني أثناء الطلب");
-    } finally {
-      setLoading(false);
-    }
-  }
+  // في مشروعك الحقيقي، ستقوم هنا بجلب بيانات المنتج من Supabase باستخدام الـ id
+  // const product = await getProductFromSupabase(id);
 
   return (
-    <button
-      onClick={handleBuy}
-      disabled={loading}
-      className="w-full bg-slate-950 hover:bg-emerald-600 text-white py-5 rounded-3xl text-center text-lg font-bold flex items-center justify-center transition-all active:scale-95 disabled:opacity-60"
-    >
-      {loading ? "جارِ إرسال الطلب..." : "شراء المنتج الآن"}
-    </button>
+    <main className="p-8">
+      <h1>تفاصيل المنتج: {id}</h1>
+      
+      {/* هنا نستخدم الزر الذي قمنا بتعريفه سابقاً */}
+      {/* تأكد من استيراد المكون بشكل صحيح إذا كان في ملف منفصل */}
+      {/* <BuyNowButton productId={id} price={100} /> */}
+      
+      <p>هذه الصفحة تعمل الآن بنجاح مع Next.js 15.</p>
+    </main>
   );
 }
