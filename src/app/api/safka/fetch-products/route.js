@@ -7,7 +7,7 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export async function GET() {
-  const SAFKA_KEY = process.env.SAFKA_API_KEY;
+  const SAFKA_KEY = process.env.API_SAFKA_KEY;
 
   if (!SAFKA_KEY) {
     return NextResponse.json({ success: false, error: "مفتاح API صفقة غير موجود" }, { status: 500 });
