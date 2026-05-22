@@ -6,6 +6,21 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+// =========================
+// GET TEST
+// =========================
+export async function GET() {
+
+  return NextResponse.json({
+    success: true,
+    message: "Products Route Working",
+  });
+
+}
+
+// =========================
+// POST FROM SAFKA
+// =========================
 export async function POST(request: Request) {
 
   try {
@@ -14,7 +29,12 @@ export async function POST(request: Request) {
 
     console.log("منتج جديد من صفقة:", body);
 
-    const product = body.product;
+    // صفقة أحياناً ترسل product
+    // وأحياناً data
+    const product =
+      body.product ||
+      body.data ||
+      body;
 
     if (!product) {
 
@@ -32,18 +52,27 @@ export async function POST(request: Request) {
 
     const mappedProduct = {
 
-      // بيانات صفقة الأصلية
-      safka_id: product._id,
-      name: product.name,
+      // بيانات صفقة
+      safka_id:
+        product._id ||
+        product.id,
+
+      name:
+        product.name || "",
 
       barcode:
-        product.barcode || product._id,
+        product.barcode ||
+        product._id ||
+        product.id,
 
       price:
-        product.sale_price || null,
+        product.sale_price ||
+        product.price ||
+        null,
 
       sale_price:
-        product.sale_price || null,
+        product.sale_price ||
+        null,
 
       main_image:
         product.image || null,
@@ -87,7 +116,7 @@ export async function POST(request: Request) {
       fb_post_id: null,
       fb_scheduled_time: null,
 
-      // التوقيت
+      // الوقت
       created_at:
         new Date().toISOString(),
 
@@ -104,7 +133,7 @@ export async function POST(request: Request) {
 
     if (error) {
 
-      console.log(error);
+      console.log("SUPABASE ERROR:", error);
 
       return NextResponse.json(
         {
@@ -130,7 +159,7 @@ export async function POST(request: Request) {
 
   } catch (error: any) {
 
-    console.log(error);
+    console.log("ROUTE ERROR:", error);
 
     return NextResponse.json(
       {
