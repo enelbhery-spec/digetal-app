@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-// تهيئة عميل Supabase
+// تهيئة Supabase
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -10,47 +10,63 @@ const supabase = createClient(
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    
-    console.log("تم استقبال بيانات المنتج من صفقة:", body);
 
-    /* المفترض أن يرسل الـ Hook بيانات المنتج مثل:
-       id, name, price, image, description, category
-    */
+    console.log("BODY:", body);
 
-    // حفظ المنتج في جدول 'products' في Supabase
-    // نستخدم upsert لتحديث المنتج إذا كان موجوداً مسبقاً (تجنباً للتكرار)
-    const { error } = await supabase
-      .from("products")
+    // استخراج بيانات المنتج
+    const product = body.data || body;
+
+    // حفظ المنتج
+    const { data, error } = await supabase
+      .from("safka_products")
       .upsert(
         [
           {
-            safka_product_id: body.id, // معرف المنتج الفريد من صفقة
-            title: body.name,
-            price: body.price,
-            image_url: body.image,
-            description: body.description,
-            category: body.category,
+            safka_product_id: product.id,
+            title: product.name,
+            price: product.price,
+            image_url: product.image,
+            description: product.description,
+            category: product.category,
             updated_at: new Date().toISOString(),
           },
         ],
-        { onConflict: "safka_product_id" }
+        {
+          onConflict: "safka_product_id",
+        }
       );
 
     if (error) {
-      console.error("خطأ أثناء حفظ المنتج في Supabase:", error);
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+      console.error("SUPABASE ERROR:", error);
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: error.message,
+        },
+        { status: 500 }
+      );
     }
 
-    // الرد بـ 200 ضروري جداً لتأكيد الاستلام لمنصة صفقة
+    console.log("INSERTED:", data);
+
     return NextResponse.json(
-      { success: true, message: "تمت مزامنة المنتج بنجاح" },
+      {
+        success: true,
+        message: "تم حفظ المنتج بنجاح",
+      },
       { status: 200 }
     );
 
   } catch (error: any) {
-    console.error("خطأ في معالجة الـ Product Hook:", error);
+
+    console.error("HOOK ERROR:", error);
+
     return NextResponse.json(
-      { success: false, error: error.message },
+      {
+        success: false,
+        error: error.message,
+      },
       { status: 500 }
     );
   }
