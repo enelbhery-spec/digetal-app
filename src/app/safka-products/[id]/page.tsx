@@ -1,3 +1,4 @@
+import BuyNowButton from "./BuyNowButton";
 import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 
@@ -10,26 +11,29 @@ type Props = {
 export default async function ProductDetailsPage({
   params,
 }: Props) {
+
   const { id } = await params;
 
   // =========================
   // جلب المنتج
   // =========================
 
-  const { data: product, error } = await supabase
-    .from("safka_products")
-    .select(`
-      id,
-      safka_id,
-      name,
-      images_urls,
-      description,
-      price,
-      sale_price,
-      barcode
-    `)
-    .eq("safka_id", id)
-    .single();
+  const { data: product, error } =
+    await supabase
+      .from("safka_products")
+      .select(`
+        id,
+        safka_id,
+        property_id,
+        name,
+        images_urls,
+        description,
+        price,
+        sale_price,
+        barcode
+      `)
+      .eq("safka_id", id)
+      .single();
 
   // =========================
   // المنتج غير موجود
@@ -84,12 +88,13 @@ export default async function ProductDetailsPage({
       : 0;
 
   return (
+
     <main className="min-h-screen bg-[#f5f5f5] py-5 sm:py-10 px-3 sm:px-4">
-      
+
       <div className="max-w-7xl mx-auto">
-        
+
         <div className="bg-white w-full rounded-[2rem] shadow-sm overflow-hidden border border-slate-100">
-          
+
           <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-10 p-4 sm:p-6 lg:p-10">
 
             {/* الصورة */}
@@ -111,6 +116,7 @@ export default async function ProductDetailsPage({
                 lg:order-2
               "
             >
+
               {/* الخصم */}
               {discount > 0 && (
                 <div className="absolute top-5 left-5 z-20 bg-red-500 text-white text-sm font-black px-4 py-2 rounded-2xl shadow-lg">
@@ -132,17 +138,23 @@ export default async function ProductDetailsPage({
                   hover:scale-105
                 "
               />
+
             </div>
 
             {/* البيانات */}
             <div
-              className="flex flex-col order-2 lg:order-1"
+              className="
+                flex
+                flex-col
+                order-2
+                lg:order-1
+              "
               dir="rtl"
             >
-              
+
               {/* الشارات */}
               <div className="flex items-center gap-3 mb-5 flex-wrap">
-                
+
                 <span className="bg-emerald-600 text-white text-sm font-bold px-4 py-2 rounded-xl">
                   إكسترا كود ماركت
                 </span>
@@ -154,6 +166,7 @@ export default async function ProductDetailsPage({
                     {product.barcode}
                   </span>
                 )}
+
               </div>
 
               {/* الاسم */}
@@ -163,7 +176,7 @@ export default async function ProductDetailsPage({
 
               {/* السعر */}
               <div className="flex items-center gap-4 flex-wrap mb-8">
-                
+
                 <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-950">
                   {finalPrice.toLocaleString()}
                 </span>
@@ -178,18 +191,20 @@ export default async function ProductDetailsPage({
                       {costPrice.toLocaleString()} ج.م
                     </span>
                   )}
+
               </div>
 
               {/* الوصف */}
               {product.description && (
+
                 <div className="mb-8">
-                  
+
                   <h2 className="text-xl sm:text-2xl font-black mb-4 text-slate-900">
                     وصف المنتج
                   </h2>
 
                   <div className="bg-slate-50 border border-slate-100 rounded-3xl p-4 sm:p-6">
-                    
+
                     <div
                       className="
                         prose
@@ -202,38 +217,34 @@ export default async function ProductDetailsPage({
                         sm:leading-9
                       "
                       dangerouslySetInnerHTML={{
-                        __html: product.description,
+                        __html:
+                          product.description,
                       }}
                     />
+
                   </div>
+
                 </div>
+
               )}
 
               {/* زر الشراء */}
-              <button
-                className="
-                  mt-auto
-                  w-full
-                  bg-slate-950
-                  hover:bg-emerald-600
-                  text-white
-                  py-4
-                  sm:py-5
-                  rounded-3xl
-                  text-lg
-                  sm:text-xl
-                  font-black
-                  transition-all
-                  duration-300
-                  shadow-lg
-                "
-              >
-                اطلب الآن
-              </button>
+              <BuyNowButton
+                productId={product.safka_id}
+                propertyId={product.property_id}
+                price={finalPrice}
+              />
+
             </div>
+
           </div>
+
         </div>
+
       </div>
+
     </main>
+
   );
+
 }
