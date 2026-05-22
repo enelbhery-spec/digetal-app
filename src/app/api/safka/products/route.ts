@@ -22,7 +22,7 @@ export async function GET() {
 }
 
 // =========================
-// POST
+// POST FROM SAFKA
 // =========================
 export async function POST(request: Request) {
 
@@ -33,20 +33,39 @@ export async function POST(request: Request) {
     // =========================
     const body = await request.json();
 
-    console.log("BODY:", body);
+    console.log(
+      "BODY RECEIVED:",
+      JSON.stringify(body, null, 2)
+    );
 
-    // صفقة غالبًا ترسل productId
+    // =========================
+    // استخراج productId
+    // =========================
     const productId =
+
       body.productId ||
       body.product_id ||
-      body.id;
+      body.id ||
+      body._id ||
 
+      body.product?._id ||
+      body.product?.id ||
+
+      body.data?._id ||
+      body.data?.id;
+
+    // =========================
+    // التحقق من وجود ID
+    // =========================
     if (!productId) {
+
+      console.log("PRODUCT ID NOT FOUND");
 
       return NextResponse.json(
         {
           success: false,
           error: "productId missing",
+          body,
         },
         {
           status: 400,
@@ -54,6 +73,8 @@ export async function POST(request: Request) {
       );
 
     }
+
+    console.log("PRODUCT ID:", productId);
 
     // =========================
     // جلب المنتج من صفقة
@@ -69,9 +90,39 @@ export async function POST(request: Request) {
           "api-safka-key":
             process.env.API_SAFKA_KEY!,
         },
+
+        cache: "no-store",
       }
     );
 
+    // =========================
+    // التحقق من response
+    // =========================
+    if (!response.ok) {
+
+      const errorText = await response.text();
+
+      console.log(
+        "SAFKA FETCH ERROR:",
+        errorText
+      );
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: "failed to fetch product from safka",
+          details: errorText,
+        },
+        {
+          status: 500,
+        }
+      );
+
+    }
+
+    // =========================
+    // تحويل JSON
+    // =========================
     const result = await response.json();
 
     console.log(
@@ -79,7 +130,11 @@ export async function POST(request: Request) {
       JSON.stringify(result, null, 2)
     );
 
+    // =========================
+    // استخراج المنتج
+    // =========================
     const product =
+
       result.data ||
       result.product ||
       result;
@@ -162,6 +217,11 @@ export async function POST(request: Request) {
 
     };
 
+    console.log(
+      "MAPPED PRODUCT:",
+      JSON.stringify(mappedProduct, null, 2)
+    );
+
     // =========================
     // حفظ المنتج
     // =========================
@@ -175,6 +235,9 @@ export async function POST(request: Request) {
       )
       .select();
 
+    // =========================
+    // خطأ Supabase
+    // =========================
     if (error) {
 
       console.log(
@@ -194,6 +257,9 @@ export async function POST(request: Request) {
 
     }
 
+    // =========================
+    // نجاح
+    // =========================
     console.log(
       "INSERT SUCCESS:",
       data
@@ -202,7 +268,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         success: true,
-        message: "تم حفظ المنتج",
+        message: "تم حفظ المنتج بنجاح",
         data,
       },
       {
