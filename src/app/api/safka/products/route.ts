@@ -158,18 +158,22 @@ export async function POST(request: Request) {
     // =========================
     const mappedProduct = {
 
+      // معرف صفقة
       safka_id:
         product._id ||
         product.id,
 
+      // اسم المنتج
       name:
         product.name || "",
 
+      // الباركود
       barcode:
         product.barcode ||
         product._id ||
         product.id,
 
+      // السعر
       price:
         product.sale_price ||
         product.price ||
@@ -179,41 +183,54 @@ export async function POST(request: Request) {
         product.sale_price ||
         null,
 
+      // الصورة الرئيسية
       main_image:
         product.image || null,
 
+      // الصور
       images_urls:
-        product.images || [],
+        Array.isArray(product.images)
+          ? product.images
+          : [],
 
+      // الوصف
       description:
         product.description || null,
 
+      // رابط الميديا
       media_url:
         product.media_url || null,
 
+      // الاسئلة الشائعة
       faqs:
-        product.faqs || [],
+        Array.isArray(product.faqs)
+          ? product.faqs
+          : [],
 
+      // ملاحظات
       note:
         product.note || null,
 
+      // الخصائص
       properties:
-        product.properties || [],
+        Array.isArray(product.properties)
+          ? product.properties
+          : [],
 
+      // حقول إضافية
       code: null,
       country_id: null,
       brand_id: null,
       category_id: null,
 
+      // المتجر
       store_id: "safka_store",
 
+      // فيسبوك
       fb_posted: false,
       fb_scheduled: false,
       fb_post_id: null,
       fb_scheduled_time: null,
-
-      created_at:
-        new Date().toISOString(),
 
     };
 
@@ -248,20 +265,11 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           success: false,
-
           supabase_error: error,
-
-          message:
-            error.message,
-
-          details:
-            error.details,
-
-          hint:
-            error.hint,
-
-          code:
-            error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
         },
         {
           status: 500,
