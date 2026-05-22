@@ -96,11 +96,12 @@ export async function POST(request: Request) {
     );
 
     // =========================
-    // التحقق من response
+    // التحقق من نجاح الطلب
     // =========================
     if (!response.ok) {
 
-      const errorText = await response.text();
+      const errorText =
+        await response.text();
 
       console.log(
         "SAFKA FETCH ERROR:",
@@ -110,7 +111,8 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           success: false,
-          error: "failed to fetch product from safka",
+          error:
+            "failed to fetch product from safka",
           details: errorText,
         },
         {
@@ -123,7 +125,8 @@ export async function POST(request: Request) {
     // =========================
     // تحويل JSON
     // =========================
-    const result = await response.json();
+    const result =
+      await response.json();
 
     console.log(
       "SAFKA PRODUCT:",
@@ -163,7 +166,7 @@ export async function POST(request: Request) {
         product._id ||
         product.id,
 
-      // اسم المنتج
+      // الاسم
       name:
         product.name || "",
 
@@ -201,13 +204,13 @@ export async function POST(request: Request) {
       media_url:
         product.media_url || null,
 
-      // الاسئلة الشائعة
+      // الأسئلة
       faqs:
         Array.isArray(product.faqs)
           ? product.faqs
           : [],
 
-      // ملاحظات
+      // الملاحظات
       note:
         product.note || null,
 
@@ -216,21 +219,6 @@ export async function POST(request: Request) {
         Array.isArray(product.properties)
           ? product.properties
           : [],
-
-      // حقول إضافية
-      code: null,
-      country_id: null,
-      brand_id: null,
-      category_id: null,
-
-      // المتجر
-      store_id: "safka_store",
-
-      // فيسبوك
-      fb_posted: false,
-      fb_scheduled: false,
-      fb_post_id: null,
-      fb_scheduled_time: null,
 
     };
 
@@ -242,15 +230,16 @@ export async function POST(request: Request) {
     // =========================
     // حفظ المنتج
     // =========================
-    const { data, error } = await supabase
-      .from("safka_products")
-      .upsert(
-        [mappedProduct],
-        {
-          onConflict: "safka_id",
-        }
-      )
-      .select();
+    const { data, error } =
+      await supabase
+        .from("safka_products")
+        .upsert(
+          [mappedProduct],
+          {
+            onConflict: "safka_id",
+          }
+        )
+        .select();
 
     // =========================
     // خطأ Supabase
@@ -289,7 +278,8 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         success: true,
-        message: "تم حفظ المنتج بنجاح",
+        message:
+          "تم حفظ المنتج بنجاح",
         data,
       },
       {
