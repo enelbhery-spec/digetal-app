@@ -241,14 +241,27 @@ export async function POST(request: Request) {
     if (error) {
 
       console.log(
-        "SUPABASE ERROR:",
-        error
+        "SUPABASE ERROR FULL:",
+        JSON.stringify(error, null, 2)
       );
 
       return NextResponse.json(
         {
           success: false,
-          error: error.message,
+
+          supabase_error: error,
+
+          message:
+            error.message,
+
+          details:
+            error.details,
+
+          hint:
+            error.hint,
+
+          code:
+            error.code,
         },
         {
           status: 500,
