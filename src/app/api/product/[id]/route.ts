@@ -14,14 +14,14 @@ export async function GET(
 
     const { id } = await params;
 
-    const SAFKA_API_KEY =
-      process.env.SAFKA_API_KEY;
+    const API_SAFKA_KEY =
+      process.env.API_SAFKA_KEY;
 
-    if (!SAFKA_API_KEY) {
+    if (!API_SAFKA_KEY) {
       return NextResponse.json(
         {
           success: false,
-          error: "SAFKA_API_KEY missing",
+          error: "API_SAFKA_KEY missing",
         },
         { status: 500 }
       );
@@ -34,7 +34,7 @@ export async function GET(
 
         headers: {
           "api-safka-key":
-            SAFKA_API_KEY.trim(),
+            API_SAFKA_KEY.trim(),
         },
 
         cache: "no-store",
