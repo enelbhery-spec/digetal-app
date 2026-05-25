@@ -7,30 +7,122 @@ const supabase = createClient(
 );
 
 export async function POST(request: Request) {
+
   try {
+
+    // =========================
+    // ORDER DATA
+    // =========================
+
     const orderData = await request.json();
 
-    // 1. جلب مفتاح API من قاعدة البيانات
-    const { data: keys } = await supabase.from("safka_keys").select("api_key").single();
-    
-    if (!keys?.api_key) {
-      return NextResponse.json({ success: false, errors: [{ msg: "مفتاح الربط غير موجود" }] }, { status: 400 });
+    console.log("📦 ORDER DATA:");
+    console.log(orderData);
+
+    // =========================
+    // GET SAFKA API KEY
+    // =========================
+
+    const { data: keys, error: keyError } =
+      await supabase
+        .from("safka_keys")
+        .select("api_key")
+        .single();
+
+    if (keyError || !keys?.api_key) {
+
+      console.log("❌ API KEY ERROR:", keyError);
+
+      return NextResponse.json(
+        {
+          success: false,
+          errors: [
+            {
+              msg: "مفتاح صفقة غير موجود"
+            }
+          ]
+        },
+        {
+          status: 400
+        }
+      );
     }
 
-    // 2. إرسال الطلب إلى صفقة
-    const response = await fetch("https://public-api.safka-eg.com/v1/orders", {
-      method: "POST",
-      headers: {
-        "api-safka-key": keys.api_key,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(orderData),
-    });
+    // =========================
+    // SEND TO SAFKA
+    // =========================
+
+    const response = await fetch(
+      "https://public-api.safka-eg.com/api/v1/public/orders/",
+      {
+        method: "POST",
+
+        headers: {
+          "api-safka-key": keys.api_key,
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(orderData),
+      }
+    );
+
+    // =========================
+    // RESPONSE
+    // =========================
 
     const result = await response.json();
-    return NextResponse.json(result);
 
-  } catch (error) {
-    return NextResponse.json({ success: false, errors: [{ msg: "خطأ في الاتصال بالسيرفر" }] }, { status: 500 });
+    console.log("📨 SAFKA RESPONSE:");
+    console.log(result);
+
+    console.log("📡 STATUS:", response.status);
+
+    // =========================
+    // HANDLE ERROR
+    // =========================
+
+    if (!response.ok) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          status: response.status,
+          safka: result
+        },
+        {
+          status: response.status
+        }
+      );
+    }
+
+    // =========================
+    // SUCCESS
+    // =========================
+
+    return NextResponse.json({
+      success: true,
+      data: result
+    });
+
+  } catch (error: any) {
+
+    console.log("❌ SERVER ERROR:");
+    console.log(error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        errors: [
+          {
+            msg:
+              error.message ||
+              "خطأ في الاتصال بالسيرفر"
+          }
+        ]
+      },
+      {
+        status: 500
+      }
+    );
   }
 }

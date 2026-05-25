@@ -268,7 +268,7 @@ export default function SafkaProductCard({
 
             <ShoppingBag size={18} />
 
-           شاهد التفاصيل قبل الشراء
+           شاهد قبل الشراء
 
           </Link>
 
