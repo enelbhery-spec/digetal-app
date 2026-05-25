@@ -39,6 +39,7 @@ interface Product {
 
 export async function GET() {
   try {
+
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -50,32 +51,40 @@ export async function GET() {
 
     const { data, error } = await supabase
       .from("safka_products")
-      .select("*")
-      .eq("status", "active");
+      .select("*");
 
     if (error) {
+
       return new NextResponse(error.message, {
         status: 500,
       });
+
     }
 
-    const products: Product[] = (data as Product[]) || [];
+    const products: Product[] =
+      (data as Product[]) || [];
 
     // =========================
-    // XML BUILD
+    // BUILD XML
     // =========================
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+
+<rss version="2.0"
+xmlns:g="http://base.google.com/ns/1.0">
+
 <channel>
 
 <title>ExtraCode Safka Products</title>
 
 <link>https://www.extracode.online</link>
 
-<description>Safka Products Feed</description>
+<description>
+ExtraCode Safka Products Feed
+</description>
 
 ${products
+
   .filter(
     (p) =>
       p.slug &&
@@ -85,15 +94,19 @@ ${products
 
   .map((p) => {
 
-    const country = p.code || "eg";
+    const country =
+      p.code || "eg";
 
     const productLink =
       `https://www.extracode.online/${country}/safka-products/${p.slug}`;
 
     return `
+
 <item>
 
-<g:id>${escapeXml(String(p.id))}</g:id>
+<g:id>
+${escapeXml(String(p.id))}
+</g:id>
 
 <g:title>
 ${escapeXml(p.title || "")}
@@ -101,7 +114,8 @@ ${escapeXml(p.title || "")}
 
 <g:description>
 ${escapeXml(
-  (p.description || p.title || "").slice(0, 500)
+  (p.description || p.title || "")
+    .slice(0, 500)
 )}
 </g:description>
 
@@ -114,24 +128,36 @@ ${escapeXml(p.image_url || "")}
 </g:image_link>
 
 <g:price>
-${escapeXml(`${p.price} ${p.currency || "EGP"}`)}
+${escapeXml(
+  `${p.price} ${p.currency || "EGP"}`
+)}
 </g:price>
 
-<g:availability>in_stock</g:availability>
+<g:availability>
+in_stock
+</g:availability>
 
-<g:condition>new</g:condition>
+<g:condition>
+new
+</g:condition>
 
-<g:brand>ExtraCode</g:brand>
+<g:brand>
+ExtraCode
+</g:brand>
 
-<g:identifier_exists>false</g:identifier_exists>
+<g:identifier_exists>
+false
+</g:identifier_exists>
 
 </item>
+
 `;
   })
 
   .join("\n")}
 
 </channel>
+
 </rss>`;
 
     // =========================
@@ -139,11 +165,17 @@ ${escapeXml(`${p.price} ${p.currency || "EGP"}`)}
     // =========================
 
     return new NextResponse(xml, {
+
       headers: {
-        "Content-Type": "application/xml; charset=utf-8",
+
+        "Content-Type":
+          "application/xml; charset=utf-8",
+
         "Cache-Control":
           "no-store, max-age=0, must-revalidate",
+
       },
+
     });
 
   } catch (err) {
@@ -153,8 +185,12 @@ ${escapeXml(`${p.price} ${p.currency || "EGP"}`)}
         ? err.message
         : "Server Error";
 
-    return new NextResponse(errorMessage, {
-      status: 500,
-    });
+    return new NextResponse(
+      errorMessage,
+      {
+        status: 500,
+      }
+    );
+
   }
 }
