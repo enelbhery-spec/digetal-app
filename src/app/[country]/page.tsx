@@ -92,7 +92,7 @@ export default async function CountryPage({ params, searchParams }: Props) {
   return (
     <main className="bg-gray-50 min-h-screen pb-20" dir="rtl">
       <div className="max-w-7xl mx-auto px-6 pt-12 text-center">
-        <h1 className="text-3xl md:text-5xl font-black text-gray-900 leading-tight">🛍️ متجر إكسترا كود الحصري</h1>
+        <h1 className="text-3xl md:text-5xl font-black text-gray-900 leading-tight">🛍️ متجر إكسترا كود </h1>
       </div>
 
       {(activeCategories || []).length > 0 && (

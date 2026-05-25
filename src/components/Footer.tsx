@@ -17,8 +17,7 @@ export default function Footer() {
             ExtraCode
           </h3>
           <p className="text-sm leading-relaxed mb-4">
-            منصة لعرض أفضل العروض وكوبونات الخصم من المتاجر الإلكترونية المختلفة. 
-            نحن لا نبيع المنتجات مباشرة، بل نقوم بتوجيهك إلى المتاجر الرسمية لإتمام عملية الشراء.
+            منصة لعرض أفضل العروض على متجرنا اكستراكود  - عروض جصريه. 
           </p>
         </div>
 
@@ -75,11 +74,7 @@ export default function Footer() {
             </li>
           </ul>
 
-          {/* ✅ إفصاح واضح (مهم جدًا لجوجل) */}
-          <div className="text-xs text-gray-400 leading-relaxed">
-            <p className="font-bold mb-1">إفصاح التسويق بالعمولة:</p>
-            هذا الموقع يعمل بنظام التسويق بالعمولة، وقد نحصل على عمولة عند الشراء من خلال الروابط الخارجية دون أي تكلفة إضافية عليك.
-          </div>
+          
         </div>
 
         {/* تواصل */}
@@ -104,23 +99,7 @@ export default function Footer() {
 
       </div>
 
-      {/* ✅ تنويه إضافي مهم */}
-      <div className="border-t border-gray-800 text-center py-6 text-xs text-gray-500 px-4 leading-relaxed">
-        
-        <div className="mb-2">
-  ⚠️ الأسعار المعروضة على الموقع قد تختلف عن الأسعار الفعلية داخل المتاجر نتيجة العروض أو التحديثات المستمرة. يرجى مراجعة السعر النهائي في صفحة المتجر قبل إتمام الشراء.
-        </div>
-
-        <div className="mb-2">
-          جميع العلامات التجارية مملوكة لأصحابها وتستخدم لأغراض توضيحية فقط.
-        </div>
-
-        <div className="mb-2">
-          نحن لا نقوم ببيع المنتجات بشكل مباشر.
-        </div>
-
-        © {new Date().getFullYear()} - ExtraCode - جميع الحقوق محفوظة
-      </div>
+      
     </footer>
   );
 }

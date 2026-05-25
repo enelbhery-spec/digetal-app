@@ -374,27 +374,7 @@ export default async function ProductPage({
             </p>
 
             {/* تنويه */}
-            <p
-              className="
-                text-[11px] md:text-xs
-                text-gray-500
-                mb-6
-                leading-relaxed
-                bg-gray-50
-                p-3
-                rounded-lg
-                border border-gray-100
-              "
-            >
-
-              هذا الموقع يعمل بنظام
-              التسويق بالعمولة،
-              وقد نحصل على عمولة
-              عند الشراء من خلال
-              الروابط بدون أي
-              تكلفة إضافية عليك.
-
-            </p>
+            
 
             {/* الأزرار */}
             <div
