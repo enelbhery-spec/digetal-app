@@ -24,12 +24,12 @@ function escapeXml(unsafe: string): string {
 
 interface Product {
   id: string;
-  title: string;
-  slug: string;
+  safka_id?: string;
+  name: string;
   description?: string;
-  image_url: string;
-  price: number | string;
-  currency?: string;
+  main_image?: string;
+  price?: number;
+  is_active?: boolean;
   code?: string;
 }
 
@@ -65,7 +65,7 @@ export async function GET() {
       (data as Product[]) || [];
 
     // =========================
-    // BUILD XML
+    // XML BUILD
     // =========================
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -87,8 +87,8 @@ ${products
 
   .filter(
     (p) =>
-      p.slug &&
-      p.image_url &&
+      p.name &&
+      p.main_image &&
       p.price
   )
 
@@ -97,25 +97,27 @@ ${products
     const country =
       p.code || "eg";
 
+    const slug =
+      p.safka_id || p.id;
+
     const productLink =
-      `https://www.extracode.online/${country}/safka-products/${p.slug}`;
+      `https://www.extracode.online/${country}/safka-products/${slug}`;
 
     return `
 
 <item>
 
 <g:id>
-${escapeXml(String(p.id))}
+${escapeXml(String(slug))}
 </g:id>
 
 <g:title>
-${escapeXml(p.title || "")}
+${escapeXml(p.name || "")}
 </g:title>
 
 <g:description>
 ${escapeXml(
-  (p.description || p.title || "")
-    .slice(0, 500)
+  (p.description || p.name || "").slice(0, 500)
 )}
 </g:description>
 
@@ -124,13 +126,11 @@ ${escapeXml(productLink)}
 </g:link>
 
 <g:image_link>
-${escapeXml(p.image_url || "")}
+${escapeXml(p.main_image || "")}
 </g:image_link>
 
 <g:price>
-${escapeXml(
-  `${p.price} ${p.currency || "EGP"}`
-)}
+${escapeXml(`${p.price} EGP`)}
 </g:price>
 
 <g:availability>
@@ -167,13 +167,11 @@ false
     return new NextResponse(xml, {
 
       headers: {
-
         "Content-Type":
           "application/xml; charset=utf-8",
 
         "Cache-Control":
           "no-store, max-age=0, must-revalidate",
-
       },
 
     });
@@ -191,6 +189,5 @@ false
         status: 500,
       }
     );
-
   }
 }
