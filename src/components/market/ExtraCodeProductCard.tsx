@@ -54,7 +54,7 @@ export default function ExtraCodeProductCard({
           <div className="flex flex-col gap-2">
             {/* شارة خضراء مميزة لمنتجات متجرك الحصري */}
             <span className="bg-emerald-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg w-fit shadow-sm">
-              إكسترا كود ماركت
+              تريند ستور  
             </span>
 
             {product?.product_code && (
@@ -76,7 +76,7 @@ export default function ExtraCodeProductCard({
           <img
             src={product?.image_url || "/no-image.png"}
             alt={product?.title || "منتج حصرى"}
-            title={`${product?.title || "منتج"} | إكسترا كود`}
+            title={`${product?.title || "منتج"} | تريند ستور `}
             loading="lazy"
             decoding="async"
             className="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-500"

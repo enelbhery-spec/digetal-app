@@ -154,7 +154,7 @@ export default function PremiumProductCard({
                     brandSlug ||
                     "brand"
                   }
-                  title={`${brandSlug || "brand"} | إكسترا كود`}
+                  title={`${brandSlug || "brand"} | تريند ستور `}
                   loading="lazy"
                   decoding="async"
                   className="h-8 w-8 object-contain"
@@ -205,7 +205,7 @@ export default function PremiumProductCard({
               product?.title ||
               "منتج"
             }
-            title={`${product?.title || "منتج"} | إكسترا كود`}
+            title={`${product?.title || "منتج"} | تريند ستور `}
             loading="lazy"
             decoding="async"
             className="max-h-full max-w-full object-contain transition duration-500 group-hover:scale-105"

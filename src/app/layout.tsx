@@ -29,15 +29,15 @@ export const metadata: Metadata = {
 
   title: {
     default:
-      "إكسترا كود | عروض حصرية للمنتجات في مكان واحد",
-    template: "%s | إكسترا كود",
+      "تريند ستور  | عروض حصرية للمنتجات في مكان واحد",
+    template: "%s | تريند ستور ",
   },
 
   description:
     "دليلك الشامل للتوفير؛ احصل على أحدث العروض الحصرية لاحتياجاتك فى مصر والسعودية .",
 
   keywords: [
-    "إكسترا كود",
+    "تريند ستور ",
     "كوبونات نون",
     "عروض أمازون مصر",
     "خصومات أمازون",
@@ -45,11 +45,11 @@ export const metadata: Metadata = {
     "خصومات شي إن",
   ],
 
-  authors: [{ name: "إكسترا كود" }],
+  authors: [{ name: "تريند ستور " }],
 
-  creator: "إكسترا كود",
+  creator: "تريند ستور ",
 
-  publisher: "إكسترا كود",
+  publisher: "تريند ستور ",
 
   manifest: "/manifest.json",
 
@@ -61,14 +61,14 @@ export const metadata: Metadata = {
 
   openGraph: {
     title:
-      "عروض حصرية يوميه من  متجر اكسترا كود",
+      "عروض حصرية يوميه من  تريند ستور ",
 
     description:
       "منصة رقمية مجانية توفر أفضل العروض الحصرية و المحدثة.",
 
     url: "https://www.extracode.online",
 
-    siteName: "إكسترا كود",
+    siteName: "تريند ستور ",
 
     locale: "ar_EG",
 
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "إكسترا كود",
+        alt: "تريند ستور ",
       },
     ],
   },
@@ -88,7 +88,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
 
     title:
-      "إكسترا كود | كل عروض Amazon, Noon, Temu & Shein",
+      "تريند ستور  | كل عروض ",
 
     description:
       "وفر أموالك مع أحدث العروض و ارخص الاسعار .",
@@ -147,7 +147,7 @@ export default function RootLayout({
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Organization",
-            name: "إكسترا كود",
+            name: "تريند ستور ",
             url: "https://www.extracode.online",
             logo: "https://www.extracode.online/logo.png",
           })}
@@ -162,7 +162,7 @@ export default function RootLayout({
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebSite",
-            name: "إكسترا كود",
+            name: "تريند ستور ",
             url: "https://www.extracode.online",
           })}
         </Script>

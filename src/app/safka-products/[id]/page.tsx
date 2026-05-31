@@ -156,7 +156,7 @@ export default async function ProductDetailsPage({
               <div className="flex items-center gap-3 mb-5 flex-wrap">
 
                 <span className="bg-emerald-600 text-white text-sm font-bold px-4 py-2 rounded-xl">
-                  إكسترا كود ماركت
+                  تريند ستور  
                 </span>
 
                 {product.barcode && (

@@ -134,7 +134,7 @@ export default function Header() {
             className="flex flex-col items-end leading-tight group"
           >
             <span className="text-2xl md:text-3xl font-extrabold text-green-600 tracking-tight">
-              إكسترا كود
+       تريند ستور 
             </span>
             <span className="text-[10px] md:text-xs uppercase font-bold text-gray-400 tracking-[0.2em] -mt-1 group-hover:tracking-[0.25em] transition-all">
               Extracode

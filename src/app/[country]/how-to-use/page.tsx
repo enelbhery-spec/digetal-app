@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "طريقة استخدام الموقع | ExtraCode",
+  title: "طريقة استخدام الموقع | تريند ستور ",
   description:
-    "تعرف على كيفية استخدام موقع ExtraCode للحصول على أفضل العروض والكوبونات من أمازون ونون بسهولة وأمان.",
+    "تعرف على كيفية استخدام موقع تريند ستور  للحصول على أفضل العروض والكوبونات من أمازون ونون بسهولة وأمان.",
   robots: "index, follow",
 };
 
@@ -16,7 +16,7 @@ export default function HowToUsePage() {
       {/* العنوان */}
       <div className="text-center mb-16">
         <h1 className="text-3xl md:text-4xl font-bold mb-6 text-gray-800 italic">
-          كيف تستخدم ExtraCode للحصول على أفضل العروض؟
+          كيف تستخدم تريند ستور  للحصول على أفضل العروض؟
         </h1>
         <p className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
           نوفر لك أقوى الخصومات والكوبونات من
@@ -73,7 +73,7 @@ export default function HowToUsePage() {
 
       {/* تنويه الثقة */}
       <div className="mt-16 bg-gray-50 p-8 rounded-2xl border text-center">
-        <h3 className="text-xl font-bold mb-4">هل موقع ExtraCode آمن؟</h3>
+        <h3 className="text-xl font-bold mb-4">هل موقع تريند ستور  آمن؟</h3>
         <p className="text-gray-600 max-w-3xl mx-auto italic">
           نعم، نحن لا نقوم ببيع المنتجات أو طلب بيانات الدفع. يتم الشراء بالكامل
           عبر مواقع المتاجر الرسمية مثل أمازون ونون.
@@ -93,7 +93,7 @@ export default function HowToUsePage() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "HowTo",
-            name: "طريقة استخدام ExtraCode",
+            name: "طريقة استخدام تريند ستور ",
             step: [
               { "@type": "HowToStep", name: "ابحث عن المنتج" },
               { "@type": "HowToStep", name: "انسخ كود الخصم" },

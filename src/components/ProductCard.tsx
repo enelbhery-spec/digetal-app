@@ -99,7 +99,7 @@ export default function ProductCard({
                 <img
                   src={brandLogo}
                   alt={brandSlug || "brand"}
-                  title={`${brandSlug || "brand"} | إكسترا كود`}
+                  title={`${brandSlug || "brand"} | تريند ستور `}
                   loading="lazy"
                   decoding="async"
                   className="w-8 h-8 object-contain"
@@ -143,7 +143,7 @@ export default function ProductCard({
             alt={
               product?.title || "منتج"
             }
-            title={`${product?.title || "منتج"} | إكسترا كود`}
+            title={`${product?.title || "منتج"} | تريند ستور `}
             loading="lazy"
             decoding="async"
             className="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-500"

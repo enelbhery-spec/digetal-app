@@ -126,7 +126,7 @@ export default function SafkaProductCard({
         <div className="flex flex-col gap-2">
 
           <span className="bg-emerald-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg w-fit shadow-sm">
-            إكسترا كود ماركت
+            تريند ستور  
           </span>
 
           {barcode && (

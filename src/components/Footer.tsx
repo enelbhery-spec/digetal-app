@@ -17,7 +17,7 @@ export default function Footer() {
             ExtraCode
           </h3>
           <p className="text-sm leading-relaxed mb-4">
-            منصة لعرض أفضل العروض على متجرنا اكستراكود  - عروض جصريه. 
+            منصة لعرض أفضل العروض على متجرنا تريند ستور | Trend Store  - عروض جصريه. 
           </p>
         </div>
 

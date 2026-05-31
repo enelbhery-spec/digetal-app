@@ -91,7 +91,7 @@ export default function AppInstallLoader({
       </h1>
 
       <p style={{ marginTop: 15, fontSize: 18 }}>
-        لتحصل على تجربة أسرع وأسهل لمتابعة كوبونات إكسترا كود
+        لتحصل على تجربة أسرع وأسهل لمتابعة منتجات تريند ستور 
       </p>
 
       <button

@@ -45,7 +45,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${product.title} | إكسترا كود`,
+    title: `${product.title} | تريند ستور `,
 
     description:
       product.description ||
@@ -277,7 +277,7 @@ export default async function ProductPage({
                 "/no-image.png"
               }
               alt={product.title}
-              title={`${product.title} | إكسترا كود`}
+              title={`${product.title} | تريند ستور `}
               loading="lazy"
               decoding="async"
               className="
