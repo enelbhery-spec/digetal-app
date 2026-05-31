@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type Props = {
@@ -10,9 +11,9 @@ type Props = {
 
 export default function BuyNowButton({
   productId,
-  propertyId,
-  price,
 }: Props) {
+
+  const router = useRouter();
 
   const [loading, setLoading] =
     useState(false);
@@ -21,97 +22,9 @@ export default function BuyNowButton({
 
     setLoading(true);
 
-    try {
-
-      const response = await fetch(
-        "/api/checkout",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-
-          body: JSON.stringify({
-
-            // بيانات العميل
-            client_name:
-              "عميل تجريبي",
-
-            client_phone1:
-              "01090111151",
-
-            client_address:
-              "القاهرة",
-
-            shipping_governorate:
-              "64878fe6dc16090c1858e698",
-
-            city: "336",
-
-            note:
-              "طلب من موقع اكسترا كود",
-
-            // السعر
-            total: price,
-
-            commission: 0,
-
-            // المنتج
-            product_id:
-              productId,
-
-            property_id:
-              propertyId,
-
-            qty: 1,
-
-          }),
-        }
-      );
-
-      const data =
-        await response.json();
-
-      console.log(
-        "SAFKA ORDER RESPONSE:",
-        data
-      );
-
-      if (data?.success) {
-
-        alert(
-          "✅ تم إرسال الطلب بنجاح"
-        );
-
-      } else {
-
-        const errorMessage =
-          data?.errors?.[0]?.msg ||
-          data?.message ||
-          "فشل إرسال الطلب";
-
-        alert(errorMessage);
-
-      }
-
-    } catch (err) {
-
-      console.error(
-        "Order Error:",
-        err
-      );
-
-      alert(
-        "حدث خطأ أثناء إرسال الطلب"
-      );
-
-    } finally {
-
-      setLoading(false);
-
-    }
+    router.push(
+      `/checkout/${productId}`
+    );
 
   }
 
@@ -140,7 +53,7 @@ export default function BuyNowButton({
     >
 
       {loading
-        ? "جارِ إرسال الطلب..."
+        ? "جارِ التحويل..."
         : "شراء المنتج الآن"}
 
     </button>
