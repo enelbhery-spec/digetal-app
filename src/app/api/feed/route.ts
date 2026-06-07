@@ -4,10 +4,10 @@ import { createClient } from "@supabase/supabase-js";
 // تحديد أن هذا المسار ديناميكي ولا يتم تخزينه كصفحة ثابتة أثناء الـ Build
 export const dynamic = "force-dynamic";
 
-// دالة تنظيف الـ XML مع تحديد نوع البيانات كـ string
-function escapeXml(unsafe: string): string {
-  if (!unsafe) return "";
-  return unsafe
+// دالة تنظيف الـ XML
+function escapeXml(unsafe: string | number | null | undefined): string {
+  if (unsafe === null || unsafe === undefined) return "";
+  return String(unsafe)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -15,15 +15,15 @@ function escapeXml(unsafe: string): string {
     .replace(/'/g, "&apos;");
 }
 
-// تعريف واجهة بيانات المنتج القادم من Supabase لتجنب خطأ الـ TypeScript
+// تعريف واجهة بيانات المنتج بناءً على جدول safka_products
 interface Product {
   id: string | number;
-  title: string;
-  slug: string;
+  name: string;
   description?: string;
-  image_url: string;
+  main_image: string;
   price: number | string;
-  currency?: string;
+  sale_price?: number | string;
+  code: string; // يُستخدم كـ slug أو معرف إضافي
 }
 
 export async function GET() {
@@ -33,10 +33,10 @@ export async function GET() {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
-    // جلب البيانات مع تحديد واجهة البيانات <Product[]>
+    // جلب البيانات من جدول safka_products
     const { data, error } = await supabase
-      .from("products")
-      .select("*");
+      .from("safka_products")
+      .select("id, name, description, main_image, price, sale_price, code");
 
     if (error) {
       return new NextResponse(error.message, { status: 500 });
@@ -52,18 +52,20 @@ export async function GET() {
 <description>Best deals and coupons</description>
 
 ${safeProducts
-  .filter((p) => p.slug && p.image_url && p.price)
+  .filter((p) => p.name && p.main_image && (p.sale_price || p.price))
   .map((p) => {
-    const productLink = `https://www.extracode.online/eg/product/${p.slug}`;
+    // نستخدم code أو id للرابط
+    const productLink = `https://www.extracode.online/eg/product/${p.code || p.id}`;
+    const displayPrice = p.sale_price || p.price;
 
     return `
 <item>
-  <g:id>${escapeXml(String(p.id))}</g:id>
-  <g:title>${escapeXml(p.title)}</g:title>
-  <g:description>${escapeXml((p.description || p.title).slice(0, 500))}</g:description>
+  <g:id>${escapeXml(p.id)}</g:id>
+  <g:title>${escapeXml(p.name)}</g:title>
+  <g:description>${escapeXml((p.description || p.name).slice(0, 500))}</g:description>
   <g:link>${escapeXml(productLink)}</g:link>
-  <g:image_link>${escapeXml(p.image_url)}</g:image_link>
-  <g:price>${escapeXml(`${p.price} ${p.currency || "EGP"}`)}</g:price>
+  <g:image_link>${escapeXml(p.main_image)}</g:image_link>
+  <g:price>${escapeXml(displayPrice)} EGP</g:price>
   <g:availability>in_stock</g:availability>
   <g:condition>new</g:condition>
   <g:brand>Generic</g:brand>
