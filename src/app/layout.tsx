@@ -70,6 +70,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ar" dir="rtl" className={`scroll-smooth ${tajawal.variable}`}>
       <head>
+        {/* ✅ Domain Verification */}
+        <meta name="facebook-domain-verification" content="dnug90dlldt2djikp2yjdhj88pbekd" />
+
         {/* ✅ Meta Pixel Code */}
         <Script id="facebook-pixel" strategy="afterInteractive">
           {`
@@ -137,7 +140,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
 
       <body className={`${tajawal.className} min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased`}>
-        {/* إضافة الـ noscript الخاصة بالبيكسل هنا */}
         <noscript>
           <img height="1" width="1" style={{ display: "none" }} src="https://www.facebook.com/tr?id=1326805792177297&ev=PageView&noscript=1" alt="fb-pixel" />
         </noscript>
