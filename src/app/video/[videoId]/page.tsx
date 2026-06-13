@@ -1,12 +1,11 @@
-// src/app/video/[videoId]/page.tsx
+// app/video/[videoId]/page.tsx
 
 type Props = {
   params: Promise<{ videoId: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export default async function VideoPage({ params }: Props) {
-  // التعديل الضروري لـ Next.js 15: استخدام await لاستخراج الـ params
+  // استخراج الـ videoId بشكل صحيح حسب متطلبات Next.js 15
   const { videoId } = await params;
 
   return (
@@ -30,7 +29,7 @@ export default async function VideoPage({ params }: Props) {
           <p className="text-gray-600 mb-8">استخدم كود الخصم المذكور في الفيديو للحصول على أفضل سعر.</p>
           
           <a 
-            href="/" // يمكنك تغييره للرابط الذي تريده
+            href="/" 
             className="block w-full py-4 bg-emerald-600 text-white text-center rounded-2xl font-bold hover:bg-emerald-700 transition"
           >
             العودة للمتجر والشراء الآن
