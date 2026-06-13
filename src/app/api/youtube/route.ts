@@ -1,6 +1,6 @@
 // src/app/api/youtube/route.ts
 
-import Parser from "rss-parser";
+const Parser = require('rss-parser');
 
 interface VideoItem {
   title: string;
@@ -22,7 +22,7 @@ export async function GET() {
 
   try {
     // ✅ استخدم Channel ID فقط (الأضمن)
-    const channelId = "UCgak46GjPPsFsVB5QnzD7pQ";
+    const channelId = "UClUjR4rRQhu06xtfOEyxznA";
 
     const url = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
 

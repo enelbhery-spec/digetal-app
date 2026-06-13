@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Play } from "lucide-react";
 
 export default function Home() {
   const router = useRouter();
@@ -9,62 +10,56 @@ export default function Home() {
 
   useEffect(() => {
     const savedCountry = localStorage.getItem("country");
-
-    if (savedCountry === "eg" || savedCountry === "sa") {
+    if (savedCountry === "eg") {
       router.replace(`/${savedCountry}`);
     } else {
-      setChecking(false); // ⛔ أظهر الصفحة فقط لو مفيش اختيار
+      setChecking(false);
     }
   }, [router]);
 
-  const selectCountry = (country: string) => {
-    localStorage.setItem("country", country);
-    router.push(`/${country}`);
+  const selectCountry = () => {
+    localStorage.setItem("country", "eg");
+    router.push("/eg");
   };
 
-  // ⏳ Loading state
   if (checking) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-500 text-sm animate-pulse">
-          جاري التوجيه...
-        </div>
-      </main>
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="animate-pulse">جاري التحميل...</p>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center text-center px-4 py-10">
-
-      {/* العنوان */}
-      <h1 className="text-xl md:text-2xl font-extrabold mb-4">
-        اختر بلدك 🌍
-      </h1>
-
-      {/* الوصف */}
-      <p className="text-gray-500 mb-8 text-sm max-w-xs leading-relaxed">
-        سيتم حفظ اختيارك تلقائيًا لزياراتك القادمة لتجربة أسرع
-      </p>
-
-      {/* الأزرار */}
-      <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
-
+    <main className="flex flex-col min-h-screen">
+      {/* القسم العلوي: اختيار الدولة */}
+      <section className="flex-grow flex flex-col items-center justify-center py-20 text-center">
+        <h1 className="text-2xl font-black mb-4">أهلاً بك في متجرنا 🌍</h1>
         <button
-          onClick={() => selectCountry("eg")}
-          className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold transition shadow"
+          onClick={selectCountry}
+          className="bg-green-600 text-white px-10 py-4 rounded-2xl font-bold hover:bg-green-700 transition-all shadow-lg"
         >
-          🇪🇬 مصر
+          🇪🇬 متابعة إلى مصر
         </button>
+      </section>
 
-        <button
-          onClick={() => selectCountry("sa")}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition shadow"
-        >
-          🇸🇦 السعودية
-        </button>
-
-      </div>
-
+      {/* القسم السفلي: الفيديوهات (سيظهر أسفل الصفحة) */}
+      <section className="w-full bg-slate-50 py-16 border-t">
+        <div className="max-w-4xl mx-auto px-4">
+          <h2 className="text-xl font-bold text-center mb-8 flex items-center justify-center gap-2">
+            <Play className="text-red-600" /> شاهد قبل الشراء
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white p-2 rounded-2xl shadow-sm">
+                <div className="aspect-video bg-gray-200 rounded-xl flex items-center justify-center">
+                  فيديو {i}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
