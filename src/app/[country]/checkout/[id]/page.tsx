@@ -1,411 +1,123 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { useEffect, useState, use } from "react";
+import { useCartStore } from "@/store/useCart";
 
-export default function CheckoutPage() {
-  const params = useParams();
+export default function CheckoutPage({ params }: { params: Promise<{ id: string }> }) {
+  const { items } = useCartStore();
+  const [shippingData, setShippingData] = useState<any[]>([]);
+  const [selectedGov, setSelectedGov] = useState<any>(null);
+  const [selectedCity, setSelectedCity] = useState<any>(null);
+  
+  const [formData, setFormData] = useState({ 
+    client_name: "", 
+    client_phone1: "", 
+    client_address: "", 
+    note: "" 
+  });
+  
+  const [sending, setSending] = useState(false);
 
-  const productId = String(params?.id || "");
-
-  const [product, setProduct] = useState<any>(null);
-
-  const [shippingData, setShippingData] =
-    useState<any[]>([]);
-
-  const [selectedGov, setSelectedGov] =
-    useState<any>(null);
-
-  const [selectedCity, setSelectedCity] =
-    useState("");
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [sending, setSending] =
-    useState(false);
-
-  // بيانات العميل
-  const [clientName, setClientName] =
-    useState("");
-
-  const [phone1, setPhone1] =
-    useState("");
-
-  const [phone2, setPhone2] =
-    useState("");
-
-  const [address, setAddress] =
-    useState("");
-
-  const [note, setNote] =
-    useState("");
+  // التأكد من أن الأسعار أرقام لتجنب NaN
+  const productsTotal = items.reduce((sum, item) => sum + (Number(item.price) * Number(item.quantity || 1)), 0);
+  const shippingCost = selectedGov ? Number(selectedGov.price || 0) : 0;
+  const grandTotal = productsTotal + shippingCost;
 
   useEffect(() => {
-    loadData();
-  }, [productId]);
+    fetch("/api/shipping")
+      .then(res => res.json())
+      .then(json => setShippingData(json.data || []));
+  }, []);
 
-  async function loadData() {
-    try {
-      const { data } = await supabase
-        .from("safka_products")
-        .select(`
-          name,
-          price,
-          sale_price,
-          images_urls,
-          property_id,
-          safka_id
-        `)
-        .eq("safka_id", productId)
-        .single();
+  async function submitOrder(e: React.FormEvent) {
+    e.preventDefault();
+    if (!selectedGov || !selectedCity) return alert("يرجى اختيار المحافظة والمدينة");
 
-      setProduct(data);
+    setSending(true);
 
-      const shippingRes =
-        await fetch("/api/shipping");
-
-      const shippingJson =
-        await shippingRes.json();
-
-      if (shippingJson?.data) {
-        setShippingData(
-          shippingJson.data
-        );
-      }
-    } catch (err) {
-      console.log(err);
-    }
-
-    setLoading(false);
-  }
-
-  if (loading) {
-    return (
-      <div className="p-10 text-center">
-        جاري التحميل...
-      </div>
-    );
-  }
-
-  if (!product) {
-    return (
-      <div className="p-10 text-center text-red-500">
-        المنتج غير موجود
-      </div>
-    );
-  }
-
-  const image =
-    product.images_urls?.[0] ||
-    "/no-image.png";
-
-  const productPrice =
-    Number(product.sale_price || 0) > 0
-      ? Number(product.sale_price)
-      : Number(product.price);
-
-  const shippingPrice =
-    Number(selectedGov?.price || 0);
-
-  const total =
-    productPrice + shippingPrice;
-
-  const cities =
-    selectedGov?.cities || [];
-
-  async function submitOrder() {
-    if (
-      !clientName ||
-      !phone1 ||
-      !address ||
-      !selectedGov ||
-      !selectedCity
-    ) {
-      alert(
-        "يرجى استكمال البيانات"
-      );
-      return;
-    }
+    const orderPayload = {
+      client_name: formData.client_name,
+      client_phone1: formData.client_phone1,
+      client_address: formData.client_address,
+      shipping_governorate: selectedGov._id,
+      city: selectedCity.id, // نرسل الـ id الخاص بالمدينة كما في مثال الـ API
+      items: items.map(item => ({
+        product: item.safka_id,
+        property: item.property_id || null,
+        qty: String(item.quantity || 1) // الـ API يتوقعها string
+      })),
+      total: String(grandTotal), // الـ API يتوقعها string
+      note: formData.note
+    };
 
     try {
-      setSending(true);
+      const res = await fetch("/api/v1/public/orders", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "api-safka-key": process.env.NEXT_PUBLIC_SAFKA_API_KEY || ""
+        },
+        body: JSON.stringify(orderPayload),
+      });
 
-      const response = await fetch(
-        "/api/checkout",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-
-          body: JSON.stringify({
-  client_name: clientName,
-
-  client_phone1: phone1,
-
-  client_phone2: phone2,
-
-  client_address: address,
-
-  shipping_governorate:
-    selectedGov._id,
-
-  city:
-    Number(selectedCity),
-
-  note,
-
-  total,
-
-  commission: 0,
-
- 
-
-            product_id:
-              product.safka_id,
-
-            property_id:
-              product.property_id,
-
-            qty: 1,
-          }),
-        }
-      );
-
-      const data =
-        await response.json();
-
-      console.log(data);
-
-      if (data?.success) {
-        alert(
-          "✅ تم إرسال الطلب بنجاح"
-        );
+      const result = await res.json();
+      if (result.success) {
+        alert("✅ تم إنشاء الطلب بنجاح! رقم الطلب: " + result.data.serial_number);
       } else {
-        alert(
-          data?.message ||
-            "فشل إرسال الطلب"
-        );
+        alert("خطأ: " + JSON.stringify(result));
       }
     } catch (err) {
-      console.log(err);
-
-      alert(
-        "حدث خطأ أثناء إرسال الطلب"
-      );
+      alert("حدث خطأ أثناء الاتصال بالخادم");
     } finally {
       setSending(false);
     }
   }
 
   return (
-    <main className="min-h-screen bg-slate-100 py-10">
-
-      <div className="max-w-3xl mx-auto bg-white rounded-3xl p-8 shadow-sm">
-
-        <h1 className="text-3xl font-black text-center mb-8">
-          إتمام الطلب
-        </h1>
-
-        <div className="flex flex-col items-center gap-4 mb-10">
-
-          <img
-            src={image}
-            alt={product.name}
-            className="w-60 h-60 object-contain"
-          />
-
-          <h2 className="text-2xl font-bold text-center">
-            {product.name}
-          </h2>
-
-          <div className="text-3xl font-black text-emerald-600">
-            {productPrice} ج.م
+    <main className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-3xl">
+      <h1 className="text-2xl font-bold mb-6 text-center">إتمام الطلب</h1>
+      
+      <div className="space-y-4 mb-6">
+        {items.map((item, i) => (
+          <div key={i} className="flex gap-4 items-center border-b pb-4">
+            <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-lg" />
+            <div>
+              <p className="font-bold">{item.name}</p>
+              <p>{Number(item.price).toLocaleString()} ج.م × {item.quantity || 1}</p>
+            </div>
           </div>
-
-        </div>
-
-        <div className="space-y-4">
-
-          <input
-            type="text"
-            placeholder="الاسم بالكامل"
-            value={clientName}
-            onChange={(e) =>
-              setClientName(
-                e.target.value
-              )
-            }
-            className="w-full border rounded-xl p-3"
-          />
-
-          <input
-            type="text"
-            placeholder="رقم الهاتف"
-            value={phone1}
-            onChange={(e) =>
-              setPhone1(
-                e.target.value
-              )
-            }
-            className="w-full border rounded-xl p-3"
-          />
-
-          <input
-            type="text"
-            placeholder="رقم هاتف بديل"
-            value={phone2}
-            onChange={(e) =>
-              setPhone2(
-                e.target.value
-              )
-            }
-            className="w-full border rounded-xl p-3"
-          />
-
-          <textarea
-            placeholder="العنوان بالتفصيل"
-            value={address}
-            onChange={(e) =>
-              setAddress(
-                e.target.value
-              )
-            }
-            className="w-full border rounded-xl p-3"
-          />
-
-          <select
-            className="w-full border rounded-xl p-3"
-            value={selectedGov?._id || ""}
-            onChange={(e) => {
-
-              const gov =
-                shippingData.find(
-                  (item) =>
-                    item._id ===
-                    e.target.value
-                );
-
-              setSelectedGov(gov);
-
-              setSelectedCity("");
-            }}
-          >
-            <option value="">
-              اختر المحافظة
-            </option>
-
-            {shippingData.map(
-              (gov) => (
-                <option
-                  key={gov._id}
-                  value={gov._id}
-                >
-                  {gov.governorateNameAr}
-                  {" - "}
-                  {gov.price}
-                  ج.م
-                </option>
-              )
-            )}
-          </select>
-
-          <select
-            value={selectedCity}
-            onChange={(e) =>
-              setSelectedCity(
-                e.target.value
-              )
-            }
-            disabled={!selectedGov}
-            className="w-full border rounded-xl p-3"
-          >
-            <option value="">
-              اختر المدينة
-            </option>
-
-            {cities.map((city: any) => (
-  <option
-    key={city.id}
-    value={city.id}
-  >
-    {city.city_name_ar}
-  </option>
-))}
-          </select>
-
-          <textarea
-            placeholder="ملاحظات الطلب"
-            value={note}
-            onChange={(e) =>
-              setNote(
-                e.target.value
-              )
-            }
-            className="w-full border rounded-xl p-3"
-          />
-
-        </div>
-
-        <div className="mt-8 border rounded-2xl p-5 bg-slate-50">
-
-          <div className="flex justify-between mb-3">
-            <span>
-              سعر المنتج
-            </span>
-
-            <span>
-              {productPrice} ج.م
-            </span>
-          </div>
-
-          <div className="flex justify-between mb-3">
-            <span>الشحن</span>
-
-            <span>
-              {shippingPrice} ج.م
-            </span>
-          </div>
-
-          <hr />
-
-          <div className="flex justify-between mt-4 text-2xl font-black">
-            <span>
-              الإجمالي
-            </span>
-
-            <span>
-              {total} ج.م
-            </span>
-          </div>
-
-        </div>
-
-        <button
-          onClick={submitOrder}
-          disabled={sending}
-          className="
-            w-full
-            mt-8
-            bg-emerald-600
-            hover:bg-emerald-700
-            text-white
-            py-4
-            rounded-2xl
-            font-bold
-          "
-        >
-          {sending
-            ? "جاري إرسال الطلب..."
-            : "تأكيد الطلب"}
-        </button>
-
+        ))}
       </div>
 
+      <form onSubmit={submitOrder} className="space-y-4">
+        <input className="w-full p-3 border rounded-xl" placeholder="الاسم" required onChange={e => setFormData({...formData, client_name: e.target.value})} />
+        <input className="w-full p-3 border rounded-xl" placeholder="الهاتف" required onChange={e => setFormData({...formData, client_phone1: e.target.value})} />
+        
+        <select className="w-full p-3 border rounded-xl" onChange={e => setSelectedGov(shippingData.find(g => g._id === e.target.value))}>
+          <option value="">اختر المحافظة</option>
+          {shippingData.map(g => <option key={g._id} value={g._id}>{g.governorateNameAr}</option>)}
+        </select>
+
+        {selectedGov && (
+          <select className="w-full p-3 border rounded-xl" onChange={e => setSelectedCity(selectedGov.cities.find((c: any) => c.id == e.target.value))}>
+            <option value="">اختر المدينة</option>
+            {selectedGov.cities.map((c: any) => <option key={c.id} value={c.id}>{c.city_name_ar}</option>)}
+          </select>
+        )}
+
+        <input className="w-full p-3 border rounded-xl" placeholder="العنوان بالتفصيل" required onChange={e => setFormData({...formData, client_address: e.target.value})} />
+        <textarea className="w-full p-3 border rounded-xl" placeholder="ملاحظات" onChange={e => setFormData({...formData, note: e.target.value})} />
+
+        <div className="bg-gray-50 p-4 rounded-xl space-y-2 text-sm">
+          <div className="flex justify-between"><span>إجمالي المنتجات:</span> <span>{productsTotal.toLocaleString()} ج.م</span></div>
+          <div className="flex justify-between text-emerald-600"><span>الشحن:</span> <span>{shippingCost.toLocaleString()} ج.م</span></div>
+          <div className="flex justify-between font-bold text-lg border-t pt-2"><span>الإجمالي:</span> <span>{grandTotal.toLocaleString()} ج.م</span></div>
+        </div>
+
+        <button disabled={sending} className="w-full bg-black text-white p-4 rounded-2xl font-bold">
+          {sending ? "جاري الإرسال..." : "تأكيد الطلب"}
+        </button>
+      </form>
     </main>
   );
 }
