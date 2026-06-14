@@ -40,13 +40,13 @@ export async function POST(req: Request) {
       items: groupedItems
     };
 
-    // 3. الإرسال للرابط الرسمي
+    // 3. الإرسال للرابط الرسمي مع تصحيح اسم الترويسة (Header)
     const response = await fetch("https://api.safka-eg.com/api/v1/public/orders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        // ملاحظة: تأكد أن المفتاح هنا هو المفتاح الصحيح الخاص بـ Public API
-        "api-safaka-key": "sk_535290c581ff6650034afb4ce7aee5cb1e2251cf2e4a27c0e955dcd216ce4a6b"
+        // تصحيح الترويسة لتصبح api-safka-key كما طلب النظام في رسالة الخطأ
+        "api-safka-key": "sk_535290c581ff6650034afb4ce7aee5cb1e2251cf2e4a27c0e955dcd216ce4a6b"
       },
       body: JSON.stringify(orderData),
     });
