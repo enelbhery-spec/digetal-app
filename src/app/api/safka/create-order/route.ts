@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     const response = await fetch("https://api.safka-eg.com/api/v1/public/orders", {
       method: "POST",
       headers: {
-        "api-safaka-key": process.env.API_SAFKA_KEY || "", 
+        "api-safaka-key":"sk_535290c581ff6650034afb4ce7aee5cb1e2251cf2e4a27c0e955dcd216ce4a6b", 
         "Content-Type": "application/json",
       },
       body: JSON.stringify(orderData),
