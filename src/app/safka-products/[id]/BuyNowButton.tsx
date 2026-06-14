@@ -6,18 +6,29 @@ import { useCartStore } from "@/store/useCart";
 
 type Props = {
   productId: string;
+  safka_id: string; // أضفنا هذا لتلقي معرف المنتج الخاص بصفقة
   name: string;
   price: number;
   image: string;
   category: string;
 };
 
-export default function BuyNowButton({ productId, name, price, image, category }: Props) {
+export default function BuyNowButton({ productId, safka_id, name, price, image, category }: Props) {
   const router = useRouter();
-  const { addItem, toggleCart } = useCartStore(); // استيراد toggleCart أيضاً
+  const { addItem, toggleCart } = useCartStore();
   const [loading, setLoading] = useState(false);
 
-  const productData = { id: productId, name, price, image, category };
+  // تجهيز بيانات المنتج لتطابق الـ interface الجديد في useCart
+  const productData = { 
+    id: productId, 
+    safka_id, 
+    name, 
+    price, 
+    image, 
+    category,
+    quantity: 1,
+    property_id: null 
+  };
 
   async function handleBuy() {
     setLoading(true);
