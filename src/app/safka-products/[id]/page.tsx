@@ -11,9 +11,7 @@ type Props = {
 export default async function ProductDetailsPage({ params }: Props) {
   const { id } = await params;
 
-  // =========================
-  // جلب المنتج
-  // =========================
+  // جلب المنتج من قاعدة البيانات
   const { data: product, error } = await supabase
     .from("safka_products")
     .select(`
@@ -34,9 +32,7 @@ export default async function ProductDetailsPage({ params }: Props) {
     notFound();
   }
 
-  // =========================
-  // تجهيز البيانات
-  // =========================
+  // تجهيز البيانات للحسابات
   const images = Array.isArray(product.images_urls) ? product.images_urls : [];
   const mainImage = images[0] || "/no-image.png";
 
@@ -112,9 +108,10 @@ export default async function ProductDetailsPage({ params }: Props) {
                 </div>
               )}
 
-              {/* ✅ زر الشراء مع تمرير كامل البيانات المطلوبة للسلة */}
+              {/* زر الشراء - تأكد من تمرير safka_id بشكل صحيح */}
               <BuyNowButton
-                productId={product.safka_id}
+                productId={product.id}
+                safka_id={product.safka_id}
                 name={product.name}
                 price={finalPrice}
                 image={mainImage}
