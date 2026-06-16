@@ -96,7 +96,7 @@ export default function SafkaProductCard({ product }: SafkaProductCardProps) {
           {/* الأزرار */}
           <div className="flex gap-2 mt-auto">
             <Link href={detailsUrl} prefetch={false} className="flex-[2] py-4 rounded-3xl text-center text-base font-bold bg-slate-950 hover:bg-emerald-600 text-white flex items-center justify-center gap-2 transition-all">
-              <ShoppingBag size={18} /> تسوق الآن
+              <ShoppingBag size={18} /> شاهد التفاصيل 
             </Link>
 
             {videoId && (

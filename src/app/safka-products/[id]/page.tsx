@@ -38,6 +38,7 @@ export default async function ProductDetailsPage({ params }: Props) {
 
   const costPrice = Number(product.price ?? 0);
   const salePrice = Number(product.sale_price ?? 0);
+  // السعر النهائي هو سعر البيع إذا وجد وكان أكبر من صفر، وإلا نستخدم السعر الأساسي
   const finalPrice = salePrice > 0 ? salePrice : costPrice;
 
   const discount =
@@ -108,15 +109,17 @@ export default async function ProductDetailsPage({ params }: Props) {
                 </div>
               )}
 
-              {/* زر الشراء - تأكد من تمرير safka_id بشكل صحيح */}
+              {/* زر الشراء - تم تمرير جميع الخصائص المطلوبة */}
               <BuyNowButton
-                productId={product.id}
-                safka_id={product.safka_id}
-                name={product.name}
-                price={finalPrice}
-                image={mainImage}
-                category="منتجات متنوعة"
-              />
+  productId={product.id}
+  safka_id={product.safka_id}
+  property_id={product.property_id}
+  name={product.name}
+  price={costPrice}
+  sale_price={finalPrice}
+  image={mainImage}
+  category="منتجات متنوعة"
+/>
             </div>
           </div>
         </div>

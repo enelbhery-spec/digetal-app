@@ -11,13 +11,14 @@ export default function CheckoutPage() {
   const [formData, setFormData] = useState({
     client_name: "",
     client_phone1: "",
+    client_phone2: "",
     client_address: "",
     note: ""
   });
   const [sending, setSending] = useState(false);
 
   const productsTotal = items.reduce(
-    (sum, item) => sum + (Number(item.price) * Number(item.quantity || 1)),
+    (sum, item) => sum + (Number(item.sale_price) * Number(item.quantity || 1)),
     0
   );
   const shippingCost = selectedGov ? Number(selectedGov.price || 0) : 0;
@@ -32,13 +33,21 @@ export default function CheckoutPage() {
   async function submitOrder(e: React.FormEvent) {
     e.preventDefault();
     if (!selectedGov || !selectedCity) return alert("يرجى اختيار المحافظة والمدينة");
+    if (!/^01[0-9]{9}$/.test(formData.client_phone1)) {
+      return alert("⚠️ رقم الهاتف غير صحيح، يجب أن يبدأ بـ 01 ويتكون من 11 رقمًا");
+    }
+
     setSending(true);
 
     // ✅ تجميع المنتجات مع تحقق من وجود safka_id
+    console.log(
+  "🛒 CART ITEMS:",
+  JSON.stringify(items, null, 2)
+);
     const groupedItems = items.reduce((acc: any, item: any) => {
       if (!item.safka_id) {
         console.error("❌ المنتج لا يحتوي على safka_id:", item);
-        return acc; // تجاهل المنتج الغلط
+        return acc;
       }
 
       const key = `${item.safka_id}-${item.property_id || "no-prop"}`;
@@ -64,13 +73,11 @@ export default function CheckoutPage() {
       return;
     }
 
-    console.log("Items being sent to Safka:", itemsArray);
-
     const orderPayload = {
       items: itemsArray,
       client_name: formData.client_name,
       client_phone1: formData.client_phone1,
-      client_phone2: "",
+      client_phone2: formData.client_phone2,
       client_address: formData.client_address,
       page_id: null,
       total: String(grandTotal),
@@ -112,10 +119,13 @@ export default function CheckoutPage() {
             <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-lg" />
             <div className="flex-1">
               <p className="font-bold">{item.name}</p>
-              <p>{Number(item.price).toLocaleString()} ج.م</p>
+              <p>{Number(item.sale_price).toLocaleString()} ج.م</p>
             </div>
             <button
-              onClick={() => removeItem(item.id, item.property_id)}
+              onClick={() => removeItem(
+  item.safka_id,
+  item.property_id
+)}
               className="text-red-500 text-sm"
             >
               حذف
@@ -133,9 +143,14 @@ export default function CheckoutPage() {
         />
         <input
           className="w-full p-3 border rounded-xl"
-          placeholder="الهاتف"
+          placeholder="الهاتف الأساسي"
           required
           onChange={e => setFormData({ ...formData, client_phone1: e.target.value })}
+        />
+        <input
+          className="w-full p-3 border rounded-xl"
+          placeholder="هاتف إضافي (اختياري)"
+          onChange={e => setFormData({ ...formData, client_phone2: e.target.value })}
         />
 
         <select

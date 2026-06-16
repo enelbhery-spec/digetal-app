@@ -1,25 +1,44 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-// تعريف كائن المنتج بدقة لضمان وجود المعرفات المطلوبة لصفقة
 export interface CartItem {
-  id: string;           // المعرف الفريد للمنتج في قاعدة بياناتك
-  safka_id: string;     // معرف المنتج في صفقة (مهم جداً للطلب)
+  safka_id: string;
+  property_id?: string | null;
+
   name: string;
-  price: number;
+  sale_price: number;
   image: string;
-  category: string;
-  property_id?: string | null; // معرف الخاصية (Variant ID) - قد يكون null للمنتجات البسيطة
+
   quantity: number;
+
+  properties?: {
+    _id: string;
+    key: string;
+    value: number;
+    sale_price: number;
+    is_available: boolean;
+  }[];
 }
 
 interface CartStore {
   items: CartItem[];
   isOpen: boolean;
+
   addItem: (item: CartItem) => void;
-  removeItem: (id: string, property_id?: string | null) => void; // تم تعديلها لتكون أدق
+
+  removeItem: (
+    safka_id: string,
+    property_id?: string | null
+  ) => void;
+
+  updateQuantity: (
+    safka_id: string,
+    property_id: string | null | undefined,
+    quantity: number
+  ) => void;
+
   toggleCart: (status: boolean) => void;
-  clearCart: () => void; // إضافة دالة لتصفير السلة بعد نجاح الطلب
+  clearCart: () => void;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -27,39 +46,76 @@ export const useCartStore = create<CartStore>()(
     (set) => ({
       items: [],
       isOpen: false,
-      
-      addItem: (item) => 
+
+      addItem: (item) =>
         set((state) => {
-          // نعتمد في التمييز على الـ ID + الـ property_id لضمان دقة الاختيار
           const existingItemIndex = state.items.findIndex(
-            (i) => i.id === item.id && i.property_id === item.property_id
+            (i) =>
+              i.safka_id === item.safka_id &&
+              i.property_id === item.property_id
           );
 
           if (existingItemIndex > -1) {
             const newItems = [...state.items];
-            newItems[existingItemIndex].quantity += item.quantity;
-            return { items: newItems, isOpen: true };
+
+            newItems[existingItemIndex].quantity +=
+              item.quantity;
+
+            return {
+              items: newItems,
+              isOpen: true,
+            };
           }
 
-          // إضافة المنتج كاملاً بكافة تفاصيله (safka_id, property_id)
-          return { 
+          return {
             items: [...state.items, item],
-            isOpen: true 
+            isOpen: true,
           };
         }),
 
-      // تعديل الحذف ليكون دقيقاً بناءً على معرف المنتج والخاصية
-      removeItem: (id, property_id) => 
-        set((state) => ({ 
-          items: state.items.filter((i) => !(i.id === id && i.property_id === property_id)) 
+      updateQuantity: (
+        safka_id,
+        property_id,
+        quantity
+      ) =>
+        set((state) => ({
+          items: state.items.map((item) =>
+            item.safka_id === safka_id &&
+            item.property_id === property_id
+              ? {
+                  ...item,
+                  quantity: Math.max(1, quantity),
+                }
+              : item
+          ),
         })),
 
-      toggleCart: (status) => set({ isOpen: status }),
-      
-      clearCart: () => set({ items: [] }),
+      removeItem: (
+        safka_id,
+        property_id
+      ) =>
+        set((state) => ({
+          items: state.items.filter(
+            (item) =>
+              !(
+                item.safka_id === safka_id &&
+                item.property_id === property_id
+              )
+          ),
+        })),
+
+      toggleCart: (status) =>
+        set({
+          isOpen: status,
+        }),
+
+      clearCart: () =>
+        set({
+          items: [],
+        }),
     }),
     {
-      name: 'cart-storage', // هذا هو المفتاح الذي يحفظ البيانات في LocalStorage
+      name: "cart-storage",
     }
   )
 );

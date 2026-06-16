@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
+// تهيئة Supabase للوصول إلى قاعدة البيانات إذا احتجت للتحقق من المنتجات مستقبلاً
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -9,41 +10,42 @@ const supabase = createClient(
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const cartItems = body.items;
+    const { 
+      items, 
+      client_name, 
+      client_phone1, 
+      client_phone2, 
+      client_address, 
+      shipping_governorate, 
+      city, 
+      total, 
+      note 
+    } = body;
 
-    // تحقق من الحقول الأساسية
-    if (!body.client_name || !body.client_phone1 || !Array.isArray(cartItems)) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
+    // 1. التحقق من وجود البيانات الأساسية المطلوبة
+    if (!client_name || !client_phone1 || !items || !Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ 
+        success: false, 
+        message: "بيانات العميل أو السلة ناقصة أو غير صحيحة" 
+      }, { status: 400 });
     }
 
-    // استخراج الـ IDs من السلة
-    const productIds = cartItems.map((i: any) => i.id).filter(Boolean);
-
-    // جلب تفاصيل المنتجات من الداتابيز
-    const { data: products, error } = await supabase
-      .from("safka_products")
-      .select("id, safka_id, property_id")
-      .in("id", productIds);
-
-    if (error) throw error;
-
-    // تجهيز الـ items بالشكل المطلوب
-    const formattedItems = cartItems.map((item: any) => {
-      const dbProduct = products?.find(
-        (p) => String(p.id) === String(item.id)
-      );
-
-      return {
-        product: String(dbProduct?.safka_id || item.safka_id),
-        property: dbProduct?.property_id || item.property_id || "",
-        qty: String(item.qty || 1),
+    // 2. تنسيق مصفوفة المنتجات (تأكد أن كل منتج في السلة يحتوي على product و qty)
+    const formattedItems = items.map((item: any) => {
+      const formatted: any = {
+        product: String(item.product || ""),
+        qty: String(item.qty || "1"),
       };
-    });
+      
+      // إضافة الخاصية (property) فقط إذا كانت موجودة وليست نصاً فارغاً
+      if (item.property && item.property !== "undefined" && item.property !== "null") {
+        formatted.property = String(item.property);
+      }
+      
+      return formatted;
+    }).filter(item => item.product !== ""); // استبعاد أي منتج مجهول
 
-    // بناء الـ payload النهائي حسب الـ API Docs
+    // 3. بناء الـ Payload النهائي حسب توثيق صفقة
     const payload = {
       items: formattedItems,
       client_name: body.client_name,
@@ -56,30 +58,45 @@ export async function POST(req: Request) {
       shipping_governorate: String(body.shipping_governorate), // لازم يكون الـ _id الخاص بالـ pricing document
       city: String(body.city), // لازم يكون id المدينة
     };
+    
 
-    // اطبع الـ payload للتأكد
-    console.log("Payload being sent:", payload);
+    console.log("🚀 الإرسال النهائي لصفقة:", JSON.stringify(payload, null, 2));
 
-    // إرسال الطلب لـ Safka API
-    const response = await fetch(
-      "https://api.safka-eg.com/api/v1/public/orders",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "api-safka-key": process.env.SAFKA_API_KEY!,
-        },
-        body: JSON.stringify(payload),
-      }
-    );
+    // 4. إرسال الطلب
+    const apiKey = process.env.API_SAFKA_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ success: false, message: "API Key مفقود" }, { status: 500 });
+    }
+
+    const response = await fetch("https://api.safka-eg.com/api/v1/public/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+          "api-safka-key": process.env.API_SAFKA_KEY!,
+      },
+      body: JSON.stringify(payload)
+    });
 
     const result = await response.json();
-    return NextResponse.json(result, { status: response.status });
-  } catch (error) {
-    console.error("خطأ:", error);
-    return NextResponse.json(
-      { success: false, message: "فشل إرسال الطلب" },
-      { status: 500 }
-    );
+
+    // 5. معالجة الرد
+    if (!response.ok) {
+      console.error("❌ خطأ من صفقة:", result);
+      return NextResponse.json({ 
+        success: false, 
+        message: result.message || "حدث خطأ في منصة صفقة",
+        details: result.errors || result 
+      }, { status: response.status });
+    }
+
+    return NextResponse.json({ success: true, ...result });
+
+  } catch (error: any) {
+    console.error("❌ خطأ داخلي في الـ Route:", error);
+    return NextResponse.json({ 
+      success: false, 
+      message: "فشل في معالجة الطلب على السيرفر", 
+      error: error.message 
+    }, { status: 500 });
   }
 }
