@@ -39,7 +39,7 @@ export default function Categories() {
           setCategories(data || []);
         } else {
           const { data, error } = await supabase
-            .from('products')
+            .from('safka_products')
             .select(`
               categories (
                 id,

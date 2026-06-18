@@ -262,7 +262,7 @@ export default function ProductCard({
 
                 <ShoppingBag size={16} />
 
-                تسوق الآن
+               شاهد التفاصيل
 
               </a>
             ) : (
