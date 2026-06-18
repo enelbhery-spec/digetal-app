@@ -23,27 +23,42 @@ const tajawal = Tajawal({
   variable: "--font-tajawal",
 });
 
-// ... (Metadata و Viewport كما هما دون تغيير)
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ar" dir="rtl" className={`scroll-smooth ${tajawal.variable}`}>
       <head>
-        {/* (كل الـ Scripts والـ Meta Tags الخاصة بك كما هي) */}
+        {/* ✅ Google Tag (gtag.js) */}
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-FGK2Z5C8W8"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-FGK2Z5C8W8');
+          `}
+        </Script>
+
         <meta name="facebook-domain-verification" content="dnug90dlldt2djikp2yjdhj88pbekd" />
-        {/* ... بقية الـ Scripts ... */}
       </head>
 
       <body className={`${tajawal.className} min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased`}>
-        {/* (الـ noscript الخاص بالفيسبوك بيكسل) */}
+        {/* ✅ Facebook Pixel NoScript - تم استخدام الكلاس fb-pixel-noscript المضاف في globals.css */}
         <noscript>
-          <img height="1" width="1" style={{ display: "none" }} src="https://www.facebook.com/tr?id=1326805792177297&ev=PageView&noscript=1" alt="fb-pixel" />
+          <img 
+            height="1" 
+            width="1" 
+            className="fb-pixel-noscript" 
+            src="https://www.facebook.com/tr?id=1326805792177297&ev=PageView&noscript=1" 
+            alt="fb-pixel" 
+          />
         </noscript>
 
         <CompareProvider>
-          {/* ✅ تم إضافة السلة هنا */}
           <CartDrawer />
-          
           <Header />
           <AppInstallLoader>
             <main className="flex-1 container mx-auto px-4">{children}</main>

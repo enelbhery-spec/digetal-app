@@ -74,7 +74,6 @@
   }
 }
 
-
 @layer base {
   * {
     @apply border-border;
@@ -82,16 +81,19 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* الكلاس المضاف لإخفاء الـ noscript الخاص بفيسبوك */
+  .fb-pixel-noscript {
+    display: none;
+  }
 }
-@layer components {
 
+@layer components {
   .pagination {
     @apply flex justify-center items-center gap-2 mt-8 flex-wrap;
   }
 
   .page-btn {
     @apply min-w-[40px] h-[40px] flex items-center justify-center rounded-lg border text-sm font-semibold transition-all duration-200;
-
     background-color: hsl(var(--card));
     color: hsl(var(--foreground));
     border-color: hsl(var(--border));
@@ -114,5 +116,4 @@
     opacity: 0.4;
     pointer-events: none;
   }
-
 }
