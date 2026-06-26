@@ -37,22 +37,11 @@ export default function ReturnsPage() {
           </p>
         </section>
 
-        {/* إخلاء مسؤولية */}
-        <section className="mb-8 bg-yellow-50 border border-yellow-200 p-6 rounded-xl">
-          <h2 className="text-xl font-bold mb-4 text-yellow-800">
-            1. إخلاء مسؤولية مهم
-          </h2>
-          <p className="text-gray-700 leading-relaxed">
-            موقع ExtraCode هو منصة تسويق بالعمولة (Affiliate)، ولا يقوم ببيع المنتجات
-            بشكل مباشر. جميع عمليات الشراء تتم عبر متاجر خارجية مثل أمازون ونون،
-            وبالتالي فإن سياسات الإرجاع والاستبدال تخضع بالكامل لهذه المتاجر.
-          </p>
-        </section>
 
         {/* طريقة الإرجاع */}
         <section className="mb-8">
           <h2 className="text-xl font-bold mb-4 text-blue-700">
-            2. كيفية إرجاع المنتج
+            1. كيفية إرجاع المنتج
           </h2>
           <p className="text-gray-600 leading-relaxed mb-3">
             لإرجاع أي منتج، يجب تسجيل الدخول إلى حسابك في المتجر الذي تم الشراء منه،
@@ -60,43 +49,11 @@ export default function ReturnsPage() {
           </p>
         </section>
 
-        {/* روابط */}
-        <section className="mb-8 bg-blue-50 p-6 rounded-xl border border-blue-100">
-          <h2 className="text-lg font-bold mb-4 text-blue-900">
-            3. روابط الإرجاع الرسمية
-          </h2>
-
-          <ul className="space-y-4">
-            <li>
-              📦{" "}
-              <a
-                href="https://www.amazon.eg/gp/help/customer/display.html?nodeId=G508510"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-700 font-medium hover:underline"
-              >
-                مركز مساعدة أمازون - الإرجاع واسترداد الأموال
-              </a>
-            </li>
-
-            <li>
-              📦{" "}
-              <a
-                href="https://www.noon.com/egypt-ar/return-policy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-700 font-medium hover:underline"
-              >
-                سياسة الإرجاع في نون
-              </a>
-            </li>
-          </ul>
-        </section>
 
         {/* ملاحظات */}
         <section className="mb-8">
           <h2 className="text-xl font-bold mb-4 text-blue-700">
-            4. ملاحظات هامة
+            2. ملاحظات هامة
           </h2>
           <ul className="list-disc pr-6 text-gray-600 space-y-2">
             <li>مدة الإرجاع تختلف حسب كل متجر.</li>
