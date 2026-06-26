@@ -37,19 +37,6 @@ export default function PrivacyPolicy() {
           </p>
         </section>
 
-        {/* Affiliate */}
-        <section className="mb-8 border-r-4 border-green-500 pr-4 bg-green-50 py-4 rounded">
-          <h2 className="text-xl font-bold mb-4 text-green-700">
-            2. روابط التسويق بالعمولة (Affiliate Links)
-          </h2>
-          <p className="leading-relaxed text-gray-700">
-            يحتوي موقع ExtraCode على روابط لمنتجات في متاجر خارجية مثل أمازون، نون، شي إن وغيرها.
-            عند النقر على هذه الروابط وإتمام عملية شراء، قد نحصل على عمولة بسيطة دون أي تكلفة إضافية عليك.
-          </p>
-          <p className="text-sm text-gray-500 mt-2">
-            ⚠️ نحن لا نتحكم في المنتجات أو الأسعار داخل هذه المتاجر.
-          </p>
-        </section>
 
         {/* Cookies */}
         <section className="mb-8">
@@ -57,7 +44,7 @@ export default function PrivacyPolicy() {
             3. ملفات تعريف الارتباط (Cookies)
           </h2>
           <p className="leading-relaxed text-gray-600">
-            نستخدم ملفات Cookies لتحسين الأداء، تحليل الاستخدام، وتتبع الروابط التابعة (Affiliate Tracking).
+            نستخدم ملفات Cookies لتحسين الأداء، تحليل الاستخدام، وتتبع الروابط التابعة .
             يمكنك تعطيل الكوكيز من إعدادات المتصفح، لكن قد يؤثر ذلك على بعض وظائف الموقع.
           </p>
         </section>

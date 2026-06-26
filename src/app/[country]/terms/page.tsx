@@ -24,19 +24,7 @@ export default function Terms() {
           </p>
         </section>
 
-        {/* Affiliate */}
-        <section className="mb-6 bg-blue-50 border border-blue-100 p-5 rounded-xl">
-          <h2 className="text-xl font-semibold mb-3 text-blue-800">
-            1. طبيعة الخدمة (التسويق بالعمولة)
-          </h2>
-          <p className="text-gray-700 leading-relaxed">
-            موقع <strong>ExtraCode</strong> هو منصة لعرض العروض والكوبونات
-            والمنتجات من متاجر خارجية مثل أمازون ونون. نحن نشارك في برامج
-            التسويق بالعمولة، مما يعني أننا قد نحصل على عمولة عند إتمام الشراء
-            من خلال الروابط الخاصة بنا، <strong>دون أي تكلفة إضافية عليك</strong>.
-          </p>
-        </section>
-
+        
         {/* Prices */}
         <section className="mb-6">
           <h2 className="text-xl font-semibold mb-3 text-gray-800">
@@ -56,33 +44,13 @@ export default function Terms() {
           </h2>
           <p className="text-gray-600 leading-relaxed">
             لا يقوم موقع ExtraCode ببيع المنتجات مباشرة. جميع عمليات الدفع،
-            الشحن، والاسترجاع تتم عبر المتاجر الخارجية (مثل أمازون أو نون).
+            الشحن، والاسترجاع تتم عبر المتجر  
             يرجى التواصل مع المتجر مباشرة لأي استفسار.
           </p>
         </section>
 
-        {/* Liability */}
-        <section className="mb-6">
-          <h2 className="text-xl font-semibold mb-3 text-gray-800">
-            4. حدود المسؤولية
-          </h2>
-          <p className="text-gray-600 leading-relaxed">
-            لا يتحمل الموقع أي مسؤولية عن جودة المنتجات أو تأخير الشحن أو
-            أي مشاكل تحدث بعد إتمام عملية الشراء، حيث أن العملية تتم بالكامل
-            عبر طرف ثالث.
-          </p>
-        </section>
-
-        {/* IP */}
-        <section className="mb-6">
-          <h2 className="text-xl font-semibold mb-3 text-gray-800">
-            5. الملكية الفكرية
-          </h2>
-          <p className="text-gray-600 leading-relaxed">
-            جميع العلامات التجارية والشعارات المعروضة هي ملك لأصحابها الأصليين،
-            وتستخدم لأغراض التوضيح فقط.
-          </p>
-        </section>
+        
+        
 
         {/* Contact */}
         <section className="mt-10 pt-6 border-t border-gray-200">

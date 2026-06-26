@@ -19,10 +19,8 @@ export default function HowToUsePage() {
           كيف تستخدم تريند ستور  للحصول على أفضل العروض؟
         </h1>
         <p className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
-          نوفر لك أقوى الخصومات والكوبونات من
-          <span className="font-bold text-orange-500 mx-1">Amazon</span>
-          و
-          <span className="font-bold text-yellow-500 mx-1">Noon</span>
+          نوفر لك أقوى الخصومات 
+         
           في مكان واحد لتوفير وقتك ومالك.
         </p>
       </div>
@@ -40,15 +38,7 @@ export default function HowToUsePage() {
           </p>
         </div>
 
-        <div className="bg-white p-8 rounded-2xl shadow-sm border hover:border-green-500 transition group">
-          <div className="bg-green-50 w-12 h-12 rounded-full flex items-center justify-center text-green-600 text-2xl font-bold mb-6 group-hover:bg-green-600 group-hover:text-white transition">
-            2
-          </div>
-          <h3 className="font-bold text-xl mb-3">انسخ كود الخصم</h3>
-          <p className="text-gray-500 text-sm leading-relaxed">
-            انسخ كود الخصم (إن وجد) للحصول على سعر أقل قبل الذهاب للمتجر.
-          </p>
-        </div>
+        
 
         <div className="bg-white p-8 rounded-2xl shadow-sm border hover:border-green-500 transition group">
           <div className="bg-green-50 w-12 h-12 rounded-full flex items-center justify-center text-green-600 text-2xl font-bold mb-6 group-hover:bg-green-600 group-hover:text-white transition">
@@ -75,15 +65,8 @@ export default function HowToUsePage() {
       <div className="mt-16 bg-gray-50 p-8 rounded-2xl border text-center">
         <h3 className="text-xl font-bold mb-4">هل موقع تريند ستور  آمن؟</h3>
         <p className="text-gray-600 max-w-3xl mx-auto italic">
-          نعم، نحن لا نقوم ببيع المنتجات أو طلب بيانات الدفع. يتم الشراء بالكامل
-          عبر مواقع المتاجر الرسمية مثل أمازون ونون.
+            نحن لا نقوم  طلب بيانات الدفع. يتم الشراء بالكامل الدفع عند الاستلام 
         </p>
-      </div>
-
-      {/* ✅ تنويه الأفلييت (مهم لجوجل) */}
-      <div className="mt-8 text-center text-xs text-gray-400 max-w-2xl mx-auto">
-        روابط الموقع هي روابط تسويق بالعمولة (Affiliate)، وقد نحصل على عمولة
-        عند الشراء دون أي تكلفة إضافية عليك.
       </div>
 
       {/* ✅ Structured Data */}
@@ -96,8 +79,7 @@ export default function HowToUsePage() {
             name: "طريقة استخدام تريند ستور ",
             step: [
               { "@type": "HowToStep", name: "ابحث عن المنتج" },
-              { "@type": "HowToStep", name: "انسخ كود الخصم" },
-              { "@type": "HowToStep", name: "انتقل للمتجر" },
+              { "@type": "HowToStep", name: "انتقل لصفحة المنتج " },
               { "@type": "HowToStep", name: "أكمل الشراء" },
             ],
           }),

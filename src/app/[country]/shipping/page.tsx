@@ -35,17 +35,6 @@ export default function Shipping() {
           </p>
         </section>
 
-        {/* إخلاء مسؤولية */}
-        <section className="mb-8 bg-yellow-50 border border-yellow-200 p-6 rounded-xl">
-          <h2 className="text-xl font-bold mb-4 text-yellow-800">
-            1. إخلاء مسؤولية
-          </h2>
-          <p className="text-gray-700 leading-relaxed">
-            موقع ExtraCode هو منصة تسويق بالعمولة (Affiliate) ولا يقوم ببيع المنتجات
-            أو شحنها بشكل مباشر. جميع عمليات الشحن والتوصيل تتم بواسطة المتاجر
-            الخارجية مثل أمازون ونون، وفقًا لسياسات كل متجر.
-          </p>
-        </section>
 
         {/* مدة التوصيل */}
         <section className="mb-8 border-t pt-6">
@@ -53,12 +42,12 @@ export default function Shipping() {
             2. مدة التوصيل
           </h2>
           <p className="text-gray-600 leading-relaxed">
-            تختلف مدة التوصيل حسب المتجر، المدينة، ونوع الشحن المختار. عادةً ما تتراوح
-            مدة الشحن بين:
+بعد إتمام خطوة التأكيد بنجاح، يتم شحن المنتج فوراً ليصل إلى العميل في فترة تتراوح بين يومين إلى خمسة أيام عمل كحد أقصى.
+
           </p>
 
           <ul className="list-disc pr-6 text-gray-600 mt-3 space-y-2">
-            <li>24 - 48 ساعة للشحن السريع</li>
+            <li>24 - 72 ساعة للشحن السريع</li>
             <li>2 - 5 أيام عمل للشحن العادي</li>
           </ul>
         </section>
@@ -74,7 +63,8 @@ export default function Shipping() {
           </p>
 
           <p className="mt-3 text-green-600 font-medium">
-            💡 نصيحة: تابع العروض وكوبونات الشحن المجاني التي نعرضها لتقليل التكلفة.
+            💡💡 نصيحة توفير: تكلفة الشحن ثابتة! أضف منتجًا آخر لتوفير مصاريف الشحن.
+
           </p>
         </section>
 
@@ -98,7 +88,9 @@ export default function Shipping() {
             <li>مواعيد التوصيل قد تختلف حسب العطلات الرسمية.</li>
             <li>قد تتأخر الشحنات في أوقات الضغط (العروض الكبرى).</li>
             <li>الشحن الدولي قد يستغرق وقتًا أطول.</li>
+            <li>في حال وصول المندوب ورفض العميل استلام الأوردر بعد المعاينة (لأي سبب غير عيوب التصنيع)، يتم تحصيل 50 جنيهاً فقط من العميل كرسوم شحن للمندوب..</li>
           </ul>
+
         </section>
 
         {/* تواصل */}
