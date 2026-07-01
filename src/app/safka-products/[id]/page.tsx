@@ -23,7 +23,9 @@ export default async function ProductDetailsPage({ params }: Props) {
         description,
         price,
         sale_price,
-        barcode
+        barcode,
+        video_id
+
       `)
     .eq("safka_id", id)
     .single();
@@ -45,9 +47,62 @@ export default async function ProductDetailsPage({ params }: Props) {
     costPrice > salePrice && salePrice > 0
       ? Math.round(((costPrice - salePrice) / costPrice) * 100)
       : 0;
+      const siteUrl = "https://www.extracode.online";
 
-  return (
-    <main className="min-h-screen bg-[#f5f5f5] py-5 sm:py-10 px-3 sm:px-4">
+const productUrl = `${siteUrl}/safka-products/${product.safka_id}`;
+
+const thumbnailUrl = mainImage;
+
+const videoEmbedUrl = product.video_id
+  ? `https://www.youtube.com/embed/${product.video_id}`
+  : "";
+
+const videoWatchUrl = product.video_id
+  ? `https://www.youtube.com/watch?v=${product.video_id}`
+  : "";
+  
+
+return (
+  <main className="min-h-screen bg-[#f5f5f5] py-5 sm:py-10 px-3 sm:px-4">
+
+    {product.video_id && (
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "VideoObject",
+
+            name: product.name,
+
+            description:
+              product.description
+                ?.replace(/<[^>]*>/g, "")
+                .substring(0, 300) || product.name,
+
+            thumbnailUrl: [thumbnailUrl],
+
+            uploadDate: new Date().toISOString(),
+
+            embedUrl: videoEmbedUrl,
+
+            contentUrl: videoWatchUrl,
+
+            url: productUrl,
+
+            publisher: {
+              "@type": "Organization",
+              name: "تريند ستور",
+              logo: {
+                "@type": "ImageObject",
+                url: `${siteUrl}/logo.png`,
+              },
+            },
+          }),
+        }}
+      />
+    )}
+
       <div className="max-w-7xl mx-auto">
         <div className="bg-white w-full rounded-[2rem] shadow-sm overflow-hidden border border-slate-100">
           <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-10 p-4 sm:p-6 lg:p-10">
@@ -108,22 +163,47 @@ export default async function ProductDetailsPage({ params }: Props) {
                   </div>
                 </div>
               )}
+              {/* فيديو المنتج */}
 
-              {/* زر الشراء - تم تمرير جميع الخصائص المطلوبة */}
-              <BuyNowButton
-  productId={product.id}
-  safka_id={product.safka_id}
-  property_id={product.property_id}
-  name={product.name}
-  price={costPrice}
-  sale_price={finalPrice}
-  image={mainImage}
-  category="منتجات متنوعة"
-/>
-            </div>
+              {/* فيديو المنتج */}
+              {product.video_id && (
+                <div className="mt-8">
+                  <h2 className="text-xl sm:text-2xl font-black mb-4 text-slate-900">
+                    🎥 فيديو المنتج
+                  </h2>
+
+                  <div className="overflow-hidden rounded-[2rem] border border-slate-200 shadow-lg bg-black">
+                    <div className="relative w-full pb-[56.25%]">
+                      <iframe
+                        className="absolute top-0 left-0 w-full h-full"
+                        src={`https://www.youtube.com/embed/${product.video_id}`}
+                        title={product.name || "فيديو المنتج"}
+                        loading="lazy"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* زر الشراء */}
+              <div className="mt-8">
+                <BuyNowButton
+                  productId={product.id}
+                  safka_id={product.safka_id}
+                  property_id={product.property_id}
+                  name={product.name}
+                  price={costPrice}
+                  sale_price={finalPrice}
+                  image={mainImage}
+                  category="منتجات متنوعة"
+                />
+              </div>            </div>
           </div>
         </div>
       </div>
+      
     </main>
   );
 }
