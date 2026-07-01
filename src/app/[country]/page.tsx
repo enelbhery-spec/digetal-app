@@ -6,6 +6,7 @@ import Pagination from "@/components/Pagination";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { Play } from "lucide-react";
+import SearchBar from "@/components/SearchBar";
 
 export const dynamic = "force-dynamic";
 
@@ -64,8 +65,16 @@ export default async function CountryPage({ params, searchParams }: Props) {
 
   return (
     <main className="bg-gray-50 min-h-screen pb-20" dir="rtl">
-      <div className="text-center pt-12"><h1 className="text-3xl md:text-5xl font-black">🛍️ تريند ستور مصر</h1></div>
+<div className="text-center pt-12">
+  <h1 className="text-3xl md:text-5xl font-black">
+    🛍️ تريند ستور مصر
+  </h1>
 
+  {/* شريط البحث */}
+  <div className="max-w-3xl mx-auto mt-8 px-4">
+    <SearchBar />
+  </div>
+</div>
       <div className="flex gap-3 flex-wrap justify-center mt-10 px-6">
         <Link href={`/${countrySlug}`} className={`px-6 py-2 rounded-xl border ${!categoryFilter ? "bg-emerald-600 text-white" : "bg-white"}`}>الكل</Link>
         {activeCategories?.map((cat: any) => <Link key={cat.id} href={`/${countrySlug}?category=${cat.slug}`} className={`px-5 py-2 rounded-xl border ${categoryFilter === cat.slug ? "bg-emerald-600 text-white" : "bg-white"}`}>{cat.title}</Link>)}
