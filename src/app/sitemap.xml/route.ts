@@ -51,21 +51,70 @@ export async function GET() {
   const { data: safkaProducts, error: safkaError } =
     await supabase
       .from("safka_products")
-      .select("id, created_at");
+      .select(`
+        safka_id,
+        name,
+        description,
+        main_image,
+        video_id,
+        created_at
+      `);
 
   if (safkaError) {
     console.error("Safka Products Error:", safkaError);
   }
 
   safkaProducts?.forEach((product) => {
+    if (!product.safka_id) return;
+
+    const image =
+      product.main_image?.startsWith("http")
+        ? product.main_image
+        : `${baseUrl}${product.main_image || "/no-image.png"}`;
+
     urls.push(`
       <url>
-        <loc>${baseUrl}/safka-products/${product.id}</loc>
+
+        <loc>${baseUrl}/safka-products/${product.safka_id}</loc>
+
         <lastmod>${new Date(
           product.created_at || Date.now()
         ).toISOString()}</lastmod>
+
         <changefreq>weekly</changefreq>
+
         <priority>0.8</priority>
+
+        ${
+          product.video_id
+            ? `
+        <video:video>
+
+          <video:thumbnail_loc>${image}</video:thumbnail_loc>
+
+          <video:title><![CDATA[${
+            product.name || "فيديو المنتج"
+          }]]></video:title>
+
+          <video:description><![CDATA[${
+            (product.description || product.name || "")
+              .replace(/<[^>]*>/g, "")
+              .substring(0, 500)
+          }]]></video:description>
+
+          <video:player_loc allow_embed="yes">
+            https://www.youtube.com/embed/${product.video_id}
+          </video:player_loc>
+
+          <video:content_loc>
+            https://www.youtube.com/watch?v=${product.video_id}
+          </video:content_loc>
+
+        </video:video>
+        `
+            : ""
+        }
+
       </url>
     `);
   });
@@ -78,7 +127,9 @@ export async function GET() {
   );
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset
+xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 ${urls.join("\n")}
 </urlset>`;
 
