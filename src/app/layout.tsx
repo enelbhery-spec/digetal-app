@@ -8,6 +8,8 @@ import Footer from "@/components/Footer";
 import RegisterSW from "@/components/RegisterSW";
 import AppInstallLoader from "@/components/AppInstallLoader";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next"
+
 
 // ✅ نظام المقارنة
 import { CompareProvider } from "@/context/CompareContext";
