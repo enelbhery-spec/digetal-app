@@ -69,6 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CompareBar />
           <RegisterSW />
           <SpeedInsights />
+          <Analytics />
         </CompareProvider>
       </body>
     </html>
