@@ -2,6 +2,7 @@
 import type { Metadata, Viewport } from "next";
 import "@/app/globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 import { Tajawal } from "next/font/google";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -67,6 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CompareBar />
           <RegisterSW />
           <SpeedInsights />
+          <Analytics />
         </CompareProvider>
       </body>
     </html>
