@@ -1,11 +1,10 @@
-import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ExtraCodeProductCard from "@/components/market/ExtraCodeProductCard";
 import SafkaProductCard from "@/components/market/SafkaProductCard";
 import Pagination from "@/components/Pagination";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
-import { Play } from "lucide-react";
+import { Play, BookOpen } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 
 export const dynamic = "force-dynamic";
@@ -35,10 +34,13 @@ export default async function CountryPage({ params, searchParams }: Props) {
   const sParams = await searchParams;
   const countrySlug = country.toLowerCase().trim();
   
+  // بارامترات الترقيم
   const pageExtra = Number(sParams?.pageExtra) || 1;
+  const pageArticles = Number(sParams?.pageArticles) || 1;
   const vToken = typeof sParams?.vToken === "string" ? sParams.vToken : undefined;
   const categoryFilter = typeof sParams?.category === "string" ? sParams.category : null;
 
+  // جلب البيانات الأساسية
   const [activeProductsCats, activeSafkaCats, videoData] = await Promise.all([
     supabase.from("products").select("category_slug").eq("code", countrySlug).eq("brand_slug", "extracode"),
     supabase.from("safka_products").select("category_slug").eq("code", countrySlug),
@@ -48,9 +50,9 @@ export default async function CountryPage({ params, searchParams }: Props) {
   const activeCategorySlugs = Array.from(new Set([...(activeProductsCats.data || []), ...(activeSafkaCats.data || [])].map(p => p.category_slug).filter(Boolean)));
   const { data: activeCategories } = await supabase.from("categories").select("id, title, slug").in("slug", activeCategorySlugs);
 
+  // منطق المنتجات
   let combinedProducts: any[] = [];
   let extraTotalPages = 0;
-  
   try {
     let regularQuery = supabase.from("products").select("*").eq("code", countrySlug).eq("brand_slug", "extracode");
     let safkaQuery = supabase.from("safka_products").select("*").eq("code", countrySlug);
@@ -63,18 +65,31 @@ export default async function CountryPage({ params, searchParams }: Props) {
     combinedProducts = allProducts.slice((pageExtra - 1) * 12, pageExtra * 12);
   } catch (err) { console.error(err); }
 
+  // منطق المقالات مع الترقيم
+  const pageSizeArticles = 6;
+  const [articlesRes, countRes] = await Promise.all([
+    supabase
+      .from("articles")
+      .select("id, title, slug, image_url, content, created_at")
+      .eq("code", countrySlug)
+      .range((pageArticles - 1) * pageSizeArticles, pageArticles * pageSizeArticles - 1)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("articles")
+      .select("*", { count: "exact", head: true })
+      .eq("code", countrySlug)
+  ]);
+
+  const articles = articlesRes.data || [];
+  const totalArticlePages = Math.ceil((countRes.count || 0) / pageSizeArticles);
+
   return (
     <main className="bg-gray-50 min-h-screen pb-20" dir="rtl">
-<div className="text-center pt-12">
-  <h1 className="text-3xl md:text-5xl font-black">
-    🛍️ تريند ستور مصر
-  </h1>
+      <div className="text-center pt-12">
+        <h1 className="text-3xl md:text-5xl font-black">🛍️ تريند ستور مصر</h1>
+        <div className="max-w-3xl mx-auto mt-8 px-4"> <SearchBar /> </div>
+      </div>
 
-  {/* شريط البحث */}
-  <div className="max-w-3xl mx-auto mt-8 px-4">
-    <SearchBar />
-  </div>
-</div>
       <div className="flex gap-3 flex-wrap justify-center mt-10 px-6">
         <Link href={`/${countrySlug}`} className={`px-6 py-2 rounded-xl border ${!categoryFilter ? "bg-emerald-600 text-white" : "bg-white"}`}>الكل</Link>
         {activeCategories?.map((cat: any) => <Link key={cat.id} href={`/${countrySlug}?category=${cat.slug}`} className={`px-5 py-2 rounded-xl border ${categoryFilter === cat.slug ? "bg-emerald-600 text-white" : "bg-white"}`}>{cat.title}</Link>)}
@@ -86,6 +101,28 @@ export default async function CountryPage({ params, searchParams }: Props) {
 
       {extraTotalPages > 1 && <div className="mt-10 flex justify-center"><Pagination currentPage={pageExtra} totalPages={extraTotalPages} baseUrl={`/${countrySlug}?category=${categoryFilter || ""}&pageExtra=`} /></div>}
 
+      {/* قسم المقالات مع الترقيم */}
+      {articles.length > 0 && (
+        <section className="max-w-7xl mx-auto px-6 mt-20 py-16 border-t">
+          <h2 className="text-2xl font-bold text-center mb-10 flex items-center justify-center gap-2"><BookOpen className="text-emerald-600" /> أحدث المقالات</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {articles.map((article: any) => (
+              <Link href={`/${countrySlug}/articles/${article.slug}`} key={article.id} className="bg-white p-4 rounded-3xl shadow-sm border hover:shadow-md transition">
+                {article.image_url && <img src={article.image_url} alt={article.title} className="w-full aspect-video object-cover rounded-xl mb-4" />}
+                <h3 className="font-bold text-lg mb-2 line-clamp-2">{article.title}</h3>
+                <p className="text-gray-500 text-sm line-clamp-3">{article.content}</p>
+              </Link>
+            ))}
+          </div>
+          {totalArticlePages > 1 && (
+            <div className="mt-12 flex justify-center">
+              <Pagination currentPage={pageArticles} totalPages={totalArticlePages} baseUrl={`/${countrySlug}?pageArticles=`} />
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* قسم الفيديوهات */}
       {videoData.items.length > 0 && (
         <section className="max-w-7xl mx-auto px-6 mt-20 py-16 border-t">
           <h2 className="text-2xl font-bold text-center mb-10 flex items-center justify-center gap-2"><Play className="text-red-600" /> شاهد تجارب العملاء</h2>
@@ -96,10 +133,6 @@ export default async function CountryPage({ params, searchParams }: Props) {
                 <h3 className="font-bold text-center line-clamp-2">{v.snippet.title}</h3>
               </div>
             ))}
-          </div>
-          <div className="mt-12 flex justify-center gap-4">
-            {videoData.prevPageToken && <Link href={`/${countrySlug}?vToken=${videoData.prevPageToken}`} className="px-6 py-2 bg-white border rounded-xl">السابق</Link>}
-            {videoData.nextPageToken && <Link href={`/${countrySlug}?vToken=${videoData.nextPageToken}`} className="px-6 py-2 bg-emerald-600 text-white rounded-xl">التالي</Link>}
           </div>
         </section>
       )}

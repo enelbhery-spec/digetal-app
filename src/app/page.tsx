@@ -1,65 +1,67 @@
-"use client";
+import { supabase } from "@/lib/supabase";
+import { Play, BookOpen } from "lucide-react";
+import Link from "next/link";
+import Pagination from "@/components/Pagination";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Play } from "lucide-react";
+export const dynamic = "force-dynamic";
 
-export default function Home() {
-  const router = useRouter();
-  const [checking, setChecking] = useState(true);
+export default async function Home({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+  const params = await searchParams;
+  const page = Number(params.page) || 1;
+  const pageSize = 6;
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
 
-  useEffect(() => {
-    const savedCountry = localStorage.getItem("country");
-    if (savedCountry === "eg") {
-      router.replace(`/${savedCountry}`);
-    } else {
-      setChecking(false);
-    }
-  }, [router]);
+  const [articlesRes, countRes] = await Promise.all([
+    supabase
+      .from("articles")
+      .select("id, title, slug, image_url")
+      .range(from, to)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("articles")
+      .select("*", { count: "exact", head: true })
+  ]);
 
-  const selectCountry = () => {
-    localStorage.setItem("country", "eg");
-    router.push("/eg");
-  };
-
-  if (checking) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="animate-pulse">جاري التحميل...</p>
-      </div>
-    );
-  }
+  const articles = articlesRes.data || [];
+  const totalPages = Math.ceil((countRes.count || 0) / pageSize);
 
   return (
-    <main className="flex flex-col min-h-screen">
-      {/* القسم العلوي: اختيار الدولة */}
-      <section className="flex-grow flex flex-col items-center justify-center py-20 text-center">
-        <h1 className="text-2xl font-black mb-4">أهلاً بك في متجرنا 🌍</h1>
+    <main className="flex flex-col min-h-screen bg-white" dir="rtl">
+      <script dangerouslySetInnerHTML={{ __html: `if(localStorage.getItem('country')==='eg') window.location.href='/eg';` }} />
+
+      <section className="flex-1 flex flex-col items-center justify-center px-6 py-20 text-center">
+        <img src="/logo.png" alt="Extra Code" className="w-32 h-32 object-contain mb-8" />
+        <h1 className="text-4xl font-black text-slate-900 mb-4">أهلاً بك في متجر Extra Code</h1>
         <button
-          onClick={selectCountry}
-          className="bg-green-600 text-white px-10 py-4 rounded-2xl font-bold hover:bg-green-700 transition-all shadow-lg"
+          onClick={() => { localStorage.setItem('country', 'eg'); window.location.href = '/eg'; }}
+          className="bg-green-600 hover:bg-green-700 transition-all text-white px-12 py-4 rounded-2xl font-black text-lg shadow-xl"
         >
-          🇪🇬 متابعة إلى مصر
+          🇪🇬 متابعة إلى متجر مصر
         </button>
       </section>
 
-      {/* القسم السفلي: الفيديوهات (سيظهر أسفل الصفحة) */}
-      <section className="w-full bg-slate-50 py-16 border-t">
-        <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-xl font-bold text-center mb-8 flex items-center justify-center gap-2">
-            <Play className="text-red-600" /> شاهد قبل الشراء
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white p-2 rounded-2xl shadow-sm">
-                <div className="aspect-video bg-gray-200 rounded-xl flex items-center justify-center">
-                  فيديو {i}
-                </div>
-              </div>
-            ))}
+      {articles.length > 0 && (
+        <section className="w-full bg-white py-16 border-t">
+          <div className="max-w-6xl mx-auto px-6">
+            <h2 className="text-2xl font-black text-center mb-10 flex items-center justify-center gap-3">
+              <BookOpen className="text-emerald-600" /> أحدث المقالات
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {articles.map((art) => (
+                <Link href={`/eg/article/${art.slug}`} key={art.id} className="bg-slate-50 rounded-3xl overflow-hidden shadow-md border hover:shadow-xl transition-all block">
+                  {art.image_url && <img src={art.image_url} alt={art.title} className="w-full aspect-video object-cover" />}
+                  <div className="p-4"><h3 className="font-black text-center line-clamp-2">{art.title}</h3></div>
+                </Link>
+              ))}
+            </div>
+            {/* العداد */}
+            <div className="mt-12 flex justify-center">
+               <Pagination currentPage={page} totalPages={totalPages} baseUrl="/?page=" />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </main>
   );
 }
