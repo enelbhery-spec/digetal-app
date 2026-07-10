@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { Play, BookOpen } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
+import Tracker from "@/components/Tracker"; // تم إضافة مكون التتبع
 
 export const dynamic = "force-dynamic";
 
@@ -85,6 +86,9 @@ export default async function CountryPage({ params, searchParams }: Props) {
 
   return (
     <main className="bg-gray-50 min-h-screen pb-20" dir="rtl">
+      {/* مكون التتبع يعمل في الخلفية بصمت */}
+      <Tracker eventName="view_country_page" productId={countrySlug} />
+
       <div className="text-center pt-12">
         <h1 className="text-3xl md:text-5xl font-black">🛍️ تريند ستور مصر</h1>
         <div className="max-w-3xl mx-auto mt-8 px-4"> <SearchBar /> </div>

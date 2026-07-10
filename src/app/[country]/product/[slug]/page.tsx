@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Script from "next/script";
 import type { Metadata } from "next";
+import Tracker from "@/components/Tracker"; // تم إضافة مكون التتبع
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -23,18 +24,10 @@ type Props = {
 export async function generateMetadata({
   params,
 }: Props): Promise<Metadata> {
+  const { slug, country } = await params;
+  const decodedSlug = decodeURIComponent(slug);
 
-  const {
-    slug,
-    country,
-  } = await params;
-
-  const decodedSlug =
-    decodeURIComponent(slug);
-
-  const {
-    data: product,
-  } = await supabase
+  const { data: product } = await supabase
     .from("products")
     .select("*")
     .eq("slug", decodedSlug)
@@ -46,51 +39,29 @@ export async function generateMetadata({
 
   return {
     title: `${product.title} | تريند ستور `,
-
-    description:
-      product.description ||
-      product.title,
-
+    description: product.description || product.title,
     alternates: {
       canonical: `https://www.extracode.online/${country}/product/${slug}`,
     },
-
     openGraph: {
       title: product.title,
-
-      description:
-        product.description ||
-        product.title,
-
+      description: product.description || product.title,
       images: [
         {
-          url:
-            product.image_url ||
-            "/og-image.png",
+          url: product.image_url || "/og-image.png",
           width: 1200,
           height: 630,
           alt: product.title,
         },
       ],
-
       type: "website",
     },
-
     twitter: {
       card: "summary_large_image",
-
       title: product.title,
-
-      description:
-        product.description ||
-        product.title,
-
-      images: [
-        product.image_url ||
-          "/og-image.png",
-      ],
+      description: product.description || product.title,
+      images: [product.image_url || "/og-image.png"],
     },
-
     robots: {
       index: true,
       follow: true,
@@ -98,32 +69,21 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProductPage({
-  params,
-}: Props) {
-
-  const {
-    slug,
-    country,
-  } = await params;
-
-  const decodedSlug =
-    decodeURIComponent(slug);
+export default async function ProductPage({ params }: Props) {
+  const { slug, country } = await params;
+  const decodedSlug = decodeURIComponent(slug);
 
   // =====================================================
   // جلب المنتج
   // =====================================================
 
-  const {
-    data: product,
-  } = await supabase
+  const { data: product } = await supabase
     .from("products")
     .select("*")
     .eq("slug", decodedSlug)
     .single();
 
   if (!product) {
-
     return notFound();
   }
 
@@ -134,37 +94,22 @@ export default async function ProductPage({
   const currency =
     product?.currency ||
     product?.country_currency ||
-    (
-      country === "sa" ||
-      country === "saudi"
-        ? "ر.س"
-        : country === "ae"
-        ? "د.إ"
-        : "ج.م"
-    );
+    (country === "sa" || country === "saudi"
+      ? "ر.س"
+      : country === "ae"
+      ? "د.إ"
+      : "ج.م");
 
   // =====================================================
   // الأسعار
   // =====================================================
 
-  const price =
-    Number(product?.price) || 0;
-
-  const oldPrice =
-    Number(product?.old_price) || 0;
-
-  const hasDiscount =
-    oldPrice > price;
-
-  const discount =
-    hasDiscount
-      ? Math.round(
-          (
-            (oldPrice - price) /
-            oldPrice
-          ) * 100
-        )
-      : 0;
+  const price = Number(product?.price) || 0;
+  const oldPrice = Number(product?.old_price) || 0;
+  const hasDiscount = oldPrice > price;
+  const discount = hasDiscount
+    ? Math.round(((oldPrice - price) / oldPrice) * 100)
+    : 0;
 
   // =====================================================
   // Product Schema
@@ -172,62 +117,28 @@ export default async function ProductPage({
 
   const productSchema = {
     "@context": "https://schema.org",
-
     "@type": "Product",
-
     name: product.title,
-
-    image: [
-      product.image_url,
-    ],
-
-    description:
-      product.description ||
-      product.title,
-
-    sku:
-      product.offer_no ||
-      product.id,
-
+    image: [product.image_url],
+    description: product.description || product.title,
+    sku: product.offer_no || product.id,
     brand: {
       "@type": "Brand",
-
-      name:
-        product?.brand_slug ||
-        "Extra Code",
+      name: product?.brand_slug || "Extra Code",
     },
-
     offers: {
       "@type": "Offer",
-
-      url:
-        product.affiliate_link ||
-        product.product_url,
-
+      url: product.affiliate_link || product.product_url,
       priceCurrency:
-        country === "sa"
-          ? "SAR"
-          : country === "ae"
-          ? "AED"
-          : "EGP",
-
+        country === "sa" ? "SAR" : country === "ae" ? "AED" : "EGP",
       price: product.price,
-
-      availability:
-        "https://schema.org/InStock",
-
-      itemCondition:
-        "https://schema.org/NewCondition",
+      availability: "https://schema.org/InStock",
+      itemCondition: "https://schema.org/NewCondition",
     },
-
     aggregateRating: {
       "@type": "AggregateRating",
-
-      ratingValue:
-        product.rating || 5,
-
-      reviewCount:
-        product.reviewsCount || 1,
+      ratingValue: product.rating || 5,
+      reviewCount: product.reviewsCount || 1,
     },
   };
 
@@ -238,9 +149,7 @@ export default async function ProductPage({
         id="product-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            productSchema
-          ),
+          __html: JSON.stringify(productSchema),
         }}
       />
 
@@ -248,6 +157,8 @@ export default async function ProductPage({
         className="max-w-7xl mx-auto px-3 py-4 md:px-4 md:py-6"
         dir="rtl"
       >
+        {/* مكون التتبع: يسجل زيارة صفحة المنتج */}
+        <Tracker eventName="product_view" productId={product.id?.toString()} />
 
         <div
           className="
@@ -260,7 +171,6 @@ export default async function ProductPage({
             gap-5 md:gap-10
           "
         >
-
           {/* الصورة */}
           <div
             className="
@@ -270,12 +180,8 @@ export default async function ProductPage({
               p-4 md:p-6
             "
           >
-
             <img
-              src={
-                product.image_url ||
-                "/no-image.png"
-              }
+              src={product.image_url || "/no-image.png"}
               alt={product.title}
               title={`${product.title} | تريند ستور `}
               loading="lazy"
@@ -286,13 +192,10 @@ export default async function ProductPage({
                 object-contain
               "
             />
-
           </div>
 
           {/* التفاصيل */}
           <div className="flex flex-col justify-center">
-
-            {/* العنوان */}
             <h1
               className="
                 text-lg md:text-3xl
@@ -302,16 +205,11 @@ export default async function ProductPage({
                 leading-snug
               "
             >
-
               {product.title}
-
             </h1>
 
-            {/* السعر */}
             <div className="mb-4 md:mb-6">
-
               <div className="flex items-center gap-3 flex-wrap">
-
                 <span
                   className="
                     text-2xl md:text-4xl
@@ -319,9 +217,7 @@ export default async function ProductPage({
                     text-green-600
                   "
                 >
-
                   {price.toLocaleString()} {currency}
-
                 </span>
 
                 {hasDiscount && (
@@ -333,11 +229,8 @@ export default async function ProductPage({
                         text-lg
                       "
                     >
-
                       {oldPrice.toLocaleString()} {currency}
-
                     </span>
-
                     <span
                       className="
                         bg-red-100
@@ -348,18 +241,13 @@ export default async function ProductPage({
                         font-bold
                       "
                     >
-
                       خصم {discount}%
-
                     </span>
                   </>
                 )}
-
               </div>
-
             </div>
 
-            {/* الوصف */}
             <p
               className="
                 text-sm md:text-base
@@ -368,15 +256,9 @@ export default async function ProductPage({
                 mb-5 md:mb-6
               "
             >
-
               {product.description}
-
             </p>
 
-            {/* تنويه */}
-            
-
-            {/* الأزرار */}
             <div
               className="
                 flex flex-col
@@ -384,17 +266,17 @@ export default async function ProductPage({
                 gap-3
               "
             >
-
-              {/* زر الشراء */}
               {product.affiliate_link && (
                 <a
-                  href={
-                    product.affiliate_link
-                  }
+                  href={product.affiliate_link}
                   target="_blank"
                   rel="nofollow sponsored noopener noreferrer"
                   title={`شراء ${product.title}`}
                   aria-label={`شراء ${product.title}`}
+                  // لإضافة تتبع عند الضغط على زر الشراء أيضاً
+                  onClick={() => {
+                    import("@/lib/analytics").then((a) => a.trackEvent("click_buy", product.id?.toString()));
+                  }}
                   className="
                     w-full md:flex-1
                     bg-green-600
@@ -408,13 +290,10 @@ export default async function ProductPage({
                     transition-all
                   "
                 >
-
                   تسوق عبر المتجر 🔥
-
                 </a>
               )}
 
-              {/* زر الرجوع */}
               <Link
                 href={`/${country}`}
                 title="العودة للرئيسية"
@@ -431,17 +310,11 @@ export default async function ProductPage({
                   transition-all
                 "
               >
-
                 رجوع
-
               </Link>
-
             </div>
-
           </div>
-
         </div>
-
       </main>
     </>
   );
