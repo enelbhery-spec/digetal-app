@@ -8,8 +8,8 @@ import Footer from "@/components/Footer";
 import RegisterSW from "@/components/RegisterSW";
 import AppInstallLoader from "@/components/AppInstallLoader";
 import Script from "next/script";
-import { Analytics } from "@vercel/analytics/next"
-
+import { Analytics } from "@vercel/analytics/next";
+import Tracker from "@/components/Tracker"; // تم الاستيراد
 
 // ✅ نظام المقارنة
 import { CompareProvider } from "@/context/CompareContext";
@@ -48,7 +48,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
 
       <body className={`${tajawal.className} min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased`}>
-        {/* ✅ Facebook Pixel NoScript - تم استخدام الكلاس fb-pixel-noscript المضاف في globals.css */}
+        {/* ✅ التتبع العام لكل الموقع */}
+        <Tracker eventName="page_view" />
+
+        {/* ✅ Facebook Pixel NoScript */}
         <noscript>
           <img 
             height="1" 
