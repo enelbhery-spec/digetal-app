@@ -3,12 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useCartStore } from "@/store/useCart";
+// 1. استيراد دالة التتبع من المسار الصحيح لديك
+import { trackEvent } from "@/utils/tracker"; 
 
 type Props = {
   productId: string;
   safka_id: string;
   property_id?: string | null;
-
   name: string;
   price: number;
   sale_price: number;
@@ -31,30 +32,37 @@ export default function BuyNowButton({
   const [loading, setLoading] = useState(false);
 
   const productData = {
-  safka_id,
-  property_id,
+    safka_id,
+    property_id,
+    name,
+    sale_price: Number(sale_price),
+    image,
+    quantity: 1,
+  };
 
-  name,
-  sale_price: Number(sale_price),
-  image,
-
-  quantity: 1,
-};
   async function handleBuy() {
     setLoading(true);
 
     console.log("🛒 PRODUCT ADDED:", productData);
 
-    addItem(productData);
+    // 2. تتبع حدث الضغط على زر الشراء الفوري مع تمرير معرف المنتج
+    if (productId) {
+      trackEvent("click_buy_button", productId);
+    }
 
+    addItem(productData);
     router.push(`/checkout/${productId}`);
   }
 
   function handleAddToCart() {
     console.log("🛒 PRODUCT ADDED:", productData);
 
-    addItem(productData);
+    // 3. تتبع حدث إضافة المنتج إلى السلة
+    if (productId) {
+      trackEvent("add_to_cart", productId);
+    }
 
+    addItem(productData);
     toggleCart(true);
   }
 

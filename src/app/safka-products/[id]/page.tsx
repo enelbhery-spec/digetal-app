@@ -1,6 +1,7 @@
 import BuyNowButton from "./BuyNowButton";
 import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
+import ProductTracker from "./ProductTracker"; // استيراد مكون التتبع الجديد
 
 type Props = {
   params: Promise<{
@@ -25,7 +26,6 @@ export default async function ProductDetailsPage({ params }: Props) {
         sale_price,
         barcode,
         video_id
-
       `)
     .eq("safka_id", id)
     .single();
@@ -40,7 +40,6 @@ export default async function ProductDetailsPage({ params }: Props) {
 
   const costPrice = Number(product.price ?? 0);
   const salePrice = Number(product.sale_price ?? 0);
-  // السعر النهائي هو سعر البيع إذا وجد وكان أكبر من صفر، وإلا نستخدم السعر الأساسي
   const finalPrice = salePrice > 0 ? salePrice : costPrice;
 
   const discount =
@@ -49,59 +48,52 @@ export default async function ProductDetailsPage({ params }: Props) {
       : 0;
       const siteUrl = "https://www.extracode.online";
 
-const productUrl = `${siteUrl}/safka-products/${product.safka_id}`;
+  const productUrl = `${siteUrl}/safka-products/${product.safka_id}`;
+  const thumbnailUrl = mainImage;
 
-const thumbnailUrl = mainImage;
+  const videoEmbedUrl = product.video_id
+    ? `https://www.youtube.com/embed/${product.video_id}`
+    : "";
 
-const videoEmbedUrl = product.video_id
-  ? `https://www.youtube.com/embed/${product.video_id}`
-  : "";
-
-const videoWatchUrl = product.video_id
-  ? `https://www.youtube.com/watch?v=${product.video_id}`
-  : "";
+  const videoWatchUrl = product.video_id
+    ? `https://www.youtube.com/watch?v=${product.video_id}`
+    : "";
   
 
-return (
-  <main className="min-h-screen bg-[#f5f5f5] py-5 sm:py-10 px-3 sm:px-4">
+  return (
+    <main className="min-h-screen bg-[#f5f5f5] py-5 sm:py-10 px-3 sm:px-4">
+      {/* تضمين مكون التتبع وتمرير الـ ID الخاص بالمنتج */}
+      <ProductTracker productId={product.id} />
 
-    {product.video_id && (
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "VideoObject",
-
-            name: product.name,
-
-            description:
-              product.description
-                ?.replace(/<[^>]*>/g, "")
-                .substring(0, 300) || product.name,
-
-            thumbnailUrl: [thumbnailUrl],
-
-            uploadDate: new Date().toISOString(),
-
-            embedUrl: videoEmbedUrl,
-
-            contentUrl: videoWatchUrl,
-
-            url: productUrl,
-
-            publisher: {
-              "@type": "Organization",
-              name: "تريند ستور",
-              logo: {
-                "@type": "ImageObject",
-                url: `${siteUrl}/logo.png`,
+      {product.video_id && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "VideoObject",
+              name: product.name,
+              description:
+                product.description
+                  ?.replace(/<[^>]*>/g, "")
+                  .substring(0, 300) || product.name,
+              thumbnailUrl: [thumbnailUrl],
+              uploadDate: new Date().toISOString(),
+              embedUrl: videoEmbedUrl,
+              contentUrl: videoWatchUrl,
+              url: productUrl,
+              publisher: {
+                "@type": "Organization",
+                name: "تريند ستور",
+                logo: {
+                  "@type": "ImageObject",
+                  url: `${siteUrl}/logo.png`,
+                },
               },
-            },
-          }),
-        }}
-      />
-    )}
+            }),
+          }}
+        />
+      )}
 
       <div className="max-w-7xl mx-auto">
         <div className="bg-white w-full rounded-[2rem] shadow-sm overflow-hidden border border-slate-100">
@@ -163,7 +155,6 @@ return (
                   </div>
                 </div>
               )}
-              {/* فيديو المنتج */}
 
               {/* فيديو المنتج */}
               {product.video_id && (
@@ -199,11 +190,11 @@ return (
                   image={mainImage}
                   category="منتجات متنوعة"
                 />
-              </div>            </div>
+              </div>            
+            </div>
           </div>
         </div>
       </div>
-      
     </main>
   );
 }

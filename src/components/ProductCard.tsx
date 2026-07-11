@@ -9,6 +9,8 @@ import {
   Star,
   Hash,
 } from "lucide-react";
+// 1. استيراد دالة التتبع من المسار الصحيح لديك
+import { trackEvent } from "@/utils/tracker"; 
 
 type Props = {
   product: any;
@@ -82,6 +84,20 @@ export default function ProductCard({
     setTimeout(() => {
       setCopied(false);
     }, 2000);
+  };
+
+  // 2. دالة تتبع الضغط على رابط الشراء/التسوق الخارجي
+  const handleAffiliateClick = () => {
+    if (product?.id) {
+      trackEvent("click_buy_button", product.id); // نستخدم نفس الحدث لرفع عداد النقرات الإجمالي في السوبابيز
+    }
+  };
+
+  // 3. دالة تتبع الانتقال إلى صفحة المنتج الداخلية
+  const handleInternalDetailsClick = () => {
+    if (product?.id) {
+      trackEvent("click_product_card", product.id);
+    }
   };
 
   return (
@@ -257,6 +273,7 @@ export default function ProductCard({
                 href={productUrl}
                 target="_blank"
                 rel="nofollow sponsored"
+                onClick={handleAffiliateClick} // ربط حدث الضغط على الشراء/التسوق
                 className="flex-[3] bg-slate-900 hover:bg-emerald-600 text-white py-3 rounded-2xl text-center text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-95"
               >
 
@@ -273,6 +290,7 @@ export default function ProductCard({
 
             <Link
               href={`/${country}/product/${safeSlug}`}
+              onClick={handleInternalDetailsClick} // ربط حدث الضغط على تفاصيل الكارت
               className="flex-1 bg-slate-50 text-slate-600 py-3 rounded-2xl text-center hover:bg-slate-100 flex items-center justify-center transition-colors"
             >
 
