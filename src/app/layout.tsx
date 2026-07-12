@@ -1,4 +1,3 @@
-// src/app/layout.tsx
 import type { Metadata, Viewport } from "next";
 import "@/app/globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -9,7 +8,7 @@ import RegisterSW from "@/components/RegisterSW";
 import AppInstallLoader from "@/components/AppInstallLoader";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
-import Tracker from "@/components/Tracker"; // تم الاستيراد
+import Tracker from "@/components/Tracker";
 
 // ✅ نظام المقارنة
 import { CompareProvider } from "@/context/CompareContext";
@@ -49,32 +48,28 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
 
       <body className={`${tajawal.className} min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased`}>
+        
+        {/* ✅ كود فيسبوك المطورين المحدث والمطابق للمعايير */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               window.fbAsyncInit = function() {
-                if (window.FB) {
-                  window.FB.init({
-                    appId: '2099990403916493',
-                    cookie: true,
-                    xfbml: true,
-                    version: 'v22.0'
-                  });
-
-                  if (window.FB.AppEvents) {
-                    window.FB.AppEvents.logPageView();
-                  }
-                }
+                FB.init({
+                  appId      : '2099990403916493',
+                  cookie     : true,
+                  xfbml      : true,
+                  version    : 'v20.0'
+                });
+                FB.AppEvents.logPageView();
               };
 
-              (function(d, s, id) {
-                var js, fjs = d.getElementsByTagName(s)[0];
-                if (d.getElementById(id)) return;
-                js = d.createElement(s);
-                js.id = id;
-                js.src = "https://connect.facebook.net/en_US/sdk.js";
-                fjs.parentNode.insertBefore(js, fjs);
-              }(document, 'script', 'facebook-jssdk'));
+              (function(d, s, id){
+                 var js, fjs = d.getElementsByTagName(s)[0];
+                 if (d.getElementById(id)) {return;}
+                 js = d.createElement(s); js.id = id;
+                 js.src = "https://connect.facebook.net/en_US/sdk.js";
+                 fjs.parentNode.insertBefore(js, fjs);
+               }(document, 'script', 'facebook-jssdk'));
             `,
           }}
         />
