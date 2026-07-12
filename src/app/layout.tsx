@@ -36,34 +36,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           strategy="afterInteractive"
         />
 
-        <Script id="facebook-sdk" strategy="afterInteractive">
-          {`
-            window.fbAsyncInit = function() {
-              if (window.FB) {
-                window.FB.init({
-                  appId: '2099990403916493',
-                  cookie: true,
-                  xfbml: true,
-                  version: '{api-version}'
-                });
-
-                if (window.FB.AppEvents) {
-                  window.FB.AppEvents.logPageView();
-                }
-              }
-            };
-
-            (function(d, s, id) {
-              var js, fjs = d.getElementsByTagName(s)[0];
-              if (d.getElementById(id)) return;
-              js = d.createElement(s);
-              js.id = id;
-              js.src = "https://connect.facebook.net/en_US/sdk.js";
-              fjs.parentNode.insertBefore(js, fjs);
-            }(document, 'script', 'facebook-jssdk'));
-          `}
-        </Script>
-
         <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
@@ -77,6 +49,36 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
 
       <body className={`${tajawal.className} min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased`}>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.fbAsyncInit = function() {
+                if (window.FB) {
+                  window.FB.init({
+                    appId: '2099990403916493',
+                    cookie: true,
+                    xfbml: true,
+                    version: 'v22.0'
+                  });
+
+                  if (window.FB.AppEvents) {
+                    window.FB.AppEvents.logPageView();
+                  }
+                }
+              };
+
+              (function(d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) return;
+                js = d.createElement(s);
+                js.id = id;
+                js.src = "https://connect.facebook.net/en_US/sdk.js";
+                fjs.parentNode.insertBefore(js, fjs);
+              }(document, 'script', 'facebook-jssdk'));
+            `,
+          }}
+        />
+
         {/* ✅ التتبع العام لكل الموقع */}
         <Tracker eventName="page_view" />
 
