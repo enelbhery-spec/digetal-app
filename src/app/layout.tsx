@@ -28,19 +28,40 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ar" dir="rtl" className={`scroll-smooth ${tajawal.variable}`}>
       <head>
-        {/* ✅ Google Tag (gtag.js) */}
+        {/* ✅ استدعاء مكتبة Google Tag */}
         <Script
           async
           src="https://www.googletagmanager.com/gtag/js?id=G-FGK2Z5C8W8"
           strategy="afterInteractive"
         />
 
+        {/* ✅ إعداد وتفعيل التتبع التلقائي والديناميكي لمنع ظهور (not set) */}
         <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-FGK2Z5C8W8');
+            
+            // تهيئة مع تفعيل إرسال المشاهدات وإجبار قراءة المسار الحالي للمتصفح
+            gtag('config', 'G-FGK2Z5C8W8', {
+              send_page_view: true,
+              page_path: window.location.pathname,
+              page_title: document.title
+            });
+
+            // الاستماع لتغييرات الروابط الداخلية لـ Next.js وإرسال البيانات الجديدة فوراً
+            let lastUrl = location.href;
+            new MutationObserver(() => {
+              const url = location.href;
+              if (url !== lastUrl) {
+                lastUrl = url;
+                gtag('event', 'page_view', {
+                  page_path: window.location.pathname,
+                  page_title: document.title,
+                  page_location: url
+                });
+              }
+            }).observe(document, { subtree: true, childList: true });
           `}
         </Script>
 
