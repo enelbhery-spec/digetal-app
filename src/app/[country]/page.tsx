@@ -7,8 +7,64 @@ import Link from "next/link";
 import { Play, BookOpen } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import Tracker from "@/components/Tracker"; // تم إضافة مكون التتبع
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ country: string }>;
+}): Promise<Metadata> {
+  const { country } = await params;
+
+  const countrySlug = country.toLowerCase();
+
+  const title =
+    countrySlug === "eg"
+      ? "تريند ستور مصر | أفضل المنتجات الرقمية والكوبونات والعروض"
+      : "Trend Store";
+
+  const description =
+    countrySlug === "eg"
+      ? "اكتشف أفضل المنتجات الرقمية والكوبونات والعروض الحصرية مع أحدث المقالات وتجارب العملاء."
+      : "Discover the best digital products and exclusive offers.";
+
+  const canonical = `https://www.extracode.online/${countrySlug}`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical,
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      type: "website",
+      locale: "ar_EG",
+      siteName: "ExtraCode",
+      images: [
+        {
+          url: "https://www.extracode.online/logo.png",
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["https://www.extracode.online/logo.png"],
+    },
+  };
+}
 
 async function getChannelVideos(pageToken?: string) {
   const API_KEY = process.env.YOUTUBE_API_KEY;
