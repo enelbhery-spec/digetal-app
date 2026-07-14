@@ -1,7 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
-import ProductCard from "@/components/ProductCard";
 import { notFound } from "next/navigation";
-
+import ExtraCodeProductCard from "@/components/market/ExtraCodeProductCard";
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -36,7 +35,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
 
   return (
     <div className="max-w-7xl mx-auto p-6" dir="rtl">
-      <div className="mb-10 border-r-4 border-green-600 pr-4">
+      <div className="mb-10 border-r-4 border-emerald-600 pr-4">
         <h1 className="text-3xl font-black text-gray-900">
           عروض {category.title}
         </h1>
@@ -48,7 +47,8 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       {products && products.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((item) => (
-            <ProductCard key={item.id} product={item} country={country} />
+            // استخدام المكون الجديد بدلاً من ProductCard
+            <ExtraCodeProductCard key={item.id} product={item} country={country} />
           ))}
         </div>
       ) : (
