@@ -1,38 +1,37 @@
-'use client';
-import { createClient } from '@supabase/supabase-js';
+// src/lib/analytics.js
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
+export async function trackEvent(supabase, eventName, productId, userId = null) {
+  try {
+    // 1. تأكد من أن البيانات ليست فارغة قبل الإرسال
+    if (!productId || !eventName) {
+      console.warn('Analytics: Missing productId or eventName, skipping track.');
+      return;
+    }
 
-export const trackEvent = async (eventName, productId = null) => {
-  // إضافة تأخير بسيط جداً للتأكد من أن البيئة أصبحت جاهزة
-  setTimeout(async () => {
-    try {
-      let sessionId = localStorage.getItem('session_id');
-      if (!sessionId) {
-        sessionId = Math.random().toString(36).substring(7);
-        localStorage.setItem('session_id', sessionId);
-      }
-
-      // التأكد من أن window معرف (تجنب أخطاء السيرفر)
-      const pageUrl = typeof window !== 'undefined' ? window.location.href : 'unknown';
-
-      const { error } = await supabase.from('user_activity_logs').insert([
+    const { data, error } = await supabase
+      .from('analytics_table') // تأكد أن اسم الجدول هو نفس اسم جدولك في Supabase
+      .insert([
         {
-          session_id: sessionId,
           event_name: eventName,
           product_id: productId,
-          page_url: pageUrl,
+          user_id: userId,
+          created_at: new Date().toISOString(),
         },
       ]);
 
-      if (error) console.error('Supabase Tracking Error:', error);
-      else console.log(`Event ${eventName} tracked successfully for ${productId}`);
-      
-    } catch (error) {
-      console.error('Error tracking event:', error);
+    if (error) {
+      // 2. هنا نكشف الغموض عن الخطأ الفارغ
+      console.error('Supabase Tracking Error Detail:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
+    } else {
+      console.log(`Event ${eventName} tracked successfully for ${productId}`);
     }
-  }, 500); // تأخير 500 ملي ثانية لضمان استقرار الصفحة
-};
+  } catch (err) {
+    // 3. التقاط أي خطأ غير متوقع في الاتصال
+    console.error('Unexpected Analytics Error:', err);
+  }
+}
