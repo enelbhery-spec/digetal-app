@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import CartIcon from "./CartIcon";
 import { useCartStore } from "@/store/useCart";
+import CategoriesDropdown from "@/components/CategoriesDropdown";
 
 interface Video {
   title: string;
@@ -15,8 +16,8 @@ interface Video {
 export default function Header() {
   const params = useParams();
   const country = (params?.country as string) || "eg";
-  
-  // استدعاء بيانات السلة وحالة الفتح
+
+  // السلة
   const { items, toggleCart } = useCartStore();
 
   const [videoData, setVideoData] = useState<Video>({
@@ -29,6 +30,7 @@ export default function Header() {
       try {
         const res = await fetch("/api/youtube");
         const data = await res.json();
+
         if (Array.isArray(data) && data.length > 0) {
           setVideoData(data[0]);
         }
@@ -39,6 +41,7 @@ export default function Header() {
         });
       }
     }
+
     fetchLatestVideo();
   }, []);
 
@@ -50,12 +53,14 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-white border-b shadow-sm">
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between gap-4">
 
-        {/* 🎬 الفيديو - يأخذ مساحة مرنة */}
+        {/* الفيديو */}
         <div className="flex items-center gap-3 bg-gray-50 border rounded-full px-3 py-1.5 flex-1 max-w-[55%] hover:shadow transition">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+
             <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
           </span>
+
           <Link
             href={videoLink}
             target="_blank"
@@ -65,24 +70,32 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* 🛒 السلة + اللوجو */}
-        <div className="flex items-center gap-4">
-          
-          {/* 🛒 أيقونة السلة */}
-          <CartIcon 
-            itemCount={items.length} 
-            onClick={() => toggleCart(true)} 
+        {/* التصنيفات + السلة + اللوجو */}
+        <div className="flex items-center gap-3">
+
+          {/* القائمة المنسدلة */}
+          <CategoriesDropdown />
+
+          {/* السلة */}
+          <CartIcon
+            itemCount={items.length}
+            onClick={() => toggleCart(true)}
           />
 
-          {/* 🟢 اللوجو */}
-          <Link href={`/${country}`} className="flex flex-col items-end leading-tight group">
+          {/* اللوجو */}
+          <Link
+            href={`/${country}`}
+            className="flex flex-col items-end leading-tight group"
+          >
             <span className="text-xl md:text-2xl font-extrabold text-green-600 tracking-tight">
               تريند ستور
             </span>
+
             <span className="text-[9px] md:text-[10px] uppercase font-bold text-gray-400 tracking-[0.2em] -mt-1">
               Extracode
             </span>
           </Link>
+
         </div>
 
       </div>

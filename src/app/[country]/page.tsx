@@ -150,10 +150,6 @@ export default async function CountryPage({ params, searchParams }: Props) {
         <div className="max-w-3xl mx-auto mt-8 px-4"> <SearchBar /> </div>
       </div>
 
-      <div className="flex gap-3 flex-wrap justify-center mt-10 px-6">
-        <Link href={`/${countrySlug}`} className={`px-6 py-2 rounded-xl border ${!categoryFilter ? "bg-emerald-600 text-white" : "bg-white"}`}>الكل</Link>
-        {activeCategories?.map((cat: any) => <Link key={cat.id} href={`/${countrySlug}?category=${cat.slug}`} className={`px-5 py-2 rounded-xl border ${categoryFilter === cat.slug ? "bg-emerald-600 text-white" : "bg-white"}`}>{cat.title}</Link>)}
-      </div>
 
       <section className="max-w-7xl mx-auto px-6 mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {combinedProducts.map((p) => p.isSafka ? <SafkaProductCard key={`safka-${p.id}`} product={p} /> : <ExtraCodeProductCard key={`reg-${p.id}`} product={p} country={countrySlug} />)}
