@@ -1,22 +1,31 @@
 // src/lib/supabase.ts
-import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+import { createClient } from "@supabase/supabase-js";
 
-// 1. تصدير دالة createClient نفسها لحل خطأ "is not exported"
 export { createClient };
 
-// 2. العميل المخصص للمتصفح والسيرفر (بدون صلاحيات أدمن)
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-// 3. العميل المخصص لعمليات السيرفر فقط (بصلاحيات الأدمن لتجاوز RLS)
-export const supabaseAdmin = supabaseServiceKey 
+if (!supabaseUrl) {
+  throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL");
+}
+
+if (!supabaseAnonKey) {
+  throw new Error("Missing NEXT_PUBLIC_SUPABASE_ANON_KEY");
+}
+
+export const supabase = createClient(
+  supabaseUrl,
+  supabaseAnonKey
+);
+
+export const supabaseAdmin = supabaseServiceKey
   ? createClient(supabaseUrl, supabaseServiceKey, {
       auth: {
         autoRefreshToken: false,
-        persistSession: false
-      }
-    }) 
-  : null
+        persistSession: false,
+      },
+    })
+  : null;
