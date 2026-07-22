@@ -10,14 +10,14 @@ const tajawal = Tajawal({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://digetal-app-theta.vercel.app/eg"),
+  metadataBase: new URL("https://digetal-app-theta.vercel.app"),
   icons: {
   icon: "/favicon.ico",
   shortcut: "/favicon.ico",
   apple: "/apple-touch-icon.png",
 },
 verification: {
-  google: "google-site-verification: googlef4ce912d6e84da26.html",
+  google: "ضع كود Google Search Console هنا",
   other: {
     "facebook-domain-verification":
       "dnug90dlldt2djikp2yjdhj88pbekd",
@@ -53,14 +53,14 @@ robots: {
   ],
 
   alternates: {
-    canonical: "https://digetal-app-theta.vercel.app/eg",
+    canonical: "https://digetal-app-theta.vercel.app",
   },
 
 
   openGraph: {
     type: "website",
     locale: "ar_EG",
-    url: "https://digetal-app-theta.vercel.app/eg",
+    url: "https://digetal-app-theta.vercel.app",
     siteName: "ExtraCode",
     title: "ExtraCode",
     description:
