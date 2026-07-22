@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "@/app/globals.css";
 import { Tajawal } from "next/font/google";
 import ClientProviders from "@/components/ClientProviders";
+
 const tajawal = Tajawal({
   subsets: ["arabic"],
   weight: ["400", "500", "700", "800", "900"],
@@ -11,30 +12,33 @@ const tajawal = Tajawal({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://digetal-app-theta.vercel.app"),
+
   icons: {
-  icon: "/favicon.ico",
-  shortcut: "/favicon.ico",
-  apple: "/apple-touch-icon.png",
-},
-verification: {
-  google: "ضع كود Google Search Console هنا",
-  other: {
-    "facebook-domain-verification":
-      "dnug90dlldt2djikp2yjdhj88pbekd",
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
   },
-},
-robots: {
-  index: true,
-  follow: true,
-  nocache: false,
-  googleBot: {
+
+  verification: {
+    google: "7XY4QFlcbO13HsbJ3M-4Pl1l9A4Pbbe-GltnYncvINA",
+    other: {
+      "facebook-domain-verification":
+        "dnug90dlldt2djikp2yjdhj88pbekd",
+    },
+  },
+
+  robots: {
     index: true,
     follow: true,
-    "max-image-preview": "large",
-    "max-snippet": -1,
-    "max-video-preview": -1,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
-},
 
   title: {
     default: "ExtraCode",
@@ -55,7 +59,6 @@ robots: {
   alternates: {
     canonical: "https://digetal-app-theta.vercel.app",
   },
-
 
   openGraph: {
     type: "website",
