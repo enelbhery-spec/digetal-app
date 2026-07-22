@@ -12,4 +12,4 @@ Disallow: /*.json$
 Disallow: /*.xml$
 
 # رابط خريطة الموقع
-Sitemap: https://www.extracode.online/sitemap.xml
+Sitemap: https://https://digetal-app-theta.vercel.app/sitemap.xml
